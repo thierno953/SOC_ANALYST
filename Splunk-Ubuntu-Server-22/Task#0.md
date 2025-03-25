@@ -128,7 +128,7 @@ root@forwarder:# chmod -R 755 /opt/splunkforwarder
 root@forwarder:# /opt/splunkforwarder/bin/splunk restart
 ```
 
-![splunk](/assets/02.png)
+![splunk](//Splunk-Ubuntu-Server-22/assets/02.png)
 
 - Création d'un index pour les logs Syslog
 
@@ -177,7 +177,7 @@ root@forwarder:/opt/splunkforwarder/etc/system/local# cd ../../../..
 root@forwarder:/opt# /opt/splunkforwarder/bin/splunk restart
 ```
 
-![splunk](/assets/03.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/03.png)
 
 ##### Recherche et reporting
 

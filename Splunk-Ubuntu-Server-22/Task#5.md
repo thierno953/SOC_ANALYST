@@ -280,7 +280,7 @@ sourcetype = syslog
 root@forwarder:~# /opt/splunkforwarder/bin/splunk restart
 ```
 
-![splunk](/assets/12.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/12.png)
 
 ###### Search & Reporting
 

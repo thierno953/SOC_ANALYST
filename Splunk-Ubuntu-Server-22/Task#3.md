@@ -120,10 +120,10 @@ root@forwarder:/# /opt/splunkforwarder/bin/splunk restart
 root@forwarder:/# /opt/splunk/bin/splunk restart
 ```
 
-![splunk](/assets/04.png)
-![splunk](/assets/05.png)
-![splunk](/assets/06.png)
-![splunk](/assets/07.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/04.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/05.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/06.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/07.png)
 
 #### 3 - Simulation d'une tentative de modification non autorisée et analyse des logs dans Splunk
 
@@ -158,10 +158,10 @@ root@forwarder:~# ausearch -k file_integrity
 root@forwarder:~# ausearch -k file_integrity | grep myfirstfile
 ```
 
-![splunk](/assets/08.png)
-![splunk](/assets/09.png)
-![splunk](/assets/10.png)
-![splunk](/assets/11.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/08.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/09.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/10.png)
+![splunk](/Splunk-Ubuntu-Server-22/assets/11.png)
 
 ##### Recherche et reporting dans Splunk
 
