@@ -6,7 +6,7 @@
 - **Objectif**: Détecter les retransmissions TCP et les problèmes de connexion.
 
 ![Wireshark](/wireshark/assets/15.png)
-![Wireshark](wireshark//assets/16.png)
+![Wireshark](wireshark/assets/16.png)
 
 #### Détecter les problèmes de connexion
 
