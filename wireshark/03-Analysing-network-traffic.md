@@ -5,8 +5,8 @@
 - Tâche 1 : Trouver les meilleurs locuteurs (hôte avec le plus de trafic).
 - **Objectif**: Détecter les retransmissions TCP et les problèmes de connexion.
 
-![Wireshark](/assets/15.png)
-![Wireshark](/assets/16.png)
+![Wireshark](/wireshark/assets/15.png)
+![Wireshark](wireshark//assets/16.png)
 
 #### Détecter les problèmes de connexion
 
@@ -31,10 +31,10 @@
           (ACK reçu)
 ```
 
-![Wireshark](/assets/17.png)
-![Wireshark](/assets/18.png)
-![Wireshark](/assets/19.png)
-![Wireshark](/assets/20.png)
+![Wireshark](/wireshark/assets/17.png)
+![Wireshark](/wireshark/assets/18.png)
+![Wireshark](/wireshark/assets/19.png)
+![Wireshark](/wireshark/assets/20.png)
 
 - Tâche 3: Analyse du trafic ICMP (Ping).
 - **Objectif**: Examiner les requêtes et les réponses ICMP.
