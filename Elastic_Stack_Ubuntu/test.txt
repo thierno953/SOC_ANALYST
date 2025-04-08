@@ -1,0 +1,6 @@
+sudo apt-key del A4E940683931525E
+curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic.gpg
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list'
+sudo apt-get update
+sudo apt-get install elasticsearch -y
+sudo systemctl enable --now elasticsearch

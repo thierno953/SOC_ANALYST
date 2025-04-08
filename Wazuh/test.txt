@@ -1,0 +1,253 @@
+# https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html
+
+# https://documentation.wazuh.com/4.7/deployment-options/docker/wazuh-container.html
+
+
+# ===================================================Security=========================================================================
+
+
+#!/bin/bash
+# Script d'installation Wazuh avec Docker - Version Complète
+
+# =============================================
+# SECTION 1: PRÉREQUIS SYSTÈME
+# =============================================
+# Configuration système nécessaire pour Elasticsearch
+sudo sysctl -w vm.max_map_count=262144
+sudo sysctl -p  # Application permanente du paramètre
+
+# =============================================
+# SECTION 2: INSTALLATION DOCKER
+# =============================================
+# Installation de Docker
+curl -sSL https://get.docker.com/ | sh
+
+# Configuration des permissions
+sudo usermod -aG docker $USER
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+
+# Installation Docker Compose
+curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+# =============================================
+# SECTION 3: DÉPLOIEMENT WAZUH MANAGER
+# =============================================
+# Téléchargement de la configuration officielle
+git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
+cd wazuh-docker/single-node/
+
+# Génération des certificats pour l'indexer
+docker-compose -f generate-indexer-certs.yml run --rm generator
+
+# Démarrage de l'environnement Wazuh
+docker-compose up -d
+
+# Ouverture du port nécessaire
+sudo ufw enable
+sudo ufw allow 9200/tcp  # Port API Elasticsearch
+
+# =============================================
+# SECTION 4: INSTALLATION DE L'AGENT WAZUH
+# =============================================
+# Téléchargement et installation du paquet
+wget https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_4.7.5-1_amd64.deb && sudo WAZUH_MANAGER='192.168.129.51' WAZUH_AGENT_GROUP='default' WAZUH_AGENT_NAME='agent01' dpkg -i ./wazuh-agent_4.7.5-1_amd64.deb
+
+# Configuration du service
+sudo systemctl daemon-reload
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+
+# =============================================
+# SECTION 5: CONFIGURATION DU MANAGER (SERVEUR)
+# =============================================
+# Configuration via Docker (exécution dans le container)
+docker exec -it single-node-wazuh.manager-1 bash -c '
+# Activation du module SCA
+cat >> /var/ossec/etc/ossec.conf << "EOF"
+<sca>
+  <enabled>yes</enabled>
+  <scan_on_start>yes</scan_on_start>
+  <interval>12h</interval>
+</sca>
+EOF
+
+# Ajout de règles personnalisées
+cat > /var/ossec/etc/rules/local_rules.xml << "EOF"
+<group name="custom,">
+  <rule id="100100" level="12">
+    <if_sid>5716</if_sid>
+    <match>minerd|cpuminer|xmrig</match>
+    <description>Détection de crypto-mining</description> 
+  </rule>
+</group>
+EOF
+
+# Redémarrage des services
+wazuh-control restart
+'
+
+# =============================================
+# SECTION 6: CONFIGURATION DE L'AGENT
+# =============================================
+# Configuration du chiffrement TLS
+sudo mkdir -p /var/ossec/etc/ssl
+sudo openssl req -newkey rsa:2048 -nodes -keyout /var/ossec/etc/ssl/agent.key -x509 -days 365 -out /var/ossec/etc/ssl/agent.crt -subj "/CN=wazuh-agent"
+
+# Modification de la configuration
+sudo bash -c 'cat >> /var/ossec/etc/ossec.conf << "EOF"
+<client>
+  <enrollment>
+    <use_source_ip>no</use_source_ip>
+    <ssl_cipher>TLS_AES_256_GCM_SHA384</ssl_cipher>
+  </enrollment>
+</client>
+EOF'
+
+# Configuration FIM étendue
+sudo sed -i '/<syscheck>/a \
+  <directories check_all="yes" realtime="yes">/etc,/usr/bin,/usr/sbin</directories>\
+  <directories check_all="yes" realtime="yes" report_changes="yes">/home</directories>' /var/ossec/etc/ossec.conf
+
+# Redémarrage de l'agent
+sudo systemctl restart wazuh-agent
+
+# =============================================
+# SECTION 7: CONFIGURATIONS COMMUNES
+# =============================================
+# Sauvegarde automatique des configurations
+sudo mkdir -p /backups
+(crontab -l 2>/dev/null; echo "0 3 * * * tar -czvf /backups/wazuh_config_\$(date +\\%F).tar.gz /var/ossec/etc/{ossec.conf,rules,decoders}") | crontab -
+
+# =============================================
+# SECTION 8: VÉRIFICATION FINALE
+# =============================================
+# Vérification des containers
+echo "=== Containers Wazuh ==="
+docker ps | grep wazuh
+
+# Vérification de l'agent
+echo "=== Statut Agent ==="
+sudo /var/ossec/bin/agent_control -l
+
+# Informations d'accès
+echo "=== INSTALLATION TERMINÉE ==="
+echo "Dashboard: https://$(hostname -I | awk '{print $1}'):443"
+echo "Identifiants: admin/SecretPassword123"
+
+
+# =========================================Wazuh-Elasticsearch=========================================================================
+
+
+#!/bin/bash
+# Script d'installation Wazuh + Elastic Stack - Configuration Directe
+
+# =============================================
+# 1. PRÉREQUIS SYSTÈME
+# =============================================
+echo "[1/4] Configuration système..."
+sudo sysctl -w vm.max_map_count=262144
+sudo sysctl -p
+
+# =============================================
+# 2. INSTALLATION WAZUH MANAGER
+# =============================================
+echo "[2/4] Déploiement Wazuh..."
+if ! command -v docker &> /dev/null; then
+    curl -fsSL https://get.docker.com | sh
+    sudo usermod -aG docker $USER
+    sudo systemctl enable --now docker
+fi
+
+git clone https://github.com/wazuh/wazuh-docker.git -b 4.7.5
+cd wazuh-docker/single-node/
+docker-compose -f generate-indexer-certs.yml run --rm generator
+docker-compose up -d
+
+# =============================================
+# 3. INSTALLATION ELASTIC STACK
+# =============================================
+echo "[3/4] Installation Elasticsearch & Kibana..."
+docker network create wazuh-elastic 2>/dev/null || true
+
+# Elasticsearch
+docker run -d \
+  --name elasticsearch \
+  --net wazuh-elastic \
+  -p 9200:9200 \
+  -e "discovery.type=single-node" \
+  -e "ES_JAVA_OPTS=-Xms1g -Xmx2g" \
+  -e "ELASTIC_PASSWORD=MonMotDePasseSecure123!" \
+  -e "xpack.security.enabled=true" \
+  --restart unless-stopped \
+  docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+
+# Kibana
+docker run -d \
+  --name kibana \
+  --net wazuh-elastic \
+  -p 5601:5601 \
+  -e "ELASTICSEARCH_HOSTS=http://elasticsearch:9200" \
+  -e "ELASTICSEARCH_USERNAME=kibana_system" \
+  -e "ELASTICSEARCH_PASSWORD=MonMotDePasseSecure123!" \
+  --restart unless-stopped \
+  docker.elastic.co/kibana/kibana:8.10.2
+
+# =============================================
+# 4. INTÉGRATION FILEBEAT
+# =============================================
+echo "[4/4] Configuration Filebeat..."
+docker exec -it single-node-wazuh.manager-1 bash -c '
+wget -q https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-8.10.2-linux-x86_64.tar.gz
+tar xzf filebeat-oss-8.10.2-linux-x86_64.tar.gz
+cd filebeat-8.10.2
+
+cat > filebeat.yml << EOF
+filebeat.modules:
+  - module: wazuh
+    alerts:
+      enabled: true
+    archives:
+      enabled: false
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "elastic"
+  password: "MonMotDePasseSecure123!"
+  ssl.verification_mode: none
+
+setup.kibana:
+  host: "kibana:5601"
+  username: "elastic"
+  password: "MonMotDePasseSecure123!"
+EOF
+
+sleep 30
+./filebeat setup --dashboards
+nohup ./filebeat -c filebeat.yml > filebeat.log 2>&1 &
+'
+
+# =============================================
+# RÉSULTAT FINAL
+# =============================================
+IP=$(hostname -I | awk '{print $1}')
+cat << EOF
+========================================
+INSTALLATION TERMINÉE SUR $IP
+
+**Accès Wazuh:**
+- Console : https://$IP
+- API : https://$IP:55000 (admin/MonMotDePasseSecure123!)
+
+**Accès Kibana:**
+- URL : http://$IP:5601
+- Identifiants : elastic/MonMotDePasseSecure123!
+
+**Commandes utiles:**
+- Vérifier les logs Wazuh : docker logs -f single-node-wazuh.manager-1
+- Redémarrer Filebeat : docker exec single-node-wazuh.manager-1 pkill filebeat && cd filebeat-8.10.2 && nohup ./filebeat -c filebeat.yml &
+========================================
+EOF
