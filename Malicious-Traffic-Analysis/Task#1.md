@@ -6,23 +6,20 @@
 
 - Filter Suspicious HTTP Requests
 
-```sh
-(http.request or tls.handshake.type eq 1) and !(ssdp)
-```
+`(http.request or tls.handshake.type eq 1) and !(ssdp)`
 
 - Enable Network Resolution
 
+`Go to View > Name Resolution > Check both`
+
 ```sh
-Go to View > Name Resolution > Check both:
 ✓ Resolve Physical Addresses
 ✓ Resolve Network Addresses
 ```
 
 - Extended Traffic Filter
 
-```sh
-(http.request or http.response or tls.handshake.type eq 1) and !(ssdp)
-```
+`(http.request or http.response or tls.handshake.type eq 1) and !(ssdp)`
 
 - Analyze Suspicious Domains
 
@@ -31,13 +28,14 @@ Go to View > Name Resolution > Check both:
 # padreescapes.com  [Stream #128] GET
 # sarture.com       [Stream #131] GET
 # seo.udaipurkart.com [Stream #142] GET (DLL response)
-
-Right-click > Follow > TCP Stream
 ```
+
+`Right-click > Follow > TCP Stream`
 
 - Extract Malicious DLL
 
 ```sh
 # seo.udaipurkart.com [Stream #1436] Port 80 → 49775
-Go to File > Export Objects > HTTP > seo.udaipurkart.com > Save All
 ```
+
+`Go to File > Export Objects > HTTP > seo.udaipurkart.com > Save All`
