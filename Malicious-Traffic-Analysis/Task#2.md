@@ -2,17 +2,14 @@
 
 - Identify Compromised Host
 
-```sh
-(Statistics → Conversations → IPv4 → Apply as Filter → Selected → Filter on stream ID)
-
-ip.stream eq 1
-```
+`(Statistics → Conversations → IPv4 → Apply as Filter → Selected → Filter on stream ID)`
+`ip.stream eq 1`
 
 - Malicious HTTP Requests
 
-```sh
-http.request.method=="GET"
+`http.request.method=="GET"`
 
+```sh
 (HyperText Transfer Protocol → Right-click on GET /dvwa/vulnerabilities/sqli → Copy → All Visible Items)
 
 (HyperText Transfer Protocol → Right-click on Request URI: /dvwa/vulnerabilities/exec → Copy → Value)
@@ -20,10 +17,8 @@ http.request.method=="GET"
 
 - Executed Commands
 
-```sh
-(Statistics → Conversations → TCP → Apply as Filter → Selected → Filter on stream ID)
+`(Statistics → Conversations → TCP → Apply as Filter → Selected → Filter on stream ID)`
 
-ip.stream eq 7
+`ip.stream eq 7`
 
-(Right-click → Follow → TCP Stream)
-```
+`(Right-click → Follow → TCP Stream)`
