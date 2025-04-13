@@ -134,9 +134,9 @@ git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 #### Fonctionnalités clés
 
 ```sh
------------------------------------------------------------------------------------------
-Catégorie	                             Fonctionnalités                                  |
-----------------------------------------------------------------------------------------|
+-------------------------|--------------------------------------------------------------|
+Catégorie	               |              Fonctionnalités                                 |
+-------------------------|--------------------------------------------------------------|
 Surveillance réseau	     |  Analyse Suricata - Détection attaques brute force           |
 -------------------------|--------------------------------------------------------------|
 Intégrité système	       |  Monitoring temps réel des fichiers système (FIM)            |
@@ -146,7 +146,7 @@ Sécurité cloud	         |  Audit AWS/Azure/GCP - Détection configs risquées 
 Conformité	             |  Rapports automatiques PCI DSS, HIPAA, GDPR                  |
 -------------------------|--------------------------------------------------------------|
 Réponse aux incidents	   |  Integration Slack/Teams - Auto-réparation (ex: blocage IP)  |
--------------------------|---------------------------------------------------------------
+-------------------------|--------------------------------------------------------------|
 ```
 
 #### Intégrations
