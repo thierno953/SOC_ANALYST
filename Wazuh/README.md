@@ -1,6 +1,6 @@
 # Wazuh
 
-- Wazuh est une plateforme open source de sécurité combinant XDR (Extended Detection and Response) et SIEM (Security Information and Event Management). Elle offre une surveillance unifiée des endpoints, du cloud et des conteneurs avec des fonctionnalités comme l'analyse de logs, la détection d'intrusions et la conformité réglementaire.
+- **Wazuh** est une plateforme open source de sécurité combinant XDR (Extended Detection and Response) et SIEM (Security Information and Event Management). Elle offre une surveillance unifiée des endpoints, du cloud et des conteneurs avec des fonctionnalités comme l'analyse de logs, la détection d'intrusions et la conformité réglementaire.
 
 #### HIDS, OSSEC et Wazuh
 
@@ -93,9 +93,7 @@ Communauté	              |   Réduite	     |      Large support        |
 
 #### Flux de données
 
-```sh
-Agents → Serveur Wazuh (analyse) → Indexeur (stockage) → Dashboard (visualisation)
-```
+`Agents → Serveur Wazuh (analyse) → Indexeur (stockage) → Dashboard (visualisation)`
 
 - **NB**: Les communications sont sécurisées par TLS et authentification mutuelle
 
@@ -262,8 +260,6 @@ curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo gpg --no-default-key
 - Vérifier l'alerte de détection
 
 - Consulter le rapport VT dans l'alerte
-
-
 
 # Installation Wazuh avec Docker
 
