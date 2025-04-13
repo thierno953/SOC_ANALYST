@@ -23,7 +23,7 @@ OSSEC créé en        | Fork d'OSSEC         | OSSEC est open source  |
 
 ```sh
 ------------------------------------------------------------------------
-Fonctionnalité	               OSSEC	             Wazuh               |
+Fonctionnalité	          |     OSSEC	     |       Wazuh               |
 -----------------------------------------------------------------------|
 Dashboard	                |   Basique	     |      Interface complète   |
 --------------------------|----------------|---------------------------|
