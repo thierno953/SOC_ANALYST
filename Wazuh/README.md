@@ -25,13 +25,13 @@ OSSEC créé en        | Fork d'OSSEC         | OSSEC est open source  |
 -----------------------------|-------------------|-----------------------------|
 Fonctionnalité	                  OSSEC	                  Wazuh
 -----------------------------|-------------------|-----------------------------|
-Dashboard	                        Basique	             Interface complète
+Dashboard	                   |     Basique	            Interface complète
 -----------------------------|-------------------|-----------------------------|
-Détection vulnérabilités   	      Non	                 Intégrée
+Détection vulnérabilités   	 |     Non	                 Intégrée
 -----------------------------|-------------------|-----------------------------|
-Sécurité  cloud	                  Limité	             Support étendu
+Sécurité  cloud	             |     Limité	             Support étendu
 -----------------------------|-------------------|-----------------------------|
-Communauté	                      Réduite	             Large support
+Communauté	                 |     Réduite	             Large support
 -----------------------------|-------------------|-----------------------------|
 ```
 
