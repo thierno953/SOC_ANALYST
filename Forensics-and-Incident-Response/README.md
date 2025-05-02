@@ -1,4 +1,4 @@
-# Qu'est-ce qu'une enquête en informatique légale (Forensic Investigation) ?
+# Enquête en informatique légale (Forensic Investigation) ?
 
 - L'investigation en informatique légale est le **processus systématique de collecte, d’analyse et de préservation de preuves numériques** dans le but de comprendre, résoudre et réagir à des incidents de cybersécurité.
 
