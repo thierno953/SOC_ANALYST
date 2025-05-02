@@ -1,23 +1,23 @@
-# Task#1: Detection of Unauthorized Access on Linux Blocked by Fail2Ban
+# Tâche 1 : Détection d'accès non autorisé par Fail2Ban
 
-- Install Fail2Ban
-- Set up Fail2Ban
-- Simulate the attack
-- Analyze
+- Détection d'accès non autorisé via SSH sur Linux à l'aide de Fail2Ban, avec envoi des logs vers Splunk via Universal Forwarder.
 
-```sh
-root@node01:~# apt update
-```
+## Installer et configurer Fail2Ban sur la machine cible
 
-#### Install and set up Fail2ban
+#### Mise à jour & installation de Fail2Ban
 
 ```sh
-root@node01:~# apt install fail2ban -y
+apt update
+apt install fail2ban -y
 ```
 
+#### Configuration de la prison SSH (jail.local)
+
 ```sh
-root@node01:~# nano /etc/fail2ban/jail.local
+nano /etc/fail2ban/jail.local
 ```
+
+#### Contenu du fichier :
 
 ```sh
 [sshd]
@@ -29,16 +29,29 @@ bantime = 600
 findtime = 600
 ```
 
-```sh
-root@node01:~# /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
-root@node01:~# systemctl restart fail2ban
-root@node01:~# fail2ban-client status
-root@node01:~# tail -f /var/log/fail2ban.log
-```
+#### Redémarrer et vérifier l’état de Fail2Ban
 
 ```sh
-root@node01:~# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+systemctl restart fail2ban
+fail2ban-client status
+tail -f /var/log/fail2ban.log
 ```
+
+## Configurer le Splunk Universal Forwarder pour collecter les logs
+
+#### Ajout du suivi des fichiers de log
+
+```sh
+/opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
+```
+
+#### Modifier inputs.conf pour ajouter les logs Fail2Ban et SSH
+
+```sh
+nano /opt/splunkforwarder/etc/system/local/inputs.conf
+```
+
+#### Contenu du fichier :
 
 ```sh
 [monitor:///var/log/syslog]
@@ -54,33 +67,61 @@ whitelist = Failed|invalid|Denied
 
 [monitor:///var/log/fail2ban.log]
 disabled = false
-sourcetype = fail2ban
 index = fail2ban_logs
+sourcetype = fail2ban
 ```
+
+#### Redémarrage du Forwarder
 
 ```sh
-root@node01:~# /opt/splunkforwarder/bin/splunk restart
+/opt/splunkforwarder/bin/splunk restart
 ```
 
-#### Simulate the SSH Brute force attack
+## Simuler une attaque SSH brute force
+
+#### Sur la machine attacker, installer Hydra
 
 ```sh
-root@attack:~# apt update
-root@attack:~# apt install hydra -y
-root@attack:~$ hydra -l admin -P passwords.txt <IP_VICTIM_MACHINE> ssh
+apt update
+apt install hydra -y
 ```
+
+#### Lancer une attaque brute force SSH
 
 ```sh
-root@node01:~#  tail -f /var/log/fail2ban.log
+hydra -l admin -P passwords.txt <IP_VICTIME> ssh
 ```
 
-#### Analyzing logs on Splunk
+- Assurez-vous que `admin` est un utilisateur existant et que le port SSH est accessible.
 
-`Search & Reporting`
+#### Observer les logs sur la machine victime
+
+```sh
+tail -f /var/log/fail2ban.log
+```
+
+## Analyse des événements sur Splunk
+
+#### Accéder à Splunk Web : `http://<IP_SPLUNK_SERVER>:8000`
+
+#### Requêtes dans Search & Reporting :
 
 ```sh
 index="fail2ban_logs"
-index="fail2ban_logs" src="<IP_ATTACK_MACHINE>"
-index="fail2ban_logs" sourcetype="fail2ban" src="<IP_ATTACK_MACHINE>"
-index="fail2ban_logs" | search "<IP_ATTACK_MACHINE>"
+```
+
+```sh
+index="fail2ban_logs" sourcetype="fail2ban" src="<IP_ATTACKER>"
+```
+
+```sh
+index="fail2ban_logs" | search "<IP_ATTACKER>"
+```
+
+```sh
+index="security_incidents" sourcetype="linux_secure" "Failed password"
+```
+
+```sh
+index="fail2ban_logs" | stats count by src, action
 ```
