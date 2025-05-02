@@ -331,11 +331,10 @@ nano /etc/suricata/suricata.yaml
 ```
 
 ```sh
-Editez ces lignes dans /etc/suricata/suricata.yaml :
-
-HOME_NET: "[192.168.129.58]"
-
-EXTERNAL_NET: "any"
+vars:
+  address-groups:
+    HOME_NET: "[192.168.129.58]"
+    EXTERNAL_NET: "any"
 
 default-rule-path: /etc/suricata/rules
 
@@ -343,10 +342,14 @@ rule-files:
   - "*.rules"
 
 stats:
-  enabled: Yes
+  enabled: yes
 
 af-packet:
   - interface: enp0s3
+    threads: auto               # Utilise tous les CPU dispo
+    cluster-id: 99              # Identifiant de groupe de capture
+    cluster-type: cluster_flow  # Classe les flux réseau pour mieux gérer
+    defrag: yes                 # Réassemble les paquets fragmentés
 
 outputs:
   - eve-log:
