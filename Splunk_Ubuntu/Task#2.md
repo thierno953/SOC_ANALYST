@@ -148,13 +148,6 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
         </Rule>
       </NetworkConnect>
 
-       <!-- Ajoute PipeEvent ici -->
-      <PipeEvent onmatch="include">
-        <PipeName condition="contains">ncat</PipeName>
-        <PipeName condition="contains">reverse</PipeName>
-        <PipeName condition="is">*</PipeName>
-      </PipeEvent>
-
     </RuleGroup>
     <!-- Event ID 5 == ProcessTerminate -->
     <RuleGroup name="" groupRelation="or">
@@ -198,6 +191,15 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
         </Rule>
       </FileCreate>
     </RuleGroup>
+    <!-- Event ID 18 == PipeEvent -->
+    <RuleGroup name="" groupRelation="or">
+      <PipeEvent onmatch="include">
+        <PipeName condition="contains">ncat</PipeName>
+        <PipeName condition="contains">reverse</PipeName>
+        <PipeName condition="is">*</PipeName>
+      </PipeEvent>
+    </RuleGroup>
+
     <!--Event ID 23 == FileDelete -->
     <RuleGroup name="" groupRelation="or">
       <FileDelete onmatch="include" />
