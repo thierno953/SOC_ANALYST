@@ -153,7 +153,7 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 </rule>
 ```
 
-## LABS: Déploiement d’une solution XDR/SIEM avec Wazuh et Docker dans un environnement Linux/Windows
+### LABS: Déploiement d’une solution XDR/SIEM avec Wazuh et Docker dans un environnement Linux/Windows
 
 #### Lab 1 - FIM
 
