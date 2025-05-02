@@ -1,129 +1,133 @@
-# TCPDUMP
+# TCPDUMP – Analyse du trafic réseau
 
-- TCPDUMP est un outil d'analyse du trafic réseau.
-- Points clés:
-  - Outil d'analyse de paquets en ligne de commande
-  - Capture et analyse le trafic réseau
-  - Fonctionne sur la plupart des systèmes de type UNIX
+- `tcpdump` est un outil en ligne de commande puissant permettant de capturer, surveiller et analyser le trafic réseau sur une interface.
 
-#### Principaux avantages de TCPDUMP
+#### Avantages de TCPDUMP
 
 ```sh
-|------------------------------------------|-----------------------------------------------|
-| Surveillance du réseau en temps réel     | Filtrer le trafic pour une analyse spécifique |
-|------------------------------------------|-----------------------------------------------|
-| Enquête de sécurité et criminalistique   | Identifier les problèmes de trafic            |
-|------------------------------------------|-----------------------------------------------|
+| Fonctionnalité                 | Description                                     |
+| ------------------------------ | ----------------------------------------------- |
+| Surveillance en temps réel     | Capture en direct du trafic réseau              |
+| Filtres puissants              | Analyse ciblée via expressions précises         |
+| Utilisation en criminalistique | Enquête sur les incidents de sécurité           |
+| Diagnostic réseau              | Identification de pannes ou d'anomalies         |
+| Sauvegarde des paquets         | Écriture des captures dans des fichiers `.pcap` |
 ```
 
-#### Configuration de TCPDUMP
+#### Installation et version
 
 ```sh
 sudo apt install tcpdump
 tcpdump --version
 ```
 
-#### Format de la commande TCPDUMP
-
-- Format de commande TCPDUMP de base
+#### Structure de base de la commande
 
 ```sh
 tcpdump [options] [expression]
 ```
 
-- **[Options]**
+- **[Options fréquentes]**
 
 ```sh
--i [interface]  : Spécifie l'interface réseau (ex. 'eth0', 'wlan0').
--c [count]      : Capture un nombre spécifique de paquets (ex. '-c 100' pour 100 paquets).
--w [file]       : Écrit les paquets capturés dans un fichier (ex. '-w capture.pcap').
--r [file]       : Lit un fichier de capture existant (ex. '-r capture.pcap').
--n              : Désactive la résolution DNS pour afficher les adresses IP brutes.
--v, -vv, -vvv   : Augmente le niveau de verbosité pour des détails supplémentaires.
--s [snaplen]    : Définit la longueur du snapshot (nombre d'octets capturés par paquet).
+| Option              | Description                                                |
+| ------------------- | ---------------------------------------------------------- |
+| `-i [interface]`    | Interface réseau à surveiller (ex. `eth0`, `wlan0`, `any`) |
+| `-c [nombre]`       | Nombre de paquets à capturer                               |
+| `-w [fichier]`      | Sauvegarde la capture dans un fichier `.pcap`              |
+| `-r [fichier]`      | Lit une capture précédemment enregistrée                   |
+| `-n`                | Ne pas résoudre les noms DNS                               |
+| `-v`, `-vv`, `-vvv` | Niveau de verbosité croissant (plus de détails)            |
+| `-s [snaplen]`      | Nombre d’octets à capturer par paquet                      |
 ```
 
-- **[Expression]**
+- **[Expressions de filtrage]**
 
 ```sh
-host [IP]       : Capture le trafic provenant ou destiné à une adresse IP spécifique.
-port [number]   : Capture le trafic provenant ou destiné à un port spécifique.
-src [IP]        : Filtre les paquets provenant d'une adresse IP source.
-dst [IP]        : Filtre les paquets destinés à une adresse IP cible.
-tcp, udp, icmp  : Capture uniquement un protocole spécifique.
+| Expression           | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `host [IP]`          | Trafic provenant ou destiné à une IP                |
+| `port [num]`         | Trafic sur un port spécifique                       |
+| `src [IP]`           | Paquets provenant d’une IP source                   |
+| `dst [IP]`           | Paquets destinés à une IP cible                     |
+| `tcp`, `udp`, `icmp` | Filtre par protocole                                |
+| `and`, `or`, `not`   | Opérateurs logiques combinés pour filtrage complexe |
 ```
 
-#### Commandes de base
+#### Commandes de base utiles
 
 ```sh
-sudo tcpdump -v
-sudo tcpdump -vv -c 10
-sudo tcpdump -D
-sudo tcpdump -i any
-sudo tcpdump -i any > file.out
-sudo tcpdump -i wlp3s0 | tee file1.out
+sudo tcpdump -v                         # Capture avec détails
+sudo tcpdump -vv -c 10                  # Capture les 10 premiers paquets (détails ++)
+sudo tcpdump -D                         # Liste des interfaces disponibles
+sudo tcpdump -i any                     # Capture sur toutes les interfaces
+sudo tcpdump -i any > file.out          # Enregistre dans un fichier texte
+sudo tcpdump -i wlp3s0 | tee file1.out  # Capture affichée et enregistrée simultanément
 ```
 
-#### Capturer des paquets par protocoles
+#### Captures par protocole ICMP (Ping)
 
 ```sh
 ping <IP>
 sudo tcpdump -i wlp3s0 icmp
-sudo tcpdump -i wlp3s0 tcp
+```
 
-# Attack
-sudo nmap -sS <IP>
-sudo nmap -sU <IP>
-||
+#### TCP
+
+```sh
+sudo tcpdump -i wlp3s0 tcp
+```
+
+#### UDP
+
+```sh
 sudo tcpdump -i wlp3s0 udp
 ```
 
-#### Capturer des paquets à l'aide de ports
+## Captures par ports et IP
+
+#### Trafic vers ou depuis une IP
 
 ```sh
 sudo tcpdump -i wlp3s0 host <IP>
-
-# Attack
-sudo nmap -sS <IP>
-
-||
-sudo tcpdump -i wlp3s0 host <IP> -vv
-
-# Attack
-sudo nmap -sS <IP>
 ```
 
-#### Capturer des paquets par source et destination spécifiques
+#### Source + Port
 
 ```sh
-sudo tcpdump -i wlp3s0 src host <IP> and dst host <IP>
-
-nslookup cfitech.be
-
 sudo tcpdump -i wlp3s0 src host <IP> and dst port 443
-sudo tcpdump -i wlp3s0 src host <IP> and dst port 443 -vvv
+```
+
+#### Source + Destination réseau
+
+```sh
 sudo tcpdump -i wlp3s0 src host <IP> and dst net 192.168.1.0/24
 ```
 
-#### Capturer les sondes d'analyse du réseau
+## Détection de scans SYN (SYN scan)
+
+#### Scan SYN (nmap -sS)
 
 ```sh
-# Une attaque par scan SYN
-
-          SYN (443, 80)
-Hacker  --------------------->  Serveur
-          SYN + ACK
-----------------------------------------
-        tcpdump capture active
+# Filtrer uniquement les paquets SYN (sans ACK)
+tcpdump -i eth0 'tcp[tcpflags] & (tcp-syn) != 0 and tcp[tcpflags] & (tcp-ack) == 0'
 ```
 
+#### Scan SYN sur les ports 80 et 443 + capture vers fichier
+
 ```sh
-#tcpdump 'tcp[tcpflags] & tcp-syn != 0 and tcp[tcpflags] & tcp-ack = 0'
-
-tcpdump -i eth0 'tcp[tcpflags] & (tcp-syn) != 0 and tcp[tcpflags] & (tcp-ack) == 0 and (port 80 or port 443)'
-
 tcpdump -i eth0 'tcp[tcpflags] & (tcp-syn) != 0 and port (443 or 80)' -w scan_probes.pcap
+```
 
-# Attack
-sudo nmap -sS <IP>
+#### commande d'attaque avec nmap
+
+```sh
+sudo nmap -sS <IP>   # Scan TCP SYN
+sudo nmap -sU <IP>   # Scan UDP
+```
+
+#### analyser le contenu ASCII (HTTP, login/password)
+
+```sh
+sudo tcpdump -i eth0 -A | grep "password"
 ```

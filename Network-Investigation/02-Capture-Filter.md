@@ -1,15 +1,5 @@
 # Wireshark
 
-## Présentation de Wireshark
-
-#### Parcourez Wireshark
-
-#### Analyse du trafic réseau
-
-#### Enquête de sécurité
-
-#### Qu'est-ce que Wireshark ?
-
 - Wireshark est un analyseur de protocole réseau qui capture et inspecte les données circulant sur un réseau en temps réel.
 
 - Il capture les paquets (petits morceaux de données) lorsqu'ils sont envoyés sur un réseau et les décode dans un format lisible par l'homme.
@@ -19,7 +9,7 @@
   - Surveillance de sécurité et criminalistique.
   - Apprentissage et analyse du comportement du réseau.
 
-# Principales caractéristiques de Wireshark
+## Principales caractéristiques de Wireshark
 
 ```sh
 ---------------------------------- |-------------------------------|
@@ -86,16 +76,16 @@ DNS                       | port udp 53             | dns                       
 
 - 3 - Et celle ci est le paquet qui est visible sous la forme hexadécimale, ce sont donc les informations sur les paquet, que c'est sous la forme hexadécimale.
 
-  ![Wireshark](/Network-Investigation/assets/01.png)
-  ![Wireshark](/Network-Investigation/assets/02.png)
-  ![Wireshark](/Network-Investigation/assets/03.png)
-  ![Wireshark](/Network-Investigation/assets/04.png)
-  ![Wireshark](/Network-Investigation/assets/05.png)
+![Wireshark](/Network-Investigation/assets/01.png)
+![Wireshark](/Network-Investigation/assets/02.png)
+![Wireshark](/Network-Investigation/assets/03.png)
+![Wireshark](/Network-Investigation/assets/04.png)
+![Wireshark](/Network-Investigation/assets/05.png)
 
 #### Colorisation du trafic
 
 ![Wireshark](/Network-Investigation/assets/06.png)
-![Wireshark](/Network-Investigation/assets/07.png)
+![Wireshark](/Network-Investigation/assets/07.png) 
 ![Wireshark](/Network-Investigation/assets/08.png)
 
 #### Port TCP et UDP
@@ -103,5 +93,5 @@ DNS                       | port udp 53             | dns                       
 ![Wireshark](/Network-Investigation/assets/10.png)
 ![Wireshark](/Network-Investigation/assets/11.png)
 ![Wireshark](/Network-Investigation/assets/12.png)
-![Wireshark](Network-Investigation//assets/13.png)
+![Wireshark](/Network-Investigation/assets/13.png)
 ![Wireshark](/Network-Investigation/assets/14.png)

@@ -25,7 +25,7 @@
 3. Si le client n'obtient pas l'ACK à temps (timeout), il retransmet le même paquet
    Client --------------------> Serveur
           (Paquet retransmis)
-
+ 
 4. Le serveur finit par répondre avec un ACK
    Client <-------------------- Serveur
           (ACK reçu)
