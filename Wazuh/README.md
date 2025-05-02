@@ -577,7 +577,6 @@ nano /var/ossec/etc/ossec.conf
   <!-- VirusTotal Integration -->
   <integration>
     <name>virustotal</name>
-    <!--<api_key>acfabf26bea1396ad524fd2b8d6efaa673af874fb92d561849a97163dfca5e07</api_key> -->
     <api_key>YOUR_VIRUSTOTAL_API_KEY</api_key> <!-- Replace with your API key -->
     <rule_id>100200,100201</rule_id>
     <alert_format>json</alert_format>
