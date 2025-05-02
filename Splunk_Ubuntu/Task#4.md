@@ -10,19 +10,20 @@
 - [Proofpoint Emerging Threats Rules](https://rules.emergingthreats.net/)
 
 ```sh
-root@forwarder:/# sudo apt-get update
-root@forwarder:/# sudo add-apt-repository ppa:oisf/suricata-stable -y
-root@forwarder:/# sudo apt-get install suricata -y
-root@forwarder:/# cd /etc/suricata && mkdir rules && cd
-root@forwarder:~# cd /tmp/ && curl -LO https://rules.emergingthreats.net/open/suricata-6.0.8/emerging.rules.tar.gz
-root@forwarder:/tmp# sudo tar -xvzf emerging.rules.tar.gz && sudo mv rules/*.rules /etc/suricata/rules/
-root@forwarder:/tmp# sudo chmod 640 /etc/suricata/rules/*.rules
-cd /etc/suricata/rules/
-root@forwarder:/etc/suricata/rules# nano emerging-malware.rules
+root@node01:/# apt-get update
+root@node01:/# add-apt-repository ppa:oisf/suricata-stable -y
+root@node01:/# apt-get install suricata -y
+root@node01:/# cd /etc/suricata && mkdir rules && cd
+root@node01:~# cd /tmp/ && curl -LO https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
+
+root@node01:/tmp# sudo tar -xvzf emerging.rules.tar.gz && sudo mv rules/*.rules /etc/suricata/rules/
+root@node01:/tmp# sudo chmod 640 /etc/suricata/rules/*.rules
+root@node01:/tmp# cd /etc/suricata/rules/
+root@node01:/etc/suricata/rules# nano emerging-malware.rules
 ```
 
 ```sh
-root@forwarder:/etc/suricata/rules# sudo nano /etc/suricata/suricata.yaml
+root@node01:/etc/suricata/rules# nano /etc/suricata/suricata.yaml
 ```
 
 ```sh
@@ -55,18 +56,17 @@ af-packet:
 ```
 
 ```sh
-root@forwarder:/etc/suricata/rules# sudo systemctl restart suricata
-root@forwarder:/etc/suricata/rules# sudo systemctl status suricata
-root@forwarder:/etc/suricata/rules# suricata-update
-root@forwarder:/etc/suricata/rules# suricata-update
-root@forwarder:/etc/suricata/rules# cd /var/log/suricata/
-root@forwarder:/var/log/suricata# tail -f fast.log
+root@node01:/etc/suricata/rules# systemctl restart suricata
+root@node01:/etc/suricata/rules# systemctl status suricata
+root@node01:/etc/suricata/rules# suricata-update
+root@node01:/etc/suricata/rules# cd /var/log/suricata/
+root@node01:/var/log/suricata# tail -f fast.log
 ```
 
 #### Setting up Splunk
 
 ```sh
-root@forwarder:/var/log/suricata# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+root@node01:/var/log/suricata# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
@@ -87,18 +87,18 @@ sourcetype = suricata
 ```
 
 ```sh
-root@forwarder:/var/log/suricata# /opt/splunkforwarder/bin/splunk restart
+root@node01:/var/log/suricata# /opt/splunkforwarder/bin/splunk restart
 ```
 
 #### Simulating an attack and Analyzing logs on Splunk
 
 ```sh
-root@attack:~# nmap -sS <IP VICTIME>
+root@attack:~# nmap -sS <IP_VICTIM_MACHINE>
 ```
 
 ####Search & Reporting
 
 ```sh
 index="network_security_logs" sourcetype="suricata"
-index="network_security_logs" sourcetype="suricata" src_ip="<IP Attack>"
+index="network_security_logs" sourcetype="suricata" src_ip="<IP_ATTACK_MACHINE>"
 ```

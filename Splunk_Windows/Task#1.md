@@ -12,9 +12,9 @@
 
 ```sh
 # Installer Sysmon avec la configuration SwiftOnSecurity
-cd C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
+C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 
-cd C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
+C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
 
 # Modifier la configuration si nécessaire
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-export.xml
@@ -22,7 +22,7 @@ PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-exp
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
-`Start > Event Viewer > Application and Service Logs > Microsoft > Windows > Sysmon > Operational`
+`Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
 #### Setting up Splunk
 
@@ -33,12 +33,12 @@ PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-exp
 defaultGroup = default-autolb-group
 
 [tcpout:default-autolb-group]
-server = <IP_de_l'indexeur>:9997
+server = <IP_DE_L_INDEXEUR>:9997
 
-[tcpout-server://<IP_de_l'indexeur>:9997]
+[tcpout-server://<IP_DE_L_INDEXEUR>:9997]
 ```
 
-`C:\Program Files > SplunkUniversalForwarder > etc > system > local > inputs.conf`
+`C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
 [WinEventLog://Application]
@@ -66,7 +66,7 @@ source = XmlWinEventLog:Sysmon
 renderXml = false
 ```
 
-`C:\Program Files > SplunkUniversalForwarder > etc > system > local > props.conf`
+`C:\Program Files\SplunkUniversalForwarder\etc\system\local\props.conf`
 
 ```sh
 [XmlWinEventLog:Sysmon]
@@ -75,46 +75,35 @@ TRANSFORMS-sysmon = sysmon-eventid,sysmon-data
 ```
 
 ```sh
-PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
-PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe status
-PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe list forward-server
-```
-
-```sh
-index=sysmon_logs sourcetype=XmlWinEventLog
-index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon"
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:Application"
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:Security"
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:System"
-
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:Application" | stats count by EventCode
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:Security" | stats count by EventCode
-index=windows_event_logs sourcetype=WinEventLog source="WinEventLog:System" | stats count by EventCode
-index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon" | stats count by EventCode
-
-
-index=windows_event_logs | stats count by sourcetype, source
-index=sysmon_logs | stats count by sourcetype, source
-index=sysmon_logs sourcetype=XmlWinEventLog | stats count by EventCode
-
-index=sysmon_logs sourcetype=XmlWinEventLog source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
-index=sysmon_logs | stats count by sourcetype
-index=sysmon_logs sourcetype=XmlWinEventLog EventCode=3 | table _time, host, user, dest_ip, dest_port
-index=sysmon_logs sourcetype=XmlWinEventLog EventCode=1 | table _time, host, user, parent_process_name, process_name
-index=sysmon_logs sourcetype=XmlWinEventLog EventCode=1 | table _time, host, process_name, parent_process_name
+cd "C:\Program Files\SplunkUniversalForwarder\bin"
+.\splunk.exe restart
+.\splunk.exe status
+.\splunk.exe list forward-server
 ```
 
 #### Simulate the attack and Visualize on Splunk Dashboard
 
 ```sh
-root@attack:~# apt install hydra -y
-root@attack:~# hydra -l administrator -P password.txt <IP_VICTIME> rdp
+# Sur la machine d'attaque (Linux)
+apt install hydra -y
+hydra -l administrator -P password.txt <IP_VICTIME> rdp
 ```
 
-####Search & Reporting
+`Search & Reporting`
 
 ```sh
-index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon"
+index=windows_event_logs | stats count by sourcetype, source
+index=sysmon_logs | stats count by sourcetype, source
+index=sysmon_logs sourcetype=XmlWinEventLog | stats count by EventCode
+
+
+# Connexions réseau RDP (EventCode=3)
+index=sysmon_logs sourcetype=XmlWinEventLog EventCode=3 | table _time, host, user, dest_ip, dest_port
+# Création de processus (EventCode=1)
+index=sysmon_logs sourcetype=XmlWinEventLog EventCode=1 | table _time, host, user, parent_process_name, process_name
+
+
+# Recherche par IP
 index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon" SourceIp="<IP_VICTIME>"
 ```
 
@@ -123,7 +112,8 @@ index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon" Sourc
 - To block inbound connections on port 3389 (RDP) using Windows Defender Firewall
 
 `Start > Windows Defender Firewall > Inbound Rules > New Rules > Ports > TCP (Specific local ports: 3389) > Block the connection > (Domain, Private, and Public) > Provide a Name for the "Block RDP Brute Force" `
+`
 
-```sh
-PS C:\Users\Administrator> New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>
-```
+- PowerShell
+
+`New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>`

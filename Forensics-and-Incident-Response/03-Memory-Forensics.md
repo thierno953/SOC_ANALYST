@@ -31,9 +31,9 @@
 #### Volatility
 
 - Volatility is an open-source memory forensics framework used for analyzing volatile memory (RAM) in digital investigations.
-- Purpose: It helps extract digital artifacts such as running processes, network connections, and loaded drivers from memory dumps.
-- Features: Offers a wide range of plugins for analyzing memory images from various operating systems (Windows, Linux, MacOS, etc.).
-- Community: Volatility has a large community of contributors and users who actively develop plugins, share knowledge, and provide support.
+- `Purpose`: It helps extract digital artifacts such as running processes, network connections, and loaded drivers from memory dumps.
+- `Features`: Offers a wide range of plugins for analyzing memory images from various operating systems (Windows, Linux, MacOS, etc.).
+- `Community`: Volatility has a large community of contributors and users who actively develop plugins, share knowledge, and provide support.
 
 #### Key Components of Volatility
 

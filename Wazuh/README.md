@@ -435,6 +435,12 @@ stats:
 
 af-packet:
   - interface: enp0s3
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: /var/log/suricata/eve.json
 ```
 
 - Configuration Wazuh pour Suricata
@@ -455,7 +461,11 @@ nano /var/ossec/etc/ossec.conf
 ```
 
 ```sh
-systemctl restart wazuh-agent
+# Redémarrer Suricata
+sudo systemctl restart suricata
+
+# Redémarrer Wazuh agent (ou manager si tu l’as modifié)
+sudo systemctl restart wazuh-agent
 ```
 
 ```sh
@@ -468,6 +478,8 @@ tail -f fast.log
 ```sh
 # Exécutez
 root@attack:~# nmap -sS <IP_VICTIME>
+root@attack:~# nmap -sS -T4 -Pn <IP_VICTIME>
+root@attack:~# nmap -p 22 --script ssh-brute <IP_VICTIME>
 ```
 
 - Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`

@@ -5,9 +5,9 @@
 
 #### Verify Sysmon Installation
 
-`Start > Event Viewer > Application and Service Logs > Microsoft > Windows > PowerShell > Operational`
+`Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > PowerShell > Operational`
 
-`C:\Program Files > SplunkUniversalForwarder > etc > system > local > inputs.conf`
+`C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
 [WinEventLog://Application]

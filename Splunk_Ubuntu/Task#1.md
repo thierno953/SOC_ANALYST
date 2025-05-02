@@ -6,17 +6,17 @@
 - Analyze
 
 ```sh
-root@forwarder:~$ sudo apt update
+root@node01:~# apt update
 ```
 
 #### Install and set up Fail2ban
 
 ```sh
-root@forwarder:~$ sudo apt install fail2ban -y
+root@node01:~# apt install fail2ban -y
 ```
 
 ```sh
-root@forwarder:~$ sudo nano /etc/fail2ban/jail.local
+root@node01:~# nano /etc/fail2ban/jail.local
 ```
 
 ```sh
@@ -30,14 +30,14 @@ findtime = 600
 ```
 
 ```sh
-root@forwarder:~$ /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
-root@forwarder:~$ sudo systemctl restart fail2ban
-root@forwarder:~$ sudo fail2ban-client status
-root@forwarder:~# tail -f /var/log/fail2ban.log
+root@node01:~# /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
+root@node01:~# systemctl restart fail2ban
+root@node01:~# fail2ban-client status
+root@node01:~# tail -f /var/log/fail2ban.log
 ```
 
 ```sh
-root@forwarder:~$ sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
+root@node01:~# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
@@ -59,28 +59,28 @@ index = fail2ban_logs
 ```
 
 ```sh
-root@forwarder:~$ sudo /opt/splunkforwarder/bin/splunk restart
+root@node01:~# /opt/splunkforwarder/bin/splunk restart
 ```
 
 #### Simulate the SSH Brute force attack
 
 ```sh
-root@attack:~$ sudo apt update
-root@attack:~$ sudo apt install hydra -y
-root@attack:~$ hydra -l admin -P passwords.txt <SPLUNK-IP> ssh
+root@attack:~# apt update
+root@attack:~# apt install hydra -y
+root@attack:~$ hydra -l admin -P passwords.txt <IP_VICTIM_MACHINE> ssh
 ```
 
 ```sh
-root@forwarder:~$ tail -f /var/log/fail2ban.log
+root@node01:~#  tail -f /var/log/fail2ban.log
 ```
 
 #### Analyzing logs on Splunk
 
-####Search & Reporting
+`Search & Reporting`
 
 ```sh
 index="fail2ban_logs"
-index="fail2ban_logs" src="<IP ATTACK>"
-index="fail2ban_logs" sourcetype="fail2ban" src="<IP ATTACK>"
-index="fail2ban_logs" | search "<IP ATTACK>"
+index="fail2ban_logs" src="<IP_ATTACK_MACHINE>"
+index="fail2ban_logs" sourcetype="fail2ban" src="<IP_ATTACK_MACHINE>"
+index="fail2ban_logs" | search "<IP_ATTACK_MACHINE>"
 ```

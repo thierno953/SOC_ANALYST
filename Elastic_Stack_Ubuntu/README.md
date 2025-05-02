@@ -130,7 +130,7 @@ root@fleet-agent:~# sudo ufw allow 9200/tcp
 root@fleet-agent:~# sudo ufw reload
 ```
 
-`Management > Fleet > Add Fleet Server`
+`Management > Fleet > Add Fleet Server > Generate Fleet Server policy`
 
 ```sh
 Name: My-fleet-server

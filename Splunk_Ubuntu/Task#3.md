@@ -8,15 +8,15 @@
 #### Installing and setting up Auditd
 
 ```sh
-root@forwarder:$ apt-get update
-root@forwarder:$ apt-get install auditd -y
-root@forwarder:$ systemctl start auditd
-root@forwarder:$ systemctl status auditd
-root@forwarder:$ cd /etc/audit/rules.d
+root@node01:~# apt-get update
+root@node01:~# apt-get install auditd -y
+root@node01:~# systemctl start auditd
+root@node01:~# systemctl status auditd
+root@node01:~# cd /etc/audit/rules.d
 ```
 
 ```sh
-root@forwarder:/etc/audit/rules.d# nano audit.rules
+root@node01:/etc/audit/rules.d# nano audit.rules
 ```
 
 ```sh
@@ -37,18 +37,15 @@ root@forwarder:/etc/audit/rules.d# nano audit.rules
 ```
 
 ```sh
-root@forwarder:/etc/audit/rules.d# cd ../../..
-```
-
-```sh
-root@forwarder:/# sudo systemctl restart auditd
-root@forwarder:/# sudo auditctl -l
+root@node01:/etc/audit/rules.d# cd ../../..
+root@node01:/# systemctl restart auditd
+root@node01:/# sudo auditctl -l
 ```
 
 #### Setting up Splunk
 
 ```sh
-root@forwarder:/# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+root@node01:/# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
@@ -69,27 +66,27 @@ sourcetype = suricata
 ```
 
 ```sh
-root@forwarder:/# /opt/splunkforwarder/bin/splunk restart
+root@node01:/# /opt/splunkforwarder/bin/splunk restart
 ```
 
 #### Simulate Unauthorized change attempt & Analyzing logs on Splunk
 
 ```sh
-root@forwarder:~# nano /etc/myfirstfile.txt
+root@node01:/# nano /etc/myfirstfile.txt
 
 #This is my first file.
 ```
 
 ```sh
-root@forwarder:/# tail -f /var/log/audit/audit.log
+root@node01:/# tail -f /var/log/audit/audit.log
 ```
 
 ```sh
-root@forwarder:~# ausearch -k file_integrity
-root@forwarder:~# ausearch -k file_integrity | grep myfirstfile
+root@node01:/# ausearch -k file_integrity
+root@node01:/# ausearch -k file_integrity | grep myfirstfile
 ```
 
-####Search & Reporting
+`Search & Reporting`
 
 ```sh
 index=linux_file_integrity sourcetype=auditd

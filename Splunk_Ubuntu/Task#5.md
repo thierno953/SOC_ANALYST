@@ -11,39 +11,38 @@
 
 ```sh
 # 1. Register Microsoft key and feed
-root@forwarder:~$ wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-root@forwarder:~$ sudo dpkg -i packages-microsoft-prod.deb
+root@node01:~# wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+root@node01:~# sudo dpkg -i packages-microsoft-prod.deb
 
 # 2. Install SysmonForLinux
-root@forwarder:~$ sudo apt-get update
-root@forwarder:~$ sudo apt-get install sysmonforlinux
+root@node01:~# apt-get update
+root@node01:~# apt-get install sysmonforlinux
 ```
 
 ```sh
-root@forwarder:~$ nano sysmon-config.xml
+root@node01:~# nano sysmon-config.xml
 ```
 
 - [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
 
 ```sh
-root@forwarder:~$ sysmon -i sysmon-config.xml
+root@node01:~# sysmon -i sysmon-config.xml
 ```
 
 ```sh
-root@forwarder:~$ sysmon -i sysmon-config.xml
-root@forwarder:~$ systemctl restart sysmon
-root@forwarder:~$ systemctl status sysmon
+root@node01:~# systemctl restart sysmon
+root@node01:~# systemctl status sysmon
 ```
 
 #### Setting up Splunk UF and Splunk Dashboard
 
 ```sh
-root@forwarder:~# cd /var/log/
-root@forwarder:/var/log# grep -i sysmon syslog
+root@node01:~# cd /var/log/
+root@node01:/var/log# grep -i sysmon syslog
 ```
 
 ```sh
-root@forwarder:/var/log# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+root@node01:/var/log# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
@@ -51,12 +50,22 @@ root@forwarder:/var/log# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
+
+#[monitor:///var/log/audit/audit.log]
+#disabled = false
+#sourcetype = auditd
+#index = linux_file_integrity
+
+#[monitor:///var/log/suricata/fast.log]
+#disabled = false
+#index = network_security_logs
+#sourcetype = suricata
 ```
 
 `Find More Apps > Browse More Apps > Splunk Add-on for Sysmon for Linux`
 
 ```sh
-root@forwarder:/var/log# /opt/splunkforwarder/bin/splunk restart
+root@node01:/var/log# /opt/splunkforwarder/bin/splunk restart
 ```
 
 ####Search & Reporting
@@ -70,7 +79,7 @@ index="linux_os_logs" process=sysmon
 #### Simulate the account activities and Visualizing it on Splunk
 
 ```sh
-root@forwarder:~# adduser maluser
+root@node01:~# adduser maluser
 Adding user `maluser' ...
 Adding new group `maluser' (1002) ...
 Adding new user `maluser' (1002) with group `maluser' ...
@@ -96,10 +105,11 @@ Enter the new value, or press ENTER for the default
         Home Phone []:
         Other []:
 Is the information correct? [Y/n]
+root@node01:~# 
 ```
 
 ```sh
-root@forwarder:~# tail -f /var/log/syslog | grep maluser
+root@node01:~# tail -f /var/log/syslog | grep maluser
 ```
 
 ####Search & Reporting
@@ -111,7 +121,7 @@ index="linux_os_logs" process=sysmon maluser
 #### Incident Response
 
 ```sh
-root@forwarder:~# less /etc/passwd
-root@forwarder:~# chage -l maluser
-root@forwarder:~# deluser maluser
+root@node01:~# less /etc/passwd
+root@node01:~# chage -l maluser
+root@node01:~# deluser maluser
 ```
