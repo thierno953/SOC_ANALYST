@@ -1,26 +1,47 @@
-# What is Forensics Investigation
+# Qu'est-ce qu'une enquête en informatique légale (Forensic Investigation) ?
 
-- It is a process of collecting, analyzing, and presenting digital evidence to identify, investigate, and resolve cybersecurity incidents.
+- L'investigation en informatique légale est le **processus systématique de collecte, d’analyse et de préservation de preuves numériques** dans le but de comprendre, résoudre et réagir à des incidents de cybersécurité.
 
-  - EX: (Preparation, Detection, Contain, Analysis, Recovery)
+#### Exemples de phases du processus :
 
-- It helps organizations respond to and recover from security breaches while building their defenses against future threats.
+- **Préparation**
 
-#### Goal of Forensics Investigation
+- **Détection**
 
-- Identify the root cause and scope of a cybersecurity incident
-- Gather admissible evidence to support legal or disciplinary action
-- Determine how the attacker gained access and what data was compromised.
-- Recommend actions to mitigate the current incident and prevent future attacks.
-- Provide intelligence to improve an organization's overall cybersecurity posture.
+- **Confinement**
 
-#### Types of Forensics
+- **Analyse**
 
-- Digital Forensics 
-- Network Forensics
-- Database Forensics
-- Memory Forensics
-- Mobile Forensics
-- Windows Forensics
-- Linux Forensics
-- Cloud Forensics
+- **Récupération**
+
+- Ce processus aide les organisations **à réagir efficacement à une violation de sécurité**, à en tirer des leçons, et à **renforcer leur défense** contre les menaces futures.
+
+#### Objectifs d'une enquête forensique
+
+- Identifier la **cause racine** et **l’étendue** de l’incident de sécurité.
+
+- Recueillir des preuves recevables juridiquement ou disciplinaires.
+
+- Déterminer comment l’attaquant a pu **accéder au système** et quelles données ont été **compromises**.
+
+- Proposer des **mesures correctives** et des recommandations pour **prévenir de futures attaques**.
+
+- Fournir des **renseignements** pour améliorer la **posture globale de cybersécurité** de l’organisation.
+
+#### Types d’investigations forensiques
+
+- **Informatique légale (Digital Forensics)** – Analyse générale des dispositifs numériques.
+
+- **Forensique réseau (Network Forensics)** – Analyse du trafic et des journaux réseau.
+
+- **Forensique des bases de données** – Examen des contenus et logs des bases de données.
+
+- **Forensique mémoire** – Analyse de la mémoire vive (RAM).
+
+- **Forensique mobile** – Enquête sur les smartphones et tablettes.
+
+- **Forensique Windows** – Investigation ciblée sur les systèmes Windows.
+
+- **Forensique Linux** – Investigation sur les systèmes Linux.
+
+- **Forensique Clou**d – Collecte et analyse de données dans les environnements cloud.

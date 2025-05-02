@@ -1,143 +1,148 @@
-# Windows Forensics
+# Forensics Windows
 
-- The practice of collecting and analyzing data from Windows systems to identify, investigate, and recover from security incidents.
+- La pratique consistant à collecter et analyser des données provenant de systèmes Windows pour identifier, enquêter et se remettre d’incidents de sécurité.
 
-- **Purpose:**
+- **Objectifs** :
 
-  - Identify malicious activities
-  - Recover evidence
-  - Prevent further attacks
+  - Identifier les activités malveillantes
+  - Récupérer des preuves
+  - Prévenir d'autres attaques
 
-- Focus Areas: Filesystem, registry, event logs, memory, network activity.
+- **Domaines d’analyse principaux** : `système de fichiers, registre, journaux d’événements, mémoire, activité réseau`.
 
-## Incident Response Process Overview
+## Vue d'ensemble du processus d'intervention sur incident
 
-#### Key Components of Windows Forensics
+#### Composants clés de Forensics Windows
 
-- Filesystem: Investigating files, folders, timestamps, and hidden data.
-- Registry: Tracting system configuration changes, user activity, and application settings.
-- Event Logs: Examining security, application,and system logs for relevant events.
-- Memory (RAM): Capturing volatile data, including running processes and network connections.
+- **Système de fichiers** : analyser les fichiers, dossiers, horodatages et données cachées.
 
-#### Why Windows Forensics is Important
+- **Registre** : suivre les modifications de configuration, l'activité utilisateur et les paramètres d’applications.
 
-- Incident Response: Detect and analyze the scope and impact of breaches.
-- Legal Evidence: Ensure data integrity for court-admissible digital evidence.
-- Recovery: Help restore systems to ensure, operational status after an attack.
-- Proactive Security: Improve defenses by learning from past incidents.
+- **Journaux d’événements** : examiner les journaux Sécurité, Application et Système pour détecter les événements pertinents.
 
-#### Why Use PowerSell for Forensics
+- **Mémoire (RAM)** : capturer les données volatiles, y compris les processus en cours et les connexions réseau.
 
-- Powerful Command-Line Tool: Built into Windows, making it accessible for forensic investigations.
-- Automation Capabilities: Easily automate repetitive forensic tasks and incident response procedures.
-- System-wide Access: Direct access to files, processes, logs, and network activity without installing third-party tools.
-- Scripting Flexibility: Create custom scripts for specific forensic needs.
+#### Pourquoi Forensics Windows est importante
 
-#### Key PowerSell CMDLETS for Forensics
+- **Réponse aux incidents** : détecter et analyser l’étendue et l’impact d’une compromission.
 
-- **Get-Process**: List all running processes and their details (memory usage, CPU time, etc.).
-- **Get-EventLog**: Retrieve and filter windows event logs (Security, Application, System logs).
-- **Get-FileHash**: Generate cryptographic hashes (MD5,SHA256) to verify file integrity.
-- **Get-ChildItem**: Recursively list files and folders with metadata for forensic analysis.
-- **Get-WmiObject**: Access system information (e.g, installed software, startup items, system configurations).
+- **Preuve légale** : garantir l'intégrité des données pour qu’elles soient recevables au tribunal.
 
-#### 1 - Collecting System Information with PowerShell
+- **Récupération** : aider à restaurer les systèmes à un état opérationnel après une attaque.
+
+- **Sécurité proactive** : améliorer les défenses en apprenant des incidents passés.
+
+#### Pourquoi utiliser PowerShell pour Forensics
+
+- **Outil en ligne de commande puissant** : intégré à Windows, donc facilement accessible.
+
+- **Automatisation** : permet d’automatiser les tâches récurrentes d’analyse et de réponse aux incidents.
+
+- **Accès au système** : accès direct aux fichiers, processus, journaux et réseau, sans outils tiers.
+
+- **Souplesse de script** : possibilité de créer des scripts personnalisés pour les besoins spécifiques.
+
+#### Cmdlets PowerShell clés pour Forensics
+
+- `Get-Process` : lister tous les processus en cours avec détails (mémoire, CPU, etc.).
+- `Get-EventLog` : récupérer et filtrer les journaux d’événements Windows.
+- `Get-FileHash` : générer des hachages (MD5, SHA256) pour vérifier l’intégrité des fichiers.
+- `Get-ChildItem` : lister récursivement les fichiers/dossiers avec métadonnées.
+- `Get-WmiObject` : accéder aux infos système (logiciels installés, éléments de démarrage, configurations...).
+
+#### 1 - Collecte d'informations système avec PowerShell
 
 ```sh
-PS C:\Users\Administrator> Get-ComputerInfo
-PS C:\Users\Administrator> Get-ComputerInfo | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\SystemInfo.txt
-PS C:\Users\Administrator> Get-Process
-PS C:\Users\Administrator> Get-Process | Format-Table -AutoSize
-PS C:\Users\Administrator> Get-Process | Format-Table -AutoSize | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessList.txt
+Get-ComputerInfo
+Get-ComputerInfo | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\SystemInfo.txt
+Get-Process
+Get-Process | Format-Table -AutoSize
+Get-Process | Format-Table -AutoSize | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessList.txt
 ```
 
-#### 2 - Investigating User Accounts
+#### 2 - Enquête sur les comptes utilisateurs
 
-- List all AD User ACcounts
+- Lister tous les comptes AD
 
 ```sh
-PS C:\Users\Administrator> Get-ADUser -Filter *
-PS C:\Users\Administrator> Get-ADUser -Filter * | Select-Object Name, Enabled | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ADUserAccounts.txt
+Get-ADUser -Filter *
+Get-ADUser -Filter * | Select-Object Name, Enabled | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ADUserAccounts.txt
 ```
 
-- List members of the Domain Admin group
+- Lister les membres du groupe "Domain Admins" :
 
 ```sh
-PS C:\Users\Administrator> Get-ADGroupMember -Identity "Domain Admins"
+Get-ADGroupMember -Identity "Domain Admins"
 ```
 
-- Get detailed into for a specific AD User
+- Obtenir les détails d’un utilisateur AD spécifique :
 
 ```sh
-PS C:\Users\Administrator> Get-ADUser -Identity "thierno" -Properties *
+Get-ADUser -Identity "thierno" -Properties *
 ```
 
-#### 3 - Investigating Process
+#### 3 - Analyse des processus
 
 ```sh
-PS C:\Users\Administrator> Get-Process
+Get-Process
 
-PS C:\Users\Administrator> Get-Process | Where-Object { $_.Name -notin @('explorer', 'svchost', 'winlogon', 'lsass', 'services')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousProcesses.txt"
+Get-Process | Where-Object { $_.Name -notin @('explorer', 'svchost', 'winlogon', 'lsass', 'services')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousProcesses.txt"
 
-PS C:\Users\Administrator> Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath
+Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath
 
-PS C:\Users\Administrator> Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindows.txt
+Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindows.txt
 
-PS C:\Users\Administrator> Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindowsBrief.txt
+Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindowsBrief.txt
 
-PS C:\Users\Administrator> Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU
+Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU
 
-PS C:\Users\Administrator> Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\HighCPUProcesses.txt
+Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\HighCPUProcesses.txt
 
-PS C:\Users\Administrator> Get-Process | Sort-Object PM -Descending | Select-Object -First 10 Name, Id, PM
+Get-Process | Sort-Object PM -Descending | Select-Object -First 10 Name, Id, PM
 ```
 
-#### 4 - Investigating Services
-
-- List all Services
-- Detaild info of a specific service
-- Services running from non-standard paths
+#### 4 - Analyse des services
 
 ```sh
-PS C:\Users\Administrator> Get-Service
+Get-Service
 
-PS C:\Users\Administrator> Get-Service | Format-Table -AutoSize
+Get-Service | Format-Table -AutoSize
 
-PS C:\Users\Administrator> Get-Service | Where-Object { $_.Name -notin @('TrustedInstaller', 'WindDefend', 'EventLog', 'Dhcp', 'Dnscache')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousServices.txt"
+Get-Service | Where-Object { $_.Name -notin @('TrustedInstaller', 'WindDefend', 'EventLog', 'Dhcp', 'Dnscache')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousServices.txt"
 
-PS C:\Users\Administrator> Get-Service -Name "BITS" | Format-List *
+Get-Service -Name "BITS" | Format-List *
 
-PS C:\Users\Administrator> Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName
+Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName
 
-PS C:\Users\Administrator> Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ServiceOutOfWindows.txt
+Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ServiceOutOfWindows.txt
 ```
 
-#### 5 - Checking Scheduled Tasks
+#### 5 - Analyse des tâches planifiées
 
 ```sh
-PS C:\Users\Administrator> Get-ScheduledTask | Format-Table -AutoSize
+Get-ScheduledTask | Format-Table -AutoSize
 
-PS C:\Users\Administrator> Get-ScheduledTask | Where-Object { $_.TaskName -notin @('UpdateTask', 'SystemTasks', 'WindowsTasks')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousScheduledTasks.txt"
+Get-ScheduledTask | Where-Object { $_.TaskName -notin @('UpdateTask', 'SystemTasks', 'WindowsTasks')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousScheduledTasks.txt"
 ```
 
-#### 6 - Checking Active Internet Connections
+#### 6 - Analyse des connexions Internet actives
 
 ```sh
-PS C:\Users\Administrator> Get-NetTCPConnection
+Get-NetTCPConnection
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Format-Table -AutoSize
+Get-NetTCPConnection | Format-Table -AutoSize
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ActiveNetTCPConnections.txt"
+Get-NetTCPConnection | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ActiveNetTCPConnections.txt"
 
-PS C:\Users\Administrator> Get-NetTCPConnection -LocalPort 3389
+Get-NetTCPConnection -LocalPort 3389
 
-PS C:\Users\Administrator> Get-NetTCPConnection -LocalPort 3389 |  Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\RDPConnection.txt"
+Get-NetTCPConnection -LocalPort 3389 | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\RDPConnection.txt"
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}
+Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize
+Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses.txt"
+Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses.txt"
 
-PS C:\Users\Administrator> Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses1.txt"
+Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses1.txt"
 ```

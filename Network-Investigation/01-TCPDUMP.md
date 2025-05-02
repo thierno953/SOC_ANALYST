@@ -1,7 +1,5 @@
 # TCPDUMP
 
-#### Qu'est-ce que TCPDUMP ?
-
 - TCPDUMP est un outil d'analyse du trafic réseau.
 - Points clés:
   - Outil d'analyse de paquets en ligne de commande

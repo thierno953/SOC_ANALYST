@@ -1,46 +1,58 @@
-# Memory Forensics
+# Analyse de la Mémoire (Memory Forensics)
 
-- Memory Forensics is the process of analyzing a computer's volatile memory (RAM) to extract critical information, artifacts, and insights related to system activities, security incidents, and digital investigations.
-- It provides a real-time snapshot of a system's state, enabling the detection of malware, uncovering rootkits, and reconstructing user activities for incident response and digital forensics.
+- L’analyse de la mémoire est le processus d’analyse de la mémoire volatile (RAM) d’un ordinateur afin d’extraire des informations critiques, des artefacts et des éléments relatifs aux activités système, incidents de sécurité et enquêtes numériques.
 
-#### Benefits of Memory Forensics
+- Elle fournit une image en temps réel de l’état du système, permettant de détecter des malwares, de révéler des rootkits et de reconstituer les activités des utilisateurs pour la réponse aux incidents et l’investigation numérique.
 
-- This is useful because of the way in which processes, files and programs are run in memory, and once a snapshot has been captured, many important facts can be ascertained by the investigator, such as:
+#### Avantages de l’analyse de la mémoire
 
-- Processes running
-- Executable files that are running
-- Open ports, IP addresses and other networking information
-- Users that are logged into the system, and from where
-- Files that are open and by whom
+- Cela est utile en raison de la manière dont les processus, fichiers et programmes s’exécutent en mémoire. Une fois un instantané capturé, de nombreuses informations importantes peuvent être obtenues par l’enquêteur, comme :
 
-#### Volatile Data
+  - Les processus en cours d’exécution
 
-- In memory forensics, volatile data refers to information stored in a computer's volatile memory (RAM or Random Access Memory) that is temporary and is lost when the system is powered off or restarted.
-- Volatile Data is in constrat to non-volatile data, which is stored on persistent storage devices like hard drives and remains intact even after a system shutdown.
-- Volatile Data is something that any incident responder needs to be aware of the reason being is that when dealing with a compromised device one of the first reactions may be to turn the device off to contain the threat.
-- The problem with this approach is that any malware that is running on the device will be running in memory. So any network connections and running processes will be lost, this is because the malware has been running in memory and this data is now lost.
+  - Les fichiers exécutables actifs
 
-#### Memory Dump
+  - Les ports ouverts, adresses IP et autres informations réseau
 
-- A memory dump or RAM dump i a snapshot of memory that has been captured for memory analysis. When a RAM dump is captured it will contain data relating to any running processes at the time the capture was taken.
+  - Les utilisateurs connectés au système, et depuis où
 
-#### Acquiring memory with FTK Image
+  - Les fichiers ouverts et par qui
+
+#### Données Volatiles
+
+- En analyse de mémoire, les données volatiles se réfèrent aux informations stockées dans la mémoire vive (RAM) d’un ordinateur, qui sont temporaires et perdues lorsque le système est éteint ou redémarré.
+
+- Les données volatiles s’opposent aux données non-volatiles, stockées sur des périphériques de stockage permanents (comme les disques durs) et qui restent intactes même après l’arrêt du système.
+
+- Les données volatiles doivent être bien comprises par tout intervenant en réponse aux incidents, car l’une des premières réactions face à un appareil compromis peut être de l’éteindre pour contenir la menace.
+
+- Le problème avec cette approche est que tout malware en cours d’exécution est probablement en mémoire. Ainsi, les connexions réseau et processus actifs seront perdus car ces informations, résidant uniquement en mémoire, disparaissent à l’arrêt.
+
+#### Capture de la mémoire (Memory Dump)
+
+- Un **dump mémoire** (ou capture de la RAM) est un instantané de la mémoire capturé à des fins d’analyse. Il contient les données relatives à tous les processus en cours au moment de la capture.
+
+#### Acquisition de la mémoire avec FTK Imager
 
 - [https://archive.org/download/access-data-ftk-imager-4.7.1.](https://archive.org/download/access-data-ftk-imager-4.7.1)
 
 #### Volatility
 
-- Volatility is an open-source memory forensics framework used for analyzing volatile memory (RAM) in digital investigations.
-- `Purpose`: It helps extract digital artifacts such as running processes, network connections, and loaded drivers from memory dumps.
-- `Features`: Offers a wide range of plugins for analyzing memory images from various operating systems (Windows, Linux, MacOS, etc.).
-- `Community`: Volatility has a large community of contributors and users who actively develop plugins, share knowledge, and provide support.
+- `Volatility` est un framework open-source d’analyse de la mémoire utilisé dans les enquêtes numériques pour analyser la mémoire volatile (RAM).
 
-#### Key Components of Volatility
+- `Objectif` : extraire des artefacts numériques tels que les processus actifs, connexions réseau et pilotes chargés à partir de dumps mémoire.
 
-- Volatility Core: Provides the foundation for memory analysis, including memory address translation, process listing, and plugin management.
-- Plugins: Specialized tools that extract specific information from memory images, such as pslist for listing processes and connections, netscan for network analysis, and filescan for file system exploration.
+- `Fonctionnalités` : propose de nombreux plugins pour analyser des images mémoire provenant de plusieurs systèmes d’exploitation (Windows, Linux, MacOS, etc.).
 
-#### Installing Volatility
+- `Communauté` : Volatility dispose d’une grande communauté d’utilisateurs et de contributeurs qui développent des plugins, partagent leurs connaissances et offrent du support.
+
+#### Composants clés de Volatility
+
+- `Noyau de Volatility` : fournit les fondations de l’analyse mémoire, incluant la traduction d’adresses mémoire, la liste des processus et la gestion des plugins.
+
+- `Plugins` : outils spécialisés extrayant des informations spécifiques, comme pslist pour les processus, netscan pour l’analyse réseau, et filescan pour l’exploration du système de fichiers.
+
+#### Installation de Volatility
 
 - [https://volatilityfoundation.org/the-volatility-framework/.](https://volatilityfoundation.org/the-volatility-framework/)
 
@@ -54,27 +66,27 @@ python3 vol.py --help
 python3 vol.py -f memdump.mem windows.vadinfo.VadInfo
 ```
 
-#### 1 - Retrieve Image Information
+#### 1 - Récupérer les informations de l’image mémoire
 
 ```sh
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.info
 ```
 
-#### 2 - Collect Process Information
+#### 2 - Collecter les informations sur les processus
 
 ```sh
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.pslist
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.psscan.PsScan
 ```
 
-#### 3 - Retrieving Command Line
+#### 3 - Récupérer la ligne de commande des processus
 
 ```sh
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.cmdline
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.cmdline --pid 2580
 ```
 
-#### 4 - Collecting Network Information
+#### 4 - Collecte des informations réseau
 
 ```sh
 python3 /opt/volatility/volatility3-2.5.0/vol.py -f memdump.mem windows.netscan
