@@ -1,52 +1,65 @@
 # Task#3: File Integrity Monitoring for Sensitive files
 
-- Installing Auditd
-- Setting up Splunk
-- Simulate attack & Analyze
-- Incident Response
+- Installer et configurer auditd pour la surveillance des fichiers sensibles
 
-#### Installing and setting up Auditd
+- Configurer l'envoi des logs vers Splunk
+
+- Simuler une attaque (modification non autorisée)
+
+- Analyser les logs et répondre à l'incident
+
+#### Installation et configuration de auditd
 
 ```sh
-root@node01:~# apt-get update
-root@node01:~# apt-get install auditd -y
-root@node01:~# systemctl start auditd
-root@node01:~# systemctl status auditd
-root@node01:~# cd /etc/audit/rules.d
+apt-get update
+apt-get install auditd -y
+systemctl start auditd
+systemctl status auditd
 ```
 
-```sh
-root@node01:/etc/audit/rules.d# nano audit.rules
-```
+#### Configuration des règles d'intégrité :
 
 ```sh
-## First rule - delete all
+cd /etc/audit/rules.d
+nano audit.rules
+```
+
+#### Contenu de audit.rules
+
+```sh
+## Supprimer toutes les règles existantes
 -D
 
-## Increase the buffers to survive stress events.
-## Make this bigger for busy systems
+## Augmenter la taille du buffer pour les systèmes chargés
 -b 8192
 
-## This determine how long to wait in burst of events
+## Temps d’attente en cas de surcharge
 --backlog_wait_time 60000
 
-## Set failure mode to syslog
+## En cas d’échec, envoyer les logs au syslog
 -f 1
 
+## Surveiller les modifications dans /etc/
 -w /etc/ -p wa -k file_integrity
 ```
 
-```sh
-root@node01:/etc/audit/rules.d# cd ../../..
-root@node01:/# systemctl restart auditd
-root@node01:/# sudo auditctl -l
-```
-
-#### Setting up Splunk
+#### Appliquer les règles
 
 ```sh
-root@node01:/# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+cd ../../..
+systemctl restart auditd
+auditctl -l   # Vérifier que la règle est bien en place
 ```
+
+## Configuration de Splunk Universal Forwarder
+
+#### Modifier inputs.conf
+
+```sh
+nano /opt/splunkforwarder/etc/system/local/inputs.conf
+```
+
+#### Contenu du fichier inputs.conf
 
 ```sh
 [monitor:///var/log/syslog]
@@ -65,28 +78,39 @@ index = network_security_logs
 sourcetype = suricata
 ```
 
-```sh
-root@node01:/# /opt/splunkforwarder/bin/splunk restart
-```
-
-#### Simulate Unauthorized change attempt & Analyzing logs on Splunk
+#### Redémarrer Splunk Forwarder
 
 ```sh
-root@node01:/# nano /etc/myfirstfile.txt
-
-#This is my first file.
+/opt/splunkforwarder/bin/splunk restart
 ```
+
+## Simulation d'une attaque (modification non autorisée)
+
+#### Créer ou modifier un fichier dans /etc/
 
 ```sh
-root@node01:/# tail -f /var/log/audit/audit.log
+nano /etc/myfirstfile.txt
+
+# Contenu du fichier
+This is my first file.
 ```
+
+#### Surveiller les logs en temps réel
 
 ```sh
-root@node01:/# ausearch -k file_integrity
-root@node01:/# ausearch -k file_integrity | grep myfirstfile
+tail -f /var/log/audit/audit.log
 ```
 
-`Search & Reporting`
+#### Rechercher les logs liés à la clé file_integrity
+
+```sh
+ausearch -k file_integrity
+ausearch -k file_integrity | grep myfirstfile
+```
+
+#### Analyse dans Splunk (Search & Reporting)
+
+- Utilise ces requêtes dans l’interface Splunk pour analyser
 
 ```sh
 index=linux_file_integrity sourcetype=auditd

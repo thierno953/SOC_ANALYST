@@ -1,52 +1,57 @@
 # Task #4: Detecting Abnormal Network Traffic
 
-- Installing Suricata IDS
-- Setting up Splunk
-- Similate Attack & Visualize
-- Incident Response
+- Installer et configurer Suricata IDS
 
-#### Installing and setting up Suricata
+- Intégrer les logs dans Splunk
+
+- Simuler un scan malveillant
+
+- Visualiser et analyser les alertes
+
+- Réagir à l’incident
+
+#### Installation et configuration de Suricata
 
 - [Proofpoint Emerging Threats Rules](https://rules.emergingthreats.net/)
 
 ```sh
-root@node01:/# apt-get update
-root@node01:/# add-apt-repository ppa:oisf/suricata-stable -y
-root@node01:/# apt-get install suricata -y
-root@node01:/# cd /etc/suricata && mkdir rules && cd
-root@node01:~# cd /tmp/ && curl -LO https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
-
-root@node01:/tmp# sudo tar -xvzf emerging.rules.tar.gz && sudo mv rules/*.rules /etc/suricata/rules/
-root@node01:/tmp# sudo chmod 640 /etc/suricata/rules/*.rules
-root@node01:/tmp# cd /etc/suricata/rules/
-root@node01:/etc/suricata/rules# nano emerging-malware.rules
+apt-get update
+add-apt-repository ppa:oisf/suricata-stable -y
+apt-get install suricata -y
 ```
 
-```sh
-root@node01:/etc/suricata/rules# nano /etc/suricata/suricata.yaml
-```
+#### Téléchargement des règles ET (Emerging Threats) :
 
 ```sh
+cd /etc/suricata && mkdir rules && cd
+cd /tmp/
+curl -LO https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
+tar -xvzf emerging.rules.tar.gz
+mv rules/*.rules /etc/suricata/rules/
+chmod 640 /etc/suricata/rules/*.rules
+```
+
+#### Exemple d’édition de règle spécifique
+
+```sh
+nano /etc/suricata/rules/emerging-malware.rules
+```
+
+#### Configuration de Suricata (/etc/suricata/suricata.yaml)
+
+```sh
+default-rule-path: /etc/suricata/rules
+
 rule-files:
   - emerging-web_client.rules
   - emerging-malware.rules
   - emerging-attack_response.rules
   - emerging-trojan.rules
 
-# ===============================
-
 vars:
-  # more specific is better for alert accuracy and performance
   address-groups:
     HOME_NET: "[IP_ADDRESS]"
-
-    #EXTERNAL_NET: "!$HOME_NET"
     EXTERNAL_NET: "any"
-
-default-rule-path: /etc/suricata/rules
-
-rule-files:
-  - "*.rules"
 
 stats:
   enabled: yes
@@ -55,19 +60,27 @@ af-packet:
   - interface: enp0s3
 ```
 
-```sh
-root@node01:/etc/suricata/rules# systemctl restart suricata
-root@node01:/etc/suricata/rules# systemctl status suricata
-root@node01:/etc/suricata/rules# suricata-update
-root@node01:/etc/suricata/rules# cd /var/log/suricata/
-root@node01:/var/log/suricata# tail -f fast.log
-```
+- **NB** : Remplace [`IP_ADDRESS`] par l’adresse IP réelle de ta machine cible (victime)
 
-#### Setting up Splunk
+#### Démarrage et test de Suricata
 
 ```sh
-root@node01:/var/log/suricata# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+systemctl restart suricata
+systemctl status suricata
+suricata-update
+cd /var/log/suricata/
+tail -f fast.log
 ```
+
+## Configuration de Splunk Universal Forwarder
+
+#### Modifier inputs.conf
+
+```sh
+nano /opt/splunkforwarder/etc/system/local/inputs.conf
+```
+
+#### Contenu du fichier
 
 ```sh
 [monitor:///var/log/syslog]
@@ -86,17 +99,23 @@ index = network_security_logs
 sourcetype = suricata
 ```
 
-```sh
-root@node01:/var/log/suricata# /opt/splunkforwarder/bin/splunk restart
-```
-
-#### Simulating an attack and Analyzing logs on Splunk
+#### Redémarrer le Forwarder
 
 ```sh
-root@attack:~# nmap -sS <IP_VICTIM_MACHINE>
+/opt/splunkforwarder/bin/splunk restart
 ```
 
-####Search & Reporting
+## Simulation d’une attaque (Scan TCP SYN)
+
+#### Depuis la machine attacker
+
+```sh
+nmap -sS <IP_VICTIM_MACHINE>
+```
+
+## Visualisation dans Splunk (Search & Reporting)
+
+#### Requêtes utiles dans l’interface Splunk
 
 ```sh
 index="network_security_logs" sourcetype="suricata"

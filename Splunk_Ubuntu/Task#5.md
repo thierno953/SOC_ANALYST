@@ -1,48 +1,64 @@
-# Task#5: Monitoring User Account Activity
+# Task #5: Monitoring User Account Activity
 
-- Install Sysmon for Linux
-- Setting up Splunk
-- Simulate attack & visualize
-- Incident Response
+- Installer Sysmon for Linux
 
-#### Install Sysmon for Linux
+- Configurer l’ingestion des logs avec Splunk
+
+- Simuler une activité malveillante
+
+- Visualiser les événements dans Splunk
+
+- Réagir à l’incident
+
+#### Installer Sysmon for Linux
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
 ```sh
-# 1. Register Microsoft key and feed
-root@node01:~# wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-root@node01:~# sudo dpkg -i packages-microsoft-prod.deb
+# Ajouter le dépôt Microsoft
+wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
 
-# 2. Install SysmonForLinux
-root@node01:~# apt-get update
-root@node01:~# apt-get install sysmonforlinux
+# Mise à jour et installation
+apt-get update
+apt-get install sysmonforlinux -y
 ```
 
+#### Créer et appliquer un fichier de configuration Sysmon
+
 ```sh
-root@node01:~# nano sysmon-config.xml
+# Télécharger ou copier un fichier de configuration XML personnalisé
+nano sysmon-config.xml
+
+# Exemple de ligne de base (à adapter selon les besoins)
+<RuleGroup name="default" groupRelation="or">
+  <ProcessCreate onmatch="include" />
+  <FileCreateTime onmatch="include" />
+  <NetworkConnect onmatch="include" />
+</RuleGroup>
 ```
 
 - [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
 
 ```sh
-root@node01:~# sysmon -i sysmon-config.xml
+# Appliquer la configuration
+sysmon -i sysmon-config.xml
+
+# Vérification du statut
+systemctl restart sysmon
+systemctl status sysmon
+```
+
+#### Configurer Splunk Universal Forwarder
+
+```sh
+# Vérifier la présence de logs sysmon dans syslog
+grep -i sysmon /var/log/syslog
 ```
 
 ```sh
-root@node01:~# systemctl restart sysmon
-root@node01:~# systemctl status sysmon
-```
-
-#### Setting up Splunk UF and Splunk Dashboard
-
-```sh
-root@node01:~# cd /var/log/
-root@node01:/var/log# grep -i sysmon syslog
-```
-
-```sh
-root@node01:/var/log# nano /opt/splunkforwarder/etc/system/local/inputs.conf
+# Modifier la configuration d’entrée de Splunk
+nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
@@ -50,78 +66,49 @@ root@node01:/var/log# nano /opt/splunkforwarder/etc/system/local/inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
-
-#[monitor:///var/log/audit/audit.log]
-#disabled = false
-#sourcetype = auditd
-#index = linux_file_integrity
-
-#[monitor:///var/log/suricata/fast.log]
-#disabled = false
-#index = network_security_logs
-#sourcetype = suricata
 ```
 
-`Find More Apps > Browse More Apps > Splunk Add-on for Sysmon for Linux`
+- **NB** : Ajout recommandé dans Splunk Web `Apps > Browse More Apps > Splunk Add-on for Sysmon for Linux`
 
 ```sh
-root@node01:/var/log# /opt/splunkforwarder/bin/splunk restart
+# Redémarrer le Forwarder Splunk
+/opt/splunkforwarder/bin/splunk restart
 ```
 
-####Search & Reporting
+#### Simuler une activité malveillante
+
+```sh
+# Création d’un faux utilisateur
+adduser maluser --disabled-password --gecos ""
+echo "maluser:Password123!" | chpasswd
+```
+
+```sh
+# Vérifier les traces dans syslog
+tail -f /var/log/syslog | grep maluser
+```
+
+#### Requêtes de recherche dans Splunk
 
 ```sh
 index="linux_os_logs"
 index="linux_os_logs" sysmon
 index="linux_os_logs" process=sysmon
-```
 
-#### Simulate the account activities and Visualizing it on Splunk
-
-```sh
-root@node01:~# adduser maluser
-Adding user `maluser' ...
-Adding new group `maluser' (1002) ...
-Adding new user `maluser' (1002) with group `maluser' ...
-Creating home directory `/home/maluser' ...
-Copying files from `/etc/skel' ...
-New password:
-Retype new password:
-No password has been supplied.
-New password:
-Retype new password:
-No password has been supplied.
-New password:
-Retype new password:
-No password has been supplied.
-passwd: Authentication token manipulation error
-passwd: password unchanged
-Try again? [y/N]
-Changing the user information for maluser
-Enter the new value, or press ENTER for the default
-        Full Name []:
-        Room Number []:
-        Work Phone []:
-        Home Phone []:
-        Other []:
-Is the information correct? [Y/n]
-root@node01:~# 
-```
-
-```sh
-root@node01:~# tail -f /var/log/syslog | grep maluser
-```
-
-####Search & Reporting
-
-```sh
+index="linux_os_logs"
+index="linux_os_logs" sourcetype=syslog "Process Create"
+index="linux_os_logs" sourcetype=syslog CommandLine="*adduser*"
+index="linux_os_logs" sourcetype=syslog User="maluser"
 index="linux_os_logs" process=sysmon maluser
 ```
 
-#### Incident Response
+#### Réponse à l’incident
 
 ```sh
-root@node01:~# less /etc/passwd
-root@node01:~# chage -l maluser
-root@node01:~# deluser maluser
+# Vérifier les détails du compte
+less /etc/passwd
+chage -l maluser
+
+# Supprimer l'utilisateur suspect
+deluser --remove-home maluser
 ```
