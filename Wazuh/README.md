@@ -64,31 +64,31 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 `Agents → Server (analyse) → Indexer (stockage) → Dashboard (visualisation)`
 
-- **NB**: Les communications sont sécurisées par TLS et authentification mutuelle
+> **NB**: Les communications sont sécurisées par TLS et authentification mutuelle
 
 #### Déploiement
 
-- **1 - Docker**
+> **1 - Docker**
 
 ```sh
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 ```
 
-- Conteneurs préconfigurés
+> Conteneurs préconfigurés
 
-- Certificats auto-signés
+> Certificats auto-signés
 
-- **2 - Cloud**
+> **2 - Cloud**
 
-- AMI AWS, images OVA
+> AMI AWS, images OVA
 
-- **3 - Kubernetes**
+> **3 - Kubernetes**
 
-- Scalabilité auto, orchestration
+> Scalabilité auto, orchestration
 
-- **Installation manuelle**
+> **Installation manuelle**
 
-- Packages DEB/RPM, ou compilation
+> Packages DEB/RPM, ou compilation
 
 #### Fonctionnalités
 
@@ -107,9 +107,9 @@ Réponse incident           | Slack/Teams, auto-blocage IP                 |
 
 #### Intégrations
 
-- **VirusTotal**
+> **VirusTotal**
 
-- **SIEM** : Elastic, Splunk
+> **SIEM** : Elastic, Splunk
 
 ```sh
 <integration>
@@ -121,8 +121,8 @@ Réponse incident           | Slack/Teams, auto-blocage IP                 |
 
 #### Enrollment Agent
 
-- Générer clé sur serveur
-- Installer agent → config IP serveur
+> Générer clé sur serveur
+> Installer agent → config IP serveur
 
 #### Ubuntu
 
@@ -133,15 +133,15 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 
 #### Windows
 
-- MSI silencieux + déploiement GPO
+> MSI silencieux + déploiement GPO
 
 #### Détection = Décodeurs + Règles
 
-- 10 000+ règles prédéfinies
+> 10 000+ règles prédéfinies
 
-- Syntaxe XML personnalisée
+> Syntaxe XML personnalisée
 
-- Niveaux 0 à 15
+> Niveaux 0 à 15
 
 #### Exemple règle SSH brute force
 
@@ -157,43 +157,43 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 
 #### Lab 1 - FIM
 
-- Activer /etc, modifier fichier
+> Activer /etc, modifier fichier
 
-- Voir alerte dans dashboard
+> Voir alerte dans dashboard
 
 #### Lab 2 - Suricata IDS
 
-- Installer + activer Suricata (format JSON EVE)
+> Installer + activer Suricata (format JSON EVE)
 
-- Scanner avec nmap, alerte → dashboard
+> Scanner avec nmap, alerte → dashboard
 
 #### Lab 3 - Vulnérabilités
 
-- Activer `Vulnerability Detector`
+> Activer `Vulnerability Detector`
 
-- Scanner → visualiser dans `Security > Vulnerability`
+> Scanner → visualiser dans `Security > Vulnerability`
 
 #### Lab 4 - Commandes malveillantes
 
-- Exécuter `rm -rf /`, `chmod 777`
+> Exécuter `rm -rf /`, `chmod 777`
 
-- Analyse via règles personnalisées
+> Analyse via règles personnalisées
 
 #### Lab 5 - SSH Brute Force
 
-- Hydra → serveur SSH
+> Hydra → serveur SSH
 
-- Blocage auto → check `/etc/hosts.deny`
+> Blocage auto → check `/etc/hosts.deny`
 
 #### Lab 6 - VirusTotal
 
-- Télécharger fichier douteux
+> Télécharger fichier douteux
 
-- Voir analyse VT dans l’alerte
+> Voir analyse VT dans l’alerte
 
 ### Install Wazuh avec Docker
 
-- [Configuration système de base](https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html)
+> [Configuration système de base](https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html)
 
 ```sh
 sudo -i
@@ -201,7 +201,7 @@ sysctl -w vm.max_map_count=262144
 sysctl -p
 ```
 
-- Docker
+> Docker
 
 ```sh
 curl -sSL https://get.docker.com/ | sh
@@ -210,14 +210,14 @@ systemctl start docker
 systemctl status docker
 ```
 
-- Docker Compose
+> Docker Compose
 
 ```sh
 curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ```
 
-- Clonage + Lancement [Clonage du dépôt Wazuh](https://documentation.wazuh.com/4.7/deployment-options/docker/wazuh-container.html)
+> Clonage + Lancement [Clonage du dépôt Wazuh](https://documentation.wazuh.com/4.7/deployment-options/docker/wazuh-container.html)
 
 ```sh
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
@@ -229,7 +229,7 @@ docker-compose -f generate-indexer-certs.yml run --rm generator
 docker-compose up -d
 ```
 
-- Configuration du firewall
+> Configuration du firewall
 
 ```sh
 sudo ufw enable
@@ -238,19 +238,19 @@ sudo ufw allow 9200/tcp
 
 #### INSTALLATION AGENT
 
-- Script d'installation de l'agent linux
+> Script d'installation de l'agent linux
 
 ![agent](/Wazuh/assets/01.png)
 
 ![agent](/Wazuh/assets/02.png)
 
-- Script d'installation de l'agent windows : `C:\Program Files > ossec-agent > win32ui`
+> Script d'installation de l'agent windows : `C:\Program Files > ossec-agent > win32ui`
 
-- [CONFIGURATIONS SPÉCIFIQUES](https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/rules.html)
+> [CONFIGURATIONS SPÉCIFIQUES](https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/rules.html)
 
-- **Lab #1:** File Integrity Monitoring (FIM)
+> **Lab #1:** File Integrity Monitoring (FIM)
 
-- Configuration FIM - Manager
+> Configuration FIM - Manager
 
 ```sh
 docker ps
@@ -266,7 +266,7 @@ apt update && apt install -y nano
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Modifiez ceci dans le fichier de configuration de Wazuh Manager
+> Modifiez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -283,13 +283,13 @@ nano /var/ossec/etc/ossec.conf
 service wazuh-manager restart
 ```
 
-- Configuration Agent
+> Configuration Agent
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 <syscheck>
@@ -302,11 +302,11 @@ systemctl restart wazuh-agent
 touch samplefile.txt
 ```
 
-- Dans l'interface Wazuh : `Modules > agent01 > Security events`
+> Dans l'interface Wazuh : `Modules > agent01 > Security events`
 
-- **Lab #2:** Detecting Network Instruction Using Suricata IDS
+> **Lab #2:** Detecting Network Instruction Using Suricata IDS
 
-- Installation Suricata
+> Installation Suricata
 
 ```sh
 add-apt-repository ppa:oisf/suricata-stable -y
@@ -324,7 +324,7 @@ chmod 640 /etc/suricata/rules/*.rules
 cd /etc/suricata/rules/
 ```
 
-- Configuration Suricata
+> Configuration Suricata
 
 ```sh
 nano /etc/suricata/suricata.yaml
@@ -358,13 +358,13 @@ outputs:
       filename: /var/log/suricata/eve.json
 ```
 
-- Configuration Wazuh pour Suricata
+> Configuration Wazuh pour Suricata
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+<> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
