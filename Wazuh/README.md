@@ -396,13 +396,13 @@ root@attack:~# nmap -p 22 --script ssh-brute <IP_VICTIME>
 
 > Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`
 
-< **Lab #3:** Détection de vulnérabilités
+> **Lab #3:** Détection de vulnérabilités
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <vulnerability-detection>
@@ -440,21 +440,21 @@ service wazuh-manager restart
 service wazuh-manager status
 ```
 
-- Pour vérifier que ça fonctionne Sur le Manager
+> Pour vérifier que ça fonctionne Sur le Manager
 
 ```sh
 tail -f /var/ossec/logs/alerts/alerts.log | grep "vulnerability"
 ```
 
-- Pour vérifier que ça fonctionne Sur l'agent (Linux)
+> Pour vérifier que ça fonctionne Sur l'agent (Linux)
 
 ```sh
 sudo wazuh-control info | grep -i "vulnerability"
 ```
 
-- Dans l'interface Wazuh : `Modules > agent01 > Vulnerabilities`
+> Dans l'interface Wazuh : `Modules > agent01 > Vulnerabilities`
 
-- **Lab #4:** Auditd
+- > **Lab #4:** Auditd
 
 - Installation Auditd
 
