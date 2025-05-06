@@ -364,7 +364,7 @@ outputs:
 nano /var/ossec/etc/ossec.conf
 ```
 
-<> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -394,9 +394,9 @@ root@attack:~# nmap -sS -T4 -Pn <IP_VICTIME>
 root@attack:~# nmap -p 22 --script ssh-brute <IP_VICTIME>
 ```
 
-- Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`
+> Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`
 
-- **Lab #3:** Détection de vulnérabilités
+< **Lab #3:** Détection de vulnérabilités
 
 ```sh
 nano /var/ossec/etc/ossec.conf
