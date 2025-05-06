@@ -44,7 +44,7 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 #### Architecture Wazuh
 
-- **Composants**
+> **Composants**
 
   - **Wazuh Server** → analyse, alertes, API
 
@@ -54,7 +54,7 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
   - **Agents** → collectent logs (Windows, Linux, macOS)
 
-- **Modes déploiement**
+> **Modes déploiement**
 
   - **Single-node** : simple, tout-en-un
 
