@@ -598,10 +598,10 @@ service wazuh-manager restart
 
 - Dans l'interface Wazuh : `Modules > agent01 > Security events`
 
-- Pour tester l'attaque par force brute SSH
+#### Pour tester l'attaque par force brute SSH
 
 ```sh
-root@attack:~# hydra -t 4 -l root pass.txt <IP_VICTIME ssh
+hydra -t 4 -l root pass.txt <IP_VICTIME> ssh
 ```
 
 - **Lab #6:** Detecting Malicious files using virustotal
@@ -675,9 +675,7 @@ systemctl restart wazuh-agent
 </group>
 ```
 
-- Téléchargez un fichier de test EICAR
-
-- [EICAR](https://www.eicar.org/)
+- Téléchargez un fichier de test [EICAR](https://www.eicar.org/)
 
 ```sh
 root@agent:~# curl -Lo /root/eicar.com https://secure.eicar.org/eicar.com && sudo ls -lah /root/eicar.com
