@@ -88,7 +88,7 @@ echo "maluser:Password123!" | chpasswd
 tail -f /var/log/syslog | grep maluser
 ```
 
-#### Requêtes de recherche dans Splunk
+> `Requêtes dans Search & Reporting>`
 
 ```sh
 index="linux_os_logs"

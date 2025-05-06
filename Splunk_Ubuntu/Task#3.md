@@ -108,7 +108,7 @@ ausearch -k file_integrity
 ausearch -k file_integrity | grep myfirstfile
 ```
 
-#### Analyse dans Splunk (Search & Reporting)
+> `Requêtes dans Search & Reporting`
 
 - Utilise ces requêtes dans l’interface Splunk pour analyser
 

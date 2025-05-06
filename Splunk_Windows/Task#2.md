@@ -1,73 +1,81 @@
-# Task 2: Investigating PowerShell Abuse on Windows Machines
+# Investigation des abus PowerShell sur les machines Windows
 
-- Simulate the attack and Visualize the event
-- Incident Response
+#### Vérification de l'installation Sysmon
 
-#### Verify Sysmon Installation
+> `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > PowerShell > Operational`
 
-`Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > PowerShell > Operational`
-
-`C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
+> Fichier `: C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
-[WinEventLog://Application]
+[WinEventLog://Microsoft-Windows-PowerShell/Operational]
 disabled = 0
-index = windows_event_logs
-sourcetype = WinEventLog
-
-[WinEventLog://Security]
-disabled = 0
-index = windows_event_logs
-sourcetype = WinEventLog
-source = WinEventLog:Security
-
-[WinEventLog://System]
-disabled = 0
-index = windows_event_logs
-sourcetype = WinEventLog
-source = WinEventLog:System
+index = powershell_logs
+sourcetype = WinEventLog:PowerShell
+renderXml = false
 
 [WinEventLog://Microsoft-Windows-Sysmon/Operational]
 disabled = 0
 index = sysmon_logs
-sourcetype = XmlWinEventLog
-source = XmlWinEventLog:Sysmon
+sourcetype = XmlWinEventLog:Sysmon
 renderXml = false
 
-[WinEventLog://Microsoft-Windows-PowerShell/Operational]
+[WinEventLog://Application]
 disabled = 0
-index = powershell_logs
-source = WinEventLog
-sourcetype = WinEventLog:PowerShell
-renderXml = false
+index = windows_event_logs
+sourcetype = WinEventLog:Application
+
+[WinEventLog://Security]
+disabled = 0
+index = windows_event_logs
+sourcetype = WinEventLog:Security
+
+[WinEventLog://System]
+disabled = 0
+index = windows_event_logs
+sourcetype = WinEventLog:System
 ```
+
+> Redémarrage du service Splunk
 
 ```sh
 PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
 ```
 
-```sh
-index="powershell_logs" sourcetype="WinEventLog" source="WinEventLog:Microsoft-Windows-PowerShell/Operational"
-```
+> `Requêtes dans Search & Reporting`
 
-#### Simulate the attack and Visualize on Splunk Dashboard
+#### Simulation d'attaque et analyse
 
-- [Anti Malware Testfile](https://www.eicar.org/download-anti-malware-testfile/)
+> [Téléchargement du fichier test EICAR](https://www.eicar.org/download-anti-malware-testfile/)
 
 ```sh
 PS C:\Users\Administrator> Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:USERPROFILE\Downloads\eicar.com.txt"
 ```
 
-####Search & Reporting
+#### Requêtes d'investigation dans Splunk
+
+> `Recherche d'activité PowerShell générale`
 
 ```sh
-index=sysmon_logs sourcetype=XmlWinEventLog source="XmlWinEventLog:Sysmon" "*eicar*"
+index="powershell_logs" sourcetype="WinEventLog:PowerShell"
 ```
 
-#### Incident Response
+> `Recherche spécifique de l'attaque`
+
+```sh
+index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
+index="powershell_logs" sourcetype="WinEventLog:PowerShell" "*eicar*"
+```
+
+#### Réponse à incident
 
 `Start > Windows Defender Firewall > Outbound Rules > New Rules > Program > All programs > Block the connection > (Domain, Private, and Public) > Provide a Name for the "Block All Traffi"`
 
+> PowerShell
+
 ```sh
-PS C:\Users\Administrator> New-NetFirewallRule -DisplayName "Block All Traffic" -Direction Outbound -Action Block
+# Blocage complet du trafic sortant
+New-NetFirewallRule -DisplayName "Block All Traffic" -Direction Outbound -Action Block
+
+# Alternative : Blocage spécifique à PowerShell
+New-NetFirewallRule -DisplayName "Block PowerShell Internet Access" -Program "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Direction Outbound -Action Block
 ```

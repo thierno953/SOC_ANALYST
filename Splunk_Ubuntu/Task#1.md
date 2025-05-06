@@ -104,7 +104,7 @@ tail -f /var/log/fail2ban.log
 
 #### Accéder à Splunk Web : `http://<IP_SPLUNK_SERVER>:8000`
 
-#### Requêtes dans Search & Reporting :
+> `Requêtes dans Search & Reporting`
 
 ```sh
 index="fail2ban_logs"

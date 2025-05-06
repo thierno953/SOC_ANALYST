@@ -1,47 +1,54 @@
-# Task 1: Investigating RDP Brute-Force Attacks on Windows Login
+# Investigation des attaques de force brute RDP sur les connexions Windows
 
-> Installing Sysmon
-> Setting up Splunk
-> Simulate Attacks & Visualize
-> Incident Response
+#### Installation et configuration de Sysmon
 
-#### Installing Sysmon
+> Téléchargement des composants :
 
-> [Sysmon for Windows](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+> [Sysmon pour Windows](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-> [sysmon-config | A Sysmon configuration file](https://github.com/SwiftOnSecurity/sysmon-config)
+> [Configuration Sysmon recommandée](https://github.com/SwiftOnSecurity/sysmon-config)
+
+#### Commandes d'installation
 
 ```sh
-# Installer Sysmon avec la configuration SwiftOnSecurity
+# Installation avec configuration SwiftOnSecurity
 C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 
+# Vérification du service
 C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
 
-# Modifier la configuration si nécessaire
+# Mise à jour de configuration
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-export.xml
-
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
+> Visualisation des logs
+
 > `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
-#### Setting up Splunk
+#### Configuration de Splunk
 
-> `C:\Program Files > SplunkUniversalForwarder > etc > system > local > outputs.conf`
+> `C:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf`
 
 ```sh
 [tcpout]
 defaultGroup = default-autolb-group
 
 [tcpout:default-autolb-group]
-server = <IP_DE_L_INDEXEUR>:9997
+server = <IP_INDEXEUR>:9997
 
-[tcpout-server://<IP_DE_L_INDEXEUR>:9997]
+[tcpout-server://<IP_INDEXEUR>:9997]
 ```
 
 > `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+disabled = 0
+index = sysmon_logs
+sourcetype = XmlWinEventLog:Sysmon
+renderXml = false
+
 [WinEventLog://Application]
 disabled = 0
 index = windows_event_logs
@@ -56,13 +63,9 @@ sourcetype = WinEventLog:Security
 disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:System
-
-[WinEventLog://Microsoft-Windows-Sysmon/Operational]
-disabled = 0
-index = sysmon_logs
-sourcetype = XmlWinEventLog:Sysmon
-renderXml = false
 ```
+
+> Gestion du service Splunk
 
 ```sh
 cd "C:\Program Files\SplunkUniversalForwarder\bin"
@@ -71,7 +74,9 @@ cd "C:\Program Files\SplunkUniversalForwarder\bin"
 .\splunk.exe list forward-server
 ```
 
-#### Simulate the attack and Visualize on Splunk Dashboard
+#### Simulation d'attaque et visualisation
+
+> Simulation avec Hydra (machine attaquante Linux)
 
 ```sh
 # Sur la machine d'attaque (Linux)
@@ -79,19 +84,19 @@ apt install hydra -y
 hydra -l administrator -P password.txt <IP_VICTIME> rdp
 ```
 
-> `Search & Reporting`
+> `Requêtes dans Search & Reporting`
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" sourceIp="<IP_Attach_Machine>"
 ```
 
-#### Incident Response
+#### Réponse à incident
 
-> To block inbound connections on port 3389 (RDP) using Windows Defender Firewall
+> Blocage via Pare-feu Windows
 
 `Start > Windows Defender Firewall > Inbound Rules > New Rules > Ports > TCP (Specific local ports: 3389) > Block the connection > (Domain, Private, and Public) > Provide a Name for the "Block RDP Brute Force"`
 
-> PowerShell
+> Alternative en PowerShell
 
 `New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>`
