@@ -13,7 +13,7 @@
 > **Analyse**
 
 > **Récupération** 
-
+ 
 - Ce processus aide les organisations **à réagir efficacement à une violation de sécurité**, à en tirer des leçons, et à **renforcer leur défense** contre les menaces futures.
 
 #### Objectifs d'une enquête forensique
