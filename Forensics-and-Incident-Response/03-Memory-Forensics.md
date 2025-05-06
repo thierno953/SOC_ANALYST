@@ -32,9 +32,7 @@
 
 > Un **dump mémoire** (ou capture de la RAM) est un instantané de la mémoire capturé à des fins d’analyse. Il contient les données relatives à tous les processus en cours au moment de la capture.
 
-#### Acquisition de la mémoire avec FTK Imager
-
-- [https://archive.org/download/access-data-ftk-imager-4.7.1.](https://archive.org/download/access-data-ftk-imager-4.7.1)
+#### Acquisition de la mémoire avec FTK Imager [https://archive.org/download/access-data-ftk-imager-4.7.1.](https://archive.org/download/access-data-ftk-imager-4.7.1)
 
 #### Volatility
 
