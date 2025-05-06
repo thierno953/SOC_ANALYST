@@ -1,4 +1,4 @@
-# Task#3: File Integrity Monitoring for Sensitive files
+# Surveillance de l'intégrité des fichiers sensibles
 
 - Installer et configurer auditd pour la surveillance des fichiers sensibles
 

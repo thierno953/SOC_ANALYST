@@ -1,4 +1,4 @@
-#### Installation et configuration du Splunk Universal Forwarder sur Windows Server 2022
+# Installation et configuration du Splunk Universal Forwarder sur Windows Server 2022
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 

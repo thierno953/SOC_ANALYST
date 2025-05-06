@@ -1,4 +1,4 @@
-# Tâche 1 : Détection d'accès non autorisé par Fail2Ban
+# Détection d'accès non autorisé par Fail2Ban
 
 - Détection d'accès non autorisé via SSH sur Linux à l'aide de Fail2Ban, avec envoi des logs vers Splunk via Universal Forwarder.
 

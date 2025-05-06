@@ -1,4 +1,4 @@
-# Task #5: Monitoring User Account Activity
+# Surveillance de l'activité des comptes utilisateurs
 
 - Installer Sysmon for Linux
 
@@ -10,7 +10,7 @@
 
 - Réagir à l’incident
 
-#### Installer Sysmon for Linux
+#### Installateur Sysmon pour Linux
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 

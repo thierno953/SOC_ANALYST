@@ -1,4 +1,4 @@
-# Task #4: Detecting Abnormal Network Traffic
+# Détection du trafic réseau anormal
 
 - Installer et configurer Suricata IDS
 

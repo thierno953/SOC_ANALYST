@@ -1,4 +1,4 @@
-# Task #2: Monitoring and Investigating Suspicious Process Execution
+# Surveillance et enquête sur l'exécution de processus suspects
 
 - L’installation de Sysmon pour Linux avec une configuration XML avancée pour détecter plusieurs techniques MITRE ATT&CK.
 
