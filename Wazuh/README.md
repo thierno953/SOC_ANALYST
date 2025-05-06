@@ -46,19 +46,19 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 > **Composants**
 
-  - **Wazuh Server** → analyse, alertes, API
+- **Wazuh Server** → analyse, alertes, API
 
-  - **Wazuh Indexer** → basé sur Elasticsearch
+- **Wazuh Indexer** → basé sur Elasticsearch
 
-  - **Dashboard** → visualisation (Kibana-like)
+- **Dashboard** → visualisation (Kibana-like)
 
-  - **Agents** → collectent logs (Windows, Linux, macOS)
+- **Agents** → collectent logs (Windows, Linux, macOS)
 
 > **Modes déploiement**
 
-  - **Single-node** : simple, tout-en-un
+- **Single-node** : simple, tout-en-un
 
-  - **Multi-node** : scalabilité, HA, clusters
+- **Multi-node** : scalabilité, HA, clusters
 
 #### Flux de données
 
@@ -454,16 +454,16 @@ sudo wazuh-control info | grep -i "vulnerability"
 
 > Dans l'interface Wazuh : `Modules > agent01 > Vulnerabilities`
 
-- > **Lab #4:** Auditd
+> **Lab #4:** Auditd
 
-- Installation Auditd
+> Installation Auditd
 
 ```sh
 apt install auditd -y
 systemctl enable --now auditd
 ```
 
-- Configuration Auditd
+> Configuration Auditd
 
 ```sh
 cd /var/log/audit/ && tail -f audit.log
@@ -473,27 +473,27 @@ cd /var/log/audit/ && tail -f audit.log
 nano /etc/audit/audit.rules
 ```
 
-- Ajoutez ces règles dans /etc/audit/audit.rules
+> Ajoutez ces règles dans /etc/audit/audit.rules
 
 ```sh
 -a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
 -a exit,always -F euid=0 -F arch=b32 -S execve -k audit-wazuh-c
 ```
 
-- Si nécessaire, configurez : **Management > CDB lists > audit-keys**
+> Si nécessaire, configurez : **Management > CDB lists > audit-keys**
 
 ```sh
 auditctl -R /etc/audit/audit.rules
 netstat
 ```
 
-- Configuration Wazuh pour Auditd
+> Configuration Wazuh pour Auditd
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -508,17 +508,17 @@ nano /var/ossec/etc/ossec.conf
 systemctl restart auditd wazuh-agent
 ```
 
-- Dans l'interface Wazuh : **Modules > agent01 > Security events**
+> Dans l'interface Wazuh : **Modules > agent01 > Security events**
 
-- **Lab #5:** Detecting and Blocking SSH brute force attacks
+> **Lab #5:** Detecting and Blocking SSH brute force attacks
 
-- Configuration Manager pour SSH brute force
+> Configuration Manager pour SSH brute force
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -536,9 +536,9 @@ nano /var/ossec/etc/ossec.conf
 service wazuh-manager restart
 ```
 
-- Modifiez : **Management > Rules > Manage rules files > 0095-sshd_rules.xml**
+> Modifiez : **Management > Rules > Manage rules files > 0095-sshd_rules.xml**
 
-- Configuration Agent pour les réponses actives
+> Configuration Agent pour les réponses actives
 
 ```sh
 root@wazuh:/# cd /var/ossec/active-response/bin/
@@ -549,7 +549,7 @@ firewall-drop          ip-customblock  kaspersky.py  restart-wazuh  wazuh-slack
 root@wazuh:/var/ossec/active-response/bin#
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
 
 ![agent](/Wazuh/assets/03.png)
 
@@ -590,13 +590,13 @@ nano /var/ossec/etc/ossec.conf
 </ossec_config>
 ```
 
-- N'oubliez pas de remplacer YOUR_VIRUSTOTAL_API_KEY par votre clé API VirusTotal.
+> N'oubliez pas de remplacer YOUR_VIRUSTOTAL_API_KEY par votre clé API VirusTotal.
 
 ```sh
 service wazuh-manager restart
 ```
 
-- Dans l'interface Wazuh : `Modules > agent01 > Security events`
+> Dans l'interface Wazuh : `Modules > agent01 > Security events`
 
 #### Pour tester l'attaque par force brute SSH
 
@@ -604,15 +604,15 @@ service wazuh-manager restart
 hydra -t 4 -l root pass.txt <IP_VICTIME> ssh
 ```
 
-- **Lab #6:** Detecting Malicious files using virustotal
+> **Lab #6:** Detecting Malicious files using virustotal
 
-- Configuration FIM
+> Configuration FIM
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-- Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 # <!-- File integrity monitoring -->
@@ -640,7 +640,7 @@ nano /var/ossec/etc/ossec.conf
 systemctl restart wazuh-agent
 ```
 
-- Modifiez : `Management > Rules > Manage rules files > Edit local_rules.xml`
+> Modifiez : `Management > Rules > Manage rules files > Edit local_rules.xml`
 
 ```sh
 <!-- Local rules -->
@@ -675,10 +675,10 @@ systemctl restart wazuh-agent
 </group>
 ```
 
-- Téléchargez un fichier de test [EICAR](https://www.eicar.org/)
+> Téléchargez un fichier de test [EICAR](https://www.eicar.org/)
 
 ```sh
 root@agent:~# curl -Lo /root/eicar.com https://secure.eicar.org/eicar.com && sudo ls -lah /root/eicar.com
 ```
 
-- Vérifiez les logs dans l'interface Wazuh : `Modules > Security events`
+> Vérifiez les logs dans l'interface Wazuh : `Modules > Security events`
