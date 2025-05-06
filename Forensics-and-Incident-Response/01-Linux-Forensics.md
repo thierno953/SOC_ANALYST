@@ -1,16 +1,16 @@
-# Linux Forensics 
+# Linux Forensics
 
-- Forensics Linux est le processus d’analyse d’un système basé sur Linux afin de détecter, enquêter et répondre à des incidents de sécurité.
+> Forensics Linux est le processus d’analyse d’un système basé sur Linux afin de détecter, enquêter et répondre à des incidents de sécurité.
 
 #### Objectifs
 
-- **Collecte de preuves**
+> **Collecte de preuves**
 
-- **Détection et réponse aux incidents**
+> **Détection et réponse aux incidents**
 
-- **Analyse approfondie**
+> **Analyse approfondie**
 
-- **Documentation et rapport**
+> **Documentation et rapport**
 
 #### Types de preuves
 
