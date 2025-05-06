@@ -191,7 +191,7 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 
 > Voir analyse VT dans l’alerte
 
-### Install Wazuh avec Docker
+### Installation Wazuh avec Docker
 
 > [Configuration système de base](https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html)
 
@@ -236,7 +236,7 @@ sudo ufw enable
 sudo ufw allow 9200/tcp
 ```
 
-#### INSTALLATION AGENT
+#### Installation AGENT
 
 > Script d'installation de l'agent linux
 
@@ -266,7 +266,7 @@ apt update && apt install -y nano
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Modifiez ceci dans le fichier de configuration de Wazuh Manager
+> Modification ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -289,7 +289,7 @@ service wazuh-manager restart
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 <syscheck>
@@ -364,7 +364,7 @@ outputs:
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -402,7 +402,7 @@ root@attack:~# nmap -p 22 --script ssh-brute <IP_VICTIME>
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <vulnerability-detection>
@@ -440,13 +440,13 @@ service wazuh-manager restart
 service wazuh-manager status
 ```
 
-> Pour vérifier que ça fonctionne Sur le Manager
+> Pour vérification que ça fonctionne Sur le Manager
 
 ```sh
 tail -f /var/ossec/logs/alerts/alerts.log | grep "vulnerability"
 ```
 
-> Pour vérifier que ça fonctionne Sur l'agent (Linux)
+> Pour vérification que ça fonctionne Sur l'agent (Linux)
 
 ```sh
 sudo wazuh-control info | grep -i "vulnerability"
@@ -473,7 +473,7 @@ cd /var/log/audit/ && tail -f audit.log
 nano /etc/audit/audit.rules
 ```
 
-> Ajoutez ces règles dans /etc/audit/audit.rules
+> Ajout ces règles dans /etc/audit/audit.rules
 
 ```sh
 -a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
@@ -493,7 +493,7 @@ netstat
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -518,7 +518,7 @@ systemctl restart auditd wazuh-agent
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Manager
+> Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -549,7 +549,7 @@ firewall-drop          ip-customblock  kaspersky.py  restart-wazuh  wazuh-slack
 root@wazuh:/var/ossec/active-response/bin#
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ![agent](/Wazuh/assets/03.png)
 
@@ -612,7 +612,7 @@ hydra -t 4 -l root pass.txt <IP_VICTIME> ssh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajoutez ceci dans le fichier de configuration de Wazuh Agent
+> Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 # <!-- File integrity monitoring -->
@@ -640,7 +640,7 @@ nano /var/ossec/etc/ossec.conf
 systemctl restart wazuh-agent
 ```
 
-> Modifiez : `Management > Rules > Manage rules files > Edit local_rules.xml`
+> Modification : `Management > Rules > Manage rules files > Edit local_rules.xml`
 
 ```sh
 <!-- Local rules -->
@@ -675,10 +675,10 @@ systemctl restart wazuh-agent
 </group>
 ```
 
-> Téléchargez un fichier de test [EICAR](https://www.eicar.org/)
+> Téléchargement un fichier de test [EICAR](https://www.eicar.org/)
 
 ```sh
 root@agent:~# curl -Lo /root/eicar.com https://secure.eicar.org/eicar.com && sudo ls -lah /root/eicar.com
 ```
 
-> Vérifiez les logs dans l'interface Wazuh : `Modules > Security events`
+> Vérification les logs dans l'interface Wazuh : `Modules > Security events`
