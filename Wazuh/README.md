@@ -2,9 +2,9 @@
 
 - **Wazuh** = plateforme open source XDR + SIEM
 
-- Surveillance unifiée des endpoints, cloud, conteneurs
+> Surveillance unifiée des endpoints, cloud, conteneurs
 
-- Fonctionnalités : analyse logs, détection d'intrusions, conformité
+> Fonctionnalités : analyse logs, détection d'intrusions, conformité
 
 #### HIDS, OSSEC, Wazuh
 
