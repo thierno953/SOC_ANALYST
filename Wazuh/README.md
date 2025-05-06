@@ -17,11 +17,11 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 #### HIDS (Host-based Intrusion Detection System)
 
-- Détection d'intrusion sur hôtes (pas réseau)
+> Détection d'intrusion sur hôtes (pas réseau)
 
-- Analyse fichiers, processus, logs
+> Analyse fichiers, processus, logs
 
-- Déploiement agent sur chaque machine
+> Déploiement agent sur chaque machine
 
 #### Wazuh vs OSSEC
 
@@ -36,11 +36,11 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 #### Wazuh ajoute
 
-- Détection vulnérabilités softs
+> Détection vulnérabilités softs
 
-- Conformité (PCI-DSS, GDPR, etc.)
+> Conformité (PCI-DSS, GDPR, etc.)
 
-- Audit cloud : AWS, Azure, GCP
+> Audit cloud : AWS, Azure, GCP
 
 #### Architecture Wazuh
 
