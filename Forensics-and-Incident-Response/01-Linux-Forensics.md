@@ -16,21 +16,21 @@
 
 - **Collecte de données en direct** :
 
-  - EDR (niveau entreprise)
+  > EDR (niveau entreprise)
 
-  - Processus actifs : `ps, top, htop`
+  > Processus actifs : `ps, top, htop`
 
-  - Réseau : `netstat, lsof -i`
+  > Réseau : `netstat, lsof -i`
 
-  - Pile système
+  > Pile système
 
 - **Capture de mémoire vive** :
 
-  - `dd`, capture RAM, **LiME** (Linux Memory Extractor)
+  > `dd`, capture RAM, **LiME** (Linux Memory Extractor)
 
 - **Image disque** :
 
-  - `dd`
+  > `dd`
 
 - **Analyse du système de fichiers** :
 
