@@ -37,8 +37,12 @@ root@elastic:~# sudo nano /etc/elasticsearch/elasticsearch.yml
 ```
 
 ```sh
+#network.host: ["192.168.1.10", "127.0.0.1"]
 network.host: 0.0.0.0
 http.port: 9200
+
+xpack.security.enabled: true
+xpack.security.http.ssl.enabled: true
 ```
 
 ```sh
@@ -107,7 +111,7 @@ New value: 3-J61NXIFoZMJnbF+EAZ
 
 ```sh
 root@elastic:/usr/share/kibana/bin# sudo /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
-
+ 
 # http://<IP>:5601/
 
 Password for the [elastic] user successfully reset.
@@ -118,7 +122,7 @@ New value: ojHdKyVvsaSMkxo8GQSw
 root@elastic:/usr/share/kibana/bin# cd /usr/share/elasticsearch/bin/
 root@elastic:/usr/share/elasticsearch/bin# ./elasticsearch-create-enrollment-token --scope kibana
 root@elastic:/usr/share/elasticsearch/bin# cd /usr/share/kibana/bin/
-root@elastic:/usr/share/kibana/bin# ./kibana-verification-code
+root@elastic:/usr/share/kibana/bin# ./kibana-verification-code 
 ```
 
 #### Lab Set up: Fleet Server Setup
@@ -133,6 +137,7 @@ root@fleet-agent:~# sudo ufw reload
 `Management > Fleet > Add Fleet Server > Generate Fleet Server policy`
 
 ```sh
-Name: My-fleet-server
-URL: https://<IP_FLEET_SERVER>:8220
+sudo ./elastic-agent install \
+  --url=https://<IP_FLEET_SERVER>:8220 \
+  --enrollment-token=<token>
 ```
