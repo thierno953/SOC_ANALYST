@@ -1,39 +1,96 @@
 # Investigating RDP Brute-Force Attacks on Windows Login
 
-#### Installing Sysmon
+#### Objectif
 
-- [Sysmon for Windows](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
-- [sysmon-config | A Sysmon configuration file](https://github.com/SwiftOnSecurity/sysmon-config)
+- Détecter une attaque par force brute via RDP sur un hôte Windows.
 
-```sh
-# Installer Sysmon avec la configuration SwiftOnSecurity
-cd C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
+- Utiliser Sysmon pour journaliser les connexions.
 
-cd C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
+- Utiliser ELK pour visualiser les événements.
 
-# Modifier la configuration si nécessaire
-PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-export.xml
+#### Installation de Sysmon
 
-PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-export.xml
-```
+- Télécharger Sysmon et le fichier de configuration :
 
-`Start > Event Viewer > Application and Service Logs > Microsoft > Windows > Sysmon > Operational`
+  > [Sysmon (Microsoft)](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-#### Setting up ELK
+  > [SwiftOnSecurity Sysmon Config](https://github.com/SwiftOnSecurity/sysmon-config)
 
-`Management > Integrations (search Windows)`
+#### Emplacement recommandé : `C:\Sysmon\`
 
-#### Simulate the attack and Visualize on ELK Dashboard
+- Commandes PowerShell
 
 ```sh
-root@attack-ubuntu:~# apt install hydra -y
-root@attack-ubuntu:~# hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
+# Se placer dans le dossier Sysmon
+cd C:\Sysmon\
+
+# Installer Sysmon avec la configuration
+.\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
+
+# Vérifier le service
+Get-Service Sysmon*
+
+# Mettre à jour la configuration
+.\Sysmon64.exe -c .\sysmonconfig-export.xml
+
+# Relancer avec une configuration mise à jour
+.\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
-- `Analystics > Discover`
+#### Fichier de log
+
+- Chemin : `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
+
+#### Intégrer à ELK (Fleet/Elastic Agent)
+
+- Dans l’interface Kibana (ELK) :
+
+- Aller dans : `Management > Integrations > Windows`
+
+- Ajouter l’intégration sur l’hôte Windows.
+
+#### Simulation d’attaque RDP
+
+- Machine attaquante (Ubuntu)
 
 ```sh
-winlog.channel:
-event.code:3 and source.ip:"<IP_ADDRESS>"
-event.code:3 and source.ip:"<IP_ADDRESS>" and rule.name:"RDP"
+# Installer hydra
+apt install hydra -y
+
+# Lancer une attaque brute-force RDP
+hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
 ```
+
+#### Visualisation dans Kibana (ELK)
+
+- Interface : `Analytics > Discover`
+  > Filtres à utiliser
+
+```sh
+winlog.channel:"Microsoft-Windows-Security-Auditing"
+event.code:4625 AND source.ip:"<IP_ATTACKER>"
+```
+
+> Event ID `4625` : Échec de tentative de connexion
+
+- **Exemple de requête Lucene**
+
+```sh
+event.code:4625 AND winlog.event_data.LogonType:10 AND source.ip:"<IP_ATTACKER>"
+```
+
+> `LogonType:10` correspond aux connexions RDP.
+
+#### Résolution / Réponse à l'incident
+
+- Vérifier les connexions répétées
+
+- Bloquer l’IP de l’attaquant
+
+- Activer la limitation des connexions RDP
+
+- Configurer une alerte dans Kibana :
+
+  - `Stack Management > Rules > Create Rule`
+
+  - Condition : `event.code:4625 AND count > 10 from same IP`

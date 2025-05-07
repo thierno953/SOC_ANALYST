@@ -1,25 +1,64 @@
 # Monitoring Windows Registry Changes
 
-- Verify ELK and Fleet Agent
-- Simulate the attack using Powershell and visualize the alert
-- Incident Response
+#### Objectif
 
-#### Verify ELK
+- Détecter la création ou la modification de clés dans la base de registre Windows.
 
-`Registry Editor > Computer`
+- Utiliser Sysmon et ELK pour surveiller les manipulations suspectes.
 
-`Management > Fleet`
+- Réagir à une tentative de persistance typique via la clé
 
-`Management > Integrations > integration policies`
+  `HKCU:\Software\Microsoft\Windows\CurrentVersion\Run`.
 
-#### Simulate the attack and Visualize on ELK Dashboard
+#### Vérifier l’intégration dans ELK
+
+> Dans Kibana
+
+- `Management > Fleet > Agents` : vérifier que l'agent Fleet est en ligne sur la machine cible (Windows).
+
+- `Management > Integrations > integration policies` :
+
+  - **Windows**
+
+  - **Sysmon Operational** doit être **actif**.
+
+  - S’assurer que l’événement **Sysmon Event ID 13** est collecté.
+
+#### Simulation d'une attaque : persistance via la base de registre
+
+> Commande PowerShell
 
 ```sh
-PS C:\Users\Administrator> New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest2" -Value "C:\malwaretest2.exe"
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest2" -Value "C:\malwaretest2.exe"
 ```
 
-- `Analystics > Discover`
+> Cette commande ajoute une entrée de persistance dans la clé `Run`, typique des malwares
+
+#### Visualisation dans Kibana
+
+> Interface : `Analystics > Discover`
 
 ```sh
-event.code: 13
+event.code:13
+```
+
+> **Sysmon Event ID 13** : Activité sur une clé de registre (création/modification).
+
+- Filtres additionnels :
+
+```sh
+winlog.event_data.TargetObject : "*CurrentVersion\\Run*"
+winlog.event_data.Details : "*malwaretest2.exe*"
+```
+
+#### Incident Response
+
+- Étapes de réponse :
+
+  - **Vérifier** l’origine de l’ajout dans la base de registre.
+
+  - **Supprimer** la clé suspecte si elle est malveillante
+
+```sh
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest2"
 ```
