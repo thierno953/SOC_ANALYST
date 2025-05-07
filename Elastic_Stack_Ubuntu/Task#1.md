@@ -1,9 +1,9 @@
 # Investigation des tentatives d'accès SSH non autorisées avec ELK SIEM
 
-- Verify the ELK and Agent
-- Simulate the Attack and visualize the events
-- Create Elastic Security rules, detect and Investigate
-- Incident Response
+- Vérifiez l'ELK et l'agent
+- Simulez l'attaque et visualisez les événements
+- Créez des règles de sécurité élastiques, détectez et enquêtez
+- Réponse aux incidents
 
 #### Vérification du bon fonctionnement d'ELK et de l'agent Fleet
 
