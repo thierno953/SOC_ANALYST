@@ -1,50 +1,108 @@
-# Task#1 Investigating Unauthorized SSH Access Attempts Using ELK SIEM
+# Investigation des tentatives d'accès SSH non autorisées avec ELK SIEM
 
 - Verify the ELK and Agent
 - Simulate the Attack and visualize the events
 - Create Elastic Security rules, detect and Investigate
 - Incident Response
 
-#### Verify the ELK and Fleet Agent
+#### Vérification du bon fonctionnement d'ELK et de l'agent Fleet
 
 `Management > Fleet > Fleet-Agent > View more agent metrics`
 
-#### Simulate the attack and Visualize the events
+- Accède à Kibana :
+
+  > `Management > Fleet > Fleet Agent > View more agent metrics`
+
+  > Vérifie que l’agent est online et collecte bien les logs système.
+
+#### Simulation d’une attaque brute-force SSH et visualisation des logs
+
+> Depuis la machine d’attaque (par exemple attack-ubuntu)
 
 ```sh
-root@attack-ubuntu:~# sudo apt install hydra
-root@attack-ubuntu:~# echo -e "password\n123456\nadmin\nroot\nthierno" > password.txt
-root@attack-ubuntu:~# hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
+# Installer Hydra
+sudo apt install hydra -y
+
+# Créer une liste de mots de passe
+echo -e "password\n123456\nadmin\nroot\nthierno" > password.txt
+
+# Lancer une attaque brute-force SSH contre l’agent Fleet
+hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
+```
+
+#### Sur la machine Fleet Agent
+
+```sh
+# Observer les logs d’authentification en temps réel
+tail -f /var/log/auth.log
+```
+
+> Répéter avec un autre utilisateur
+
+```sh
+hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
 ```
 
 ```sh
-root@fleet-agent:~# tail -f /var/log/auth.log
+tail -f /var/log/auth.log
 ```
 
-```sh
-root@attack-ubuntu:~# hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
-```
+#### Visualiser les événements dans Kibana Discover
 
-```sh
-root@fleet-agent:~# tail -f /var/log/auth.log
-```
+- Aller dans:
 
-`Analystics > Discover`
+  `Analytics > Discover`
+
+- Filtrer avec KQL
 
 ```sh
 event.outcome: "failure" and process.name: "sshd"
-event.outcome: "failure" and process.name: "sshd" and user.name: thierno
+
+# ou plus précisément
+event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 ```
 
-#### Create Elastic Security rules, detect and Investigate
+#### Création de règles de sécurité Elastic SIEM
 
-`Security > Rules > Detection rules (SIEM) > Add Elastic rules > search > ssh brute and active Potential Successful, External, Internal`
+- Aller dans :
 
-#### Attack Machine
+  > `Security > Rules > Detection Rules > Create new rule`
+
+- Ajouter des règles existantes Elastic :
+
+  > Cliquer sur Add Elastic rules
+
+  > Rechercher ssh brute
+
+  - Activer les règles pertinentes :
+
+    > Potential Successful SSH Login
+
+    > External SSH Brute Force
+
+    > Internal SSH Brute Force
+
+#### Génération et gestion d’une alerte de sécurité
+
+> Déclencher à nouveau l'attaque pour générer une alerte
 
 ```sh
-root@attack-ubuntu:~# hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
-root@attack-ubuntu:~# hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
+hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
+hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
 ```
 
-`Security > Alerts > Take action > add to new case [Name: SSH brute force attempt; Description: brute force and Create case]`
+- Aller dans :
+
+  > `Security > Alerts`
+
+- Créer un cas d’investigation :
+
+  > Cliquer sur l’alerte
+
+  > `Take action > Add to new case`
+
+  > Nom du cas : `SSH brute force attempt`
+
+  > Description : `Tentative d'attaque par force brute SSH`
+
+  > Valider avec `Create case`
