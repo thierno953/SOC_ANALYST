@@ -1,4 +1,4 @@
-# Detecting Suspicious Activities Using SysmonForLinux
+# Détection d'activités suspectes à l'aide de SysmonForLinux
 
 #### Installation de SysmonForLinux
 
