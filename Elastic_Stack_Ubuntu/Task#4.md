@@ -38,7 +38,7 @@ rule-files:
 
 vars:
   address-groups:
-    HOME_NET: "[IP_ADDRESS]"   # Adresse IP de l'hôte à surveiller
+    HOME_NET: "[IP_FLEET_AGENT]"   # Adresse IP de l'hôte à surveiller
     EXTERNAL_NET: "any"
 
 af-packet:

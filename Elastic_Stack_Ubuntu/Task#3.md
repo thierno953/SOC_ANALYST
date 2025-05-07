@@ -78,7 +78,12 @@ adduser linuxuser
 passwd linuxuser
 
 # Modifier manuellement le fichier (simulation attaque)
-sudo echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
+echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
+```
+#### Visualiser les logs
+
+```sh
+tail -f /var/log/audit/audit.log
 ausearch -k passwd_changes
 ```
 
@@ -86,7 +91,7 @@ ausearch -k passwd_changes
 
 - Visualiser dans Kibana
 
-  > `Requêtes Discover`
+  > `Analytics > Discover`
 
 ```sh
 auditd.log.key:"passwd_changes"
