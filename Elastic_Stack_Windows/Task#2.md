@@ -1,4 +1,4 @@
-# Investigating PowerShell Abuse on Windows Machines
+# Enquête sur les abus de PowerShell sur les machines Windows
 
 #### Objectif
 

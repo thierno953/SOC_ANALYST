@@ -1,4 +1,4 @@
-# Monitoring Windows Registry Changes
+# Surveillance des modifications du registre Windows
 
 #### Objectif
 
