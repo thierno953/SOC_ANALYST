@@ -1,99 +1,105 @@
-# Task#3: Investigating File Integrity using Auditd
+# Investigating File Integrity using Auditd
 
-- Objective
-- Install Auditd
-- Prepare Elk for detection
-- Simulate the attack and visualize the events
-- Incident Response
+#### Objectif
 
-#### Install Auditd
+Surveiller l’intégrité des fichiers critiques (ex: `/etc/passwd`, `/etc/shadow`) pour détecter des modifications suspectes sur un hôte Linux via **Auditd** et l'intégrer à **ELK SIEM** pour l'analyse centralisée.
+
+#### Installation d’Auditd
 
 ```sh
-root@fleet-agent:~# apt update
-root@fleet-agent:~# sudo apt install auditd audispd-plugins -y
-root@fleet-agent:~# systemctl enable auditd
-root@fleet-agent:~# systemctl start auditd
-root@fleet-agent:~# systemctl status auditd
+apt update
+sudo apt install auditd audispd-plugins -y
+systemctl enable auditd
+systemctl start auditd
+systemctl status auditd
 ```
 
-```sh
-root@fleet-agent:~# nano /etc/audit/rules.d/audit.rules
-```
+> Vérification des logs
 
 ```sh
-## First rule - delete all
+tail -f /var/log/audit/audit.log
+```
+
+#### Configuration d’Auditd
+
+> Modifier les règles d’audi
+
+```sh
+nano /etc/audit/rules.d/audit.rules
+```
+
+> Contenu
+
+```sh
+## Réinitialiser les règles
 -D
 
-## Increase the buffers to survive stress events.
-## Make this bigger for busy systems
+## Buffers pour systèmes actifs
 -b 8192
 
-## This determine how long to wait in burst of events
+## Délai d’attente en rafale
 --backlog_wait_time 60000
 
-## Set failure mode to syslog
--f 1
-```
-
-```sh
-root@fleet-agent:~# tail -f /var/log/audit/audit.log
-```
-
-#### Prepare ELK for detection
-
-`Management > Integrations > Add Auditd Logs`
-
-```sh
-(Paths: /var/log/audit/audit.log* > and select existing hosts and save continue)
-(Auditd Logs --> assets [Logs Auditd] Audit Events)
-```
-
-#### Simulate the attack and visualize the events
-
-```sh
-root@fleet-agent:~# adduser linuxuser
-root@fleet-agent:~# passwd linuxuser
-root@fleet-agent:~# less /etc/passwd
-root@fleet-agent:~# nano /etc/audit/rules.d/audit.rules
-```
-
-```sh
-## First rule - delete all
--D
-
-## Increase the buffers to survive stress events.
-## Make this bigger for busy systems
--b 8192
-
-## This determine how long to wait in burst of events
---backlog_wait_time 60000
-
-## Set failure mode to syslog
+## En cas d’échec, loguer dans syslog
 -f 1
 
+## Surveillance des fichiers sensibles
 -w /etc/passwd -p wa -k passwd_changes
 -w /etc/shadow -p wa -k shadow_changes
 ```
 
+> Redémarrer le service
+
 ```sh
-root@fleet-agent:~# systemctl restart auditd
-root@fleet-agent:~# sudo echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
-root@fleet-agent:~# tail -f /var/log/audit/audit.log
-root@fleet-agent:~# ausearch -k passwd_changes
+systemctl restart auditd
 ```
 
-- `Analystics > Discover`
+#### Préparer ELK pour la détection
+
+> Aller dans Kibana → `Management > Integrations`
+
+> Rechercher Auditd Logs → Ajouter l’intégration
+
+> Chemins : `/var/log/audit/audit.log*`
+
+> Associer l’agent existant → Continuer → Valider
+
+- Dashboards disponibles :
+
+  > `[Logs Auditd] Audit Events`
+
+#### Simuler l'attaque et visualiser les événements
+
+> Simuler un changement dans /etc/passwd
+
+```sh
+# Ajouter un utilisateur
+adduser linuxuser
+passwd linuxuser
+
+# Modifier manuellement le fichier (simulation attaque)
+sudo echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
+ausearch -k passwd_changes
+```
+
+> Vérifier localement avec `ausearch`
+
+- Visualiser dans Kibana
+
+  > `Requêtes Discover`
 
 ```sh
 auditd.log.key:"passwd_changes"
-
-"/etc/passwd"
+message: "/etc/passwd"
 ```
 
-#### Incident Response
+#### Réponse à l'incident
+
+> Supprimer la ligne manuelle ajoutée (ou commenter)
 
 ```sh
-root@fleet-agent:~# nano /etc/passwd 
+nano /etc/passwd
 
-#testuser:x:1001:1001::/home/testuser:/bin/bash
+# Supprimer ou commenter :
+# testuser:x:1001:1001::/home/testuser:/bin/bash
 ```

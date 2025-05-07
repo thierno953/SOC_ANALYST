@@ -1,4 +1,4 @@
-# Stack ELK (Elasticsearch, Logstash, Kibana) avec configuration de sécurité et du Fleet Server
+# ELK Stack (Elasticsearch, Logstash, Kibana) avec configuration de sécurité et du Fleet Server
 
 > Mise à jour et installation de Java
 
@@ -11,7 +11,7 @@ sudo apt install openjdk-11-jdk -y
 
 ```sh
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-sudo sh -c 'echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list'
+echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
 sudo apt update
 ```
 

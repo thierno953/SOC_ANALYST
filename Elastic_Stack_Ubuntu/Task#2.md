@@ -1,80 +1,91 @@
-# Task#2: Detecting Suspicious activities using SysmonForLinux
+# Detecting Suspicious Activities Using SysmonForLinux
 
-- Install SysmonForLinux
-- Prepare ELK for detection
-- Simulate the Attack and visualize the events
-- Incident Response
+#### Installation de SysmonForLinux
 
-#### Install Sysmon for Linux
-
-- [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+- Lien officiel [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
 ```sh
-# 1. Register Microsoft key and feed
-root@fleet-agent:~# wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-root@fleet-agent:~# sudo dpkg -i packages-microsoft-prod.deb
+# Enregistrer la clé et le dépôt Microsoft
+wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
 
-# 2. Install SysmonForLinux
-root@fleet-agent:~# sudo apt-get update
-root@fleet-agent:~# sudo apt-get install sysmonforlinux
+# Mettre à jour et installer Sysmon
+sudo apt-get update
+sudo apt-get install sysmonforlinux
 ```
 
+> Créer un fichier de configuration personnalisé
+
 ```sh
-root@fleet-agent:~# nano sysmon-config.xml
+nano sysmon-config.xml
 ```
 
-- [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+- Exemple de configuration [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
 
 ```sh
-root@fleet-agent:~# sysmon -i sysmon-config.xml
+# Installer la configuration
+sysmon -i sysmon-config.xml
+
+# Redémarrer le service
+systemctl restart sysmon
+systemctl status sysmon
+
+# Vérifier les logs
+tail -f /var/log/syslog | grep sysmon
 ```
 
-```sh
-root@fleet-agent:~# systemctl restart sysmon
-root@fleet-agent:~# systemctl status sysmon
+#### Préparation d’ELK pour la détection
 
-root@fleet-agent:~# tail -f /var/log/syslog | grep sysmon
+- **Kibana** → `Management > Integrations`
+
+- Rechercher : `Sysmon for Linux`
+
+- Ajouter l’intégration et configurer :
+
+  > Paths : `/var/log/syslog*`
+
+  > Associer à une **Agent Policy**
+
+- Valider → Dashboards disponibles : `[Sysmon] Sysmon for Linux Logs Overview`
+
+> Kibana Discover (recherche rapide) :
+
+```sh
+process.name: sysmon
 ```
 
-#### Prepare ELK for detection
+#### Simulation d’une activité malveillante
 
-`Management > Integrations (search Sysmon for linux and added)`
+> Simuler une configuration malicieuse [MalwareBazaar](https://bazaar.abuse.ch/)
 
 ```sh
-Paths: /var/log/syslog*
-Existing hosts > select: Agent policies > Save and continue
-Assets; Dashboards: [Sysmon] Sysmon for Linux Logs Overview
+touch /etc/apt/apt.conf.d/99-suspicious-config
+sudo bash -c "echo 'malicious config' > /etc/apt/apt.conf.d/99-malicious-config"
+
+# Télécharger une URL connue pour héberger du malware (simulé, pas d’exécution réelle ici)
+curl -X GET "https://bazaar.abuse.ch/" -v
 ```
 
-- `Analystics > Discover`
+- `Visualiser les événements dans Kibana`
 
 ```sh
-process.name:sysmon
+process.name: sysmon and message: "99"
+process.name: sysmon and message: "bazaar.abuse.ch"
 ```
 
-#### Simulate the attack and visualize the events
+#### Réponse à l’incident
 
-- [MalwareBazaar](https://bazaar.abuse.ch/)
+> Identifier et supprimer les fichiers suspects
 
 ```sh
-root@fleet-agent:~# touch /etc/apt/apt.conf.d/99-suspicious-config
-root@fleet-agent:~# sudo bash -c "echo 'malicious config' > /etc/apt/apt.conf.d/99-malicious-config"
-root@fleet-agent:~# curl -X GET "https://bazaar.abuse.ch/" -v
+find / -name "99-malicious-config" -type f
+rm -rf /etc/apt/apt.conf.d/99-suspicious-config
+rm -rf /etc/apt/apt.conf.d/99-malicious-config
+find / -name "99-malicious-config" -type f
 ```
 
-- `Analystics > Discover`
+> Vérifier les connexions réseau actives
 
 ```sh
-process.name:sysmon and message:"99"
-process.name:sysmon and message:"bazaar.abuse.ch"
-```
-
-#### Incident Response
-
-```sh
-root@fleet-agent:~# find / -name "99-malicious-config" -type f
-root@fleet-agent:~# rm -rf /etc/apt/apt.conf.d/99-suspicious-config
-root@fleet-agent:~# rm -rf /etc/apt/apt.conf.d/99-malicious-config
-root@fleet-agent:~# find / -name "99-malicious-config" -type f
-root@fleet-agent:~# netstat -ltnp
+netstat -ltnp
 ```
