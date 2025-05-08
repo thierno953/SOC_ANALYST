@@ -34,9 +34,6 @@ sudo nano /etc/elasticsearch/elasticsearch.yml
 ```sh
 network.host: 0.0.0.0
 http.port: 9200
-
-xpack.security.enabled: true
-xpack.security.http.ssl.enabled: true
 ```
 
 ```sh
