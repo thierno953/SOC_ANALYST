@@ -6,6 +6,8 @@ Surveiller l’intégrité des fichiers critiques (ex: `/etc/passwd`, `/etc/shad
 
 #### Installation d’Auditd
 
+- **Auditd** est un service de journalisation de sécurité intégré à Linux, utilisé pour **surveiller l'intégrité des fichiers critiques et détecter toute action suspecte** sur un hôte. Dans le cadre de notre projet, il est couplé avec **ELK SIEM** pour visualiser et analyser les événements en temps réel, renforçant ainsi notre capacité à réagir rapidement en cas de tentative de compromission.
+
 ```sh
 apt update
 sudo apt install auditd audispd-plugins -y
@@ -80,6 +82,7 @@ passwd linuxuser
 # Modifier manuellement le fichier (simulation attaque)
 echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
 ```
+
 #### Visualiser les logs
 
 ```sh

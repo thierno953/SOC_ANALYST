@@ -6,7 +6,11 @@ Détecter des activités réseau malveillantes ou suspectes en utilisant **Suric
 
 #### Installer et configurer Suricata
 
-- [Proofpoint Emerging Threats Rules](https://rules.emergingthreats.net/)
+- **Suricata** est un moteur de détection d'intrusion réseau (IDS) et de prévention d'intrusion (IPS) open source. Il analyse le trafic réseau en temps réel et permet d’identifier des **comportements malveillants, des attaques, ou des anomalies** grâce à des règles de détection (comme celles d’**Emerging Threats**).
+
+- Dans ce projet, Suricata est utilisé pour **surveiller les communications réseau de l’hôte analysé** et remonter les alertes de sécurité dans **ELK SIEM**. Cela permet aux analystes de **détecter des scans de ports, des connexions suspectes, ou des transferts de fichiers anormaux**, et de prendre des mesures de remédiation rapides.
+
+- [Pro of point Emerging Threats Rules](https://rules.emergingthreats.net/)
 
 ```sh
 sudo apt-get update
