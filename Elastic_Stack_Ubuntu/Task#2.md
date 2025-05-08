@@ -2,7 +2,19 @@
 
 #### Installation de SysmonForLinux
 
-- Lien officiel [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+- **Sysmon** (System Monitor) est un utilitaire développé par Microsoft dans le cadre de la suite **Sysinternals**, conçu pour fournir une **surveillance approfondie du système**. Il permet de **collecter des événements système détaillés** comme la création de processus, les connexions réseau, les modifications de fichiers, les chargements de DLL, etc. Initialement conçu pour Windows, une version dédiée à Linux nommée **Sysmon for Linux** est désormais [disponible](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon).
+
+- Son intérêt majeur réside dans sa capacité à fournir une visibilité granulaire sur les activités du système, ce qui est crucial pour :
+
+  > la détection d’activités suspectes ou malveillantes,
+
+  > le répondant à incident,
+
+  > la chasse aux menaces (threat hunting),
+
+  > l’investigation post-incident, et la corrélation avec des outils de sécurité comme l’ELK Stack (Elasticsearch, Logstash, Kibana).
+
+- En intégrant Sysmon for Linux avec une plateforme comme Kibana, les analystes SOC et les professionnels de la cybersécurité peuvent surveiller les comportements anormaux, déclencher des alertes, et établir des dashboards de sécurité centralisés et dynamiques.
 
 ```sh
 # Enregistrer la clé et le dépôt Microsoft

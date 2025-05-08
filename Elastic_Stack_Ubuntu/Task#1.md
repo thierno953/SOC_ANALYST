@@ -70,15 +70,15 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 
   > Cliquer sur Add Elastic rules
 
-  > Rechercher ssh brute
+  > Rechercher ssh brute, installer et activer
 
   - Activer les règles pertinentes :
 
-    > Potential Successful SSH Login
+    > Potential Successful SSH Brute Force Attack
 
-    > External SSH Brute Force
+    > Potential External Linux SSH Brute Force
 
-    > Internal SSH Brute Force
+    > Potential Internal Linux SSH Brute Force
 
 #### Génération et gestion d’une alerte de sécurité
 
