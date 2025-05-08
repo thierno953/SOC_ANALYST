@@ -7,13 +7,11 @@
 
 #### Vérification du bon fonctionnement d'ELK et de l'agent Fleet
 
-`Management > Fleet > Fleet-Agent > View more agent metrics`
-
 - Accède à Kibana :
 
-  > `Management > Fleet > Fleet Agent > View more agent metrics`
-
   > Vérifie que l’agent est online et collecte bien les logs système.
+
+  `Management > Fleet > Fleet-Agent > View more agent metrics > Agent Info`
 
 #### Simulation d’une attaque brute-force SSH et visualisation des logs
 
