@@ -68,10 +68,11 @@ process.name: sysmon
 
 #### Simulation d’une activité malveillante
 
-> Simuler une configuration malicieuse [MalwareBazaar](https://bazaar.abuse.ch/)
+> Simuler une configuration malicieuse (c’est-à-dire une configuration système suspecte qui pourrait être utilisée à des fins de compromission). [MalwareBazaar](https://bazaar.abuse.ch/)
 
 ```sh
 touch /etc/apt/apt.conf.d/99-suspicious-config
+
 sudo bash -c "echo 'malicious config' > /etc/apt/apt.conf.d/99-malicious-config"
 
 # Télécharger une URL connue pour héberger du malware (simulé, pas d’exécution réelle ici)
