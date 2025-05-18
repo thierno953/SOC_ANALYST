@@ -2,9 +2,9 @@
 
 - **Wazuh** = plateforme open source XDR + SIEM
 
-> Surveillance unifiée des endpoints, cloud, conteneurs
+- Surveillance unifiée des endpoints, cloud, conteneurs
 
-> Fonctionnalités : analyse logs, détection d'intrusions, conformité
+- `Fonctionnalités` : analyse logs, détection d'intrusions, conformité
 
 #### HIDS, OSSEC, Wazuh
 
@@ -17,11 +17,11 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 #### HIDS (Host-based Intrusion Detection System)
 
-> Détection d'intrusion sur hôtes (pas réseau)
+- Détection d'intrusion sur hôtes (pas réseau)
 
-> Analyse fichiers, processus, logs
+- Analyse fichiers, processus, logs
 
-> Déploiement agent sur chaque machine
+- Déploiement agent sur chaque machine
 
 #### Wazuh vs OSSEC
 
@@ -36,39 +36,39 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 
 #### Wazuh ajoute
 
-> Détection vulnérabilités softs
+- Détection vulnérabilités softs
 
-> Conformité (PCI-DSS, GDPR, etc.)
+- Conformité (PCI-DSS, GDPR, etc.)
 
-> Audit cloud : AWS, Azure, GCP
+- `Audit cloud` : AWS, Azure, GCP
 
 #### Architecture Wazuh
 
-> **Composants**
+- **Composants**
 
-- **Wazuh Server** → analyse, alertes, API
+  - **Wazuh Server** → analyse, alertes, API
 
-- **Wazuh Indexer** → basé sur Elasticsearch
+  - **Wazuh Indexer** → basé sur Elasticsearch
 
-- **Dashboard** → visualisation (Kibana-like)
+  - **Dashboard** → visualisation (Kibana-like)
 
-- **Agents** → collectent logs (Windows, Linux, macOS)
+  - **Agents** → collectent logs (Windows, Linux, macOS)
 
-> **Modes déploiement**
+- **Modes déploiement**
 
-- **Single-node** : simple, tout-en-un
+  - **Single-node** : simple, tout-en-un
 
-- **Multi-node** : scalabilité, HA, clusters
+  - **Multi-node** : scalabilité, HA, clusters
 
 #### Flux de données
 
 `Agents → Server (analyse) → Indexer (stockage) → Dashboard (visualisation)`
 
-> **NB**: Les communications sont sécurisées par TLS et authentification mutuelle
+- **NB**: Les communications sont sécurisées par TLS et authentification mutuelle
 
 #### Déploiement
 
-> **1 - Docker**
+- **1 - Docker**
 
 ```sh
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
