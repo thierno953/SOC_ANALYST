@@ -668,7 +668,7 @@ systemctl restart wazuh-agent
 
 </group>
 ```
-
+ 
 - Téléchargement un fichier de test [EICAR](https://www.eicar.org/)
 
 ```sh
