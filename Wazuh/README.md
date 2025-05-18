@@ -93,16 +93,10 @@ git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 #### Fonctionnalités
 
 ```sh
----------------------------|----------------------------------------------|
-Catégorie                  | Fonctionnalités                              |
----------------------------|----------------------------------------------|
-Surveillance réseau        | Suricata, brute force, scan ports            |
-Intégrité fichiers (FIM)   | En temps réel                                |
-Audit cloud                | AWS, Azure, GCP                              |
-Conformité                 | PCI, HIPAA, GDPR                             |
-Réponse incident           | Slack/Teams, auto-blocage IP                 |
----------------------------|----------------------------------------------|
-
+| Catégorie                | Fonctionnalités                        |
+|--------------------------|----------------------------------------|
+| Surveillance réseau      | Suricata, brute force, scan ports      |
+| Intégrité fichiers (FIM) | En temps réel                          |
 ```
 
 #### Intégrations
@@ -223,8 +217,6 @@ chmod +x /usr/local/bin/docker-compose
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 cd wazuh-docker/single-node/
 
-git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
-cd wazuh-docker/single-node/
 docker-compose -f generate-indexer-certs.yml run --rm generator
 docker-compose up -d
 ```
@@ -294,6 +286,8 @@ nano /var/ossec/etc/ossec.conf
 ```sh
 <syscheck>
   <directories check_all="yes" realtime="yes" report_changes="yes">/root</directories>
+  <frequency>3600</frequency>
+  <scan_on_start>yes</scan_on_start>
 </syscheck>
 ```
 
