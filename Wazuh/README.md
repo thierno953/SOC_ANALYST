@@ -74,21 +74,21 @@ OSSEC créé en        | Fork d'OSSEC        | Type         |
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 ```
 
-> Conteneurs préconfigurés
+- Conteneurs préconfigurés
 
-> Certificats auto-signés
+- Certificats auto-signés
 
-> **2 - Cloud**
+- **2 - Cloud**
 
-> AMI AWS, images OVA
+  - AMI AWS, images OVA
 
-> **3 - Kubernetes**
+- **3 - Kubernetes**
 
-> Scalabilité auto, orchestration
+  - Scalabilité auto, orchestration
 
-> **Installation manuelle**
+- **Installation manuelle**
 
-> Packages DEB/RPM, ou compilation
+  - Packages DEB/RPM, ou compilation
 
 #### Fonctionnalités
 
@@ -101,9 +101,9 @@ git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 
 #### Intégrations
 
-> **VirusTotal**
+- **VirusTotal**
 
-> **SIEM** : Elastic, Splunk
+- **SIEM** : Elastic, Splunk
 
 ```sh
 <integration>
@@ -115,8 +115,8 @@ git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
 
 #### Enrollment Agent
 
-> Générer clé sur serveur
-> Installer agent → config IP serveur
+- Générer clé sur serveur
+- Installer agent → config IP serveur
 
 #### Ubuntu
 
@@ -127,15 +127,15 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 
 #### Windows
 
-> MSI silencieux + déploiement GPO
+- MSI silencieux + déploiement GPO
 
 #### Détection = Décodeurs + Règles
 
-> 10 000+ règles prédéfinies
+- 10 000+ règles prédéfinies
 
-> Syntaxe XML personnalisée
+- Syntaxe XML personnalisée
 
-> Niveaux 0 à 15
+- Niveaux 0 à 15
 
 #### Exemple règle SSH brute force
 
@@ -151,43 +151,43 @@ sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg
 
 #### Lab 1 - FIM
 
-> Activer /etc, modifier fichier
+- Activer /etc, modifier fichier
 
-> Voir alerte dans dashboard
+- Voir alerte dans dashboard
 
 #### Lab 2 - Suricata IDS
 
-> Installer + activer Suricata (format JSON EVE)
+- Installer + activer Suricata (format JSON EVE)
 
-> Scanner avec nmap, alerte → dashboard
+- Scanner avec nmap, alerte → dashboard
 
 #### Lab 3 - Vulnérabilités
 
-> Activer `Vulnerability Detector`
+- Activer `Vulnerability Detector`
 
-> Scanner → visualiser dans `Security > Vulnerability`
+- Scanner → visualiser dans `Security > Vulnerability`
 
 #### Lab 4 - Commandes malveillantes
 
-> Exécuter `rm -rf /`, `chmod 777`
+- Exécuter `rm -rf /`, `chmod 777`
 
-> Analyse via règles personnalisées
+- Analyse via règles personnalisées
 
 #### Lab 5 - SSH Brute Force
 
-> Hydra → serveur SSH
+- Hydra → serveur SSH
 
-> Blocage auto → check `/etc/hosts.deny`
+- Blocage auto → check `/etc/hosts.deny`
 
 #### Lab 6 - VirusTotal
 
-> Télécharger fichier douteux
+- Télécharger fichier douteux
 
-> Voir analyse VT dans l’alerte
+- Voir analyse VT dans l’alerte
 
 ### Installation Wazuh avec Docker
 
-> [Configuration système de base](https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html)
+- [Configuration système de base](https://documentation.wazuh.com/4.7/deployment-options/docker/docker-installation.html)
 
 ```sh
 sudo -i
@@ -195,7 +195,7 @@ sysctl -w vm.max_map_count=262144
 sysctl -p
 ```
 
-> Docker
+- Docker
 
 ```sh
 curl -sSL https://get.docker.com/ | sh
@@ -204,14 +204,14 @@ systemctl start docker
 systemctl status docker
 ```
 
-> Docker Compose
+- Docker Compose
 
 ```sh
 curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ```
 
-> Clonage + Lancement [Clonage du dépôt Wazuh](https://documentation.wazuh.com/4.7/deployment-options/docker/wazuh-container.html)
+- Clonage + Lancement [Clonage du dépôt Wazuh](https://documentation.wazuh.com/4.7/deployment-options/docker/wazuh-container.html)
 
 ```sh
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.7.5
@@ -221,7 +221,7 @@ docker-compose -f generate-indexer-certs.yml run --rm generator
 docker-compose up -d
 ```
 
-> Configuration du firewall
+- Configuration du firewall
 
 ```sh
 sudo ufw enable
@@ -230,19 +230,19 @@ sudo ufw allow 9200/tcp
 
 #### Installation AGENT
 
-> Script d'installation de l'agent linux
+- Script d'installation de l'agent linux
 
 ![agent](/Wazuh/assets/01.png)
 
 ![agent](/Wazuh/assets/02.png)
 
-> Script d'installation de l'agent windows : `C:\Program Files > ossec-agent > win32ui`
+- Script d'installation de l'agent windows : `C:\Program Files > ossec-agent > win32ui`
 
-> [CONFIGURATIONS SPÉCIFIQUES](https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/rules.html)
+- [CONFIGURATIONS SPÉCIFIQUES](https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/rules.html)
 
-> **Lab #1:** File Integrity Monitoring (FIM)
+- **Lab #1:** File Integrity Monitoring (FIM)
 
-> Configuration FIM - Manager
+  - Configuration FIM - Manager
 
 ```sh
 docker ps
@@ -258,7 +258,7 @@ apt update && apt install -y nano
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Modification ceci dans le fichier de configuration de Wazuh Manager
+- Modification ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -275,13 +275,13 @@ nano /var/ossec/etc/ossec.conf
 service wazuh-manager restart
 ```
 
-> Configuration Agent
+- Configuration Agent
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Agent
+- Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 <syscheck>
@@ -296,11 +296,11 @@ systemctl restart wazuh-agent
 touch samplefile.txt
 ```
 
-> Dans l'interface Wazuh : `Modules > agent01 > Security events`
+- Dans l'interface Wazuh : `Modules > agent01 > Security events`
 
-> **Lab #2:** Detecting Network Instruction Using Suricata IDS
+- **Lab #2:** Detecting Network Instruction Using Suricata IDS
 
-> Installation Suricata
+  - Installation Suricata
 
 ```sh
 add-apt-repository ppa:oisf/suricata-stable -y
@@ -318,7 +318,7 @@ chmod 640 /etc/suricata/rules/*.rules
 cd /etc/suricata/rules/
 ```
 
-> Configuration Suricata
+- Configuration Suricata
 
 ```sh
 nano /etc/suricata/suricata.yaml
@@ -352,13 +352,13 @@ outputs:
       filename: /var/log/suricata/eve.json
 ```
 
-> Configuration Wazuh pour Suricata
+- Configuration Wazuh pour Suricata
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Manager
+- Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -388,15 +388,15 @@ root@attack:~# nmap -sS -T4 -Pn <IP_VICTIME>
 root@attack:~# nmap -p 22 --script ssh-brute <IP_VICTIME>
 ```
 
-> Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`
+- Dans l'interface Wazuh : `Modules > agent01 > Security events > rule.id`
 
-> **Lab #3:** Détection de vulnérabilités
+- **Lab #3:** Détection de vulnérabilités
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Manager
+- Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <vulnerability-detection>
@@ -434,30 +434,30 @@ service wazuh-manager restart
 service wazuh-manager status
 ```
 
-> Pour vérification que ça fonctionne Sur le Manager
+- Pour vérification que ça fonctionne Sur le Manager
 
 ```sh
 tail -f /var/ossec/logs/alerts/alerts.log | grep "vulnerability"
 ```
 
-> Pour vérification que ça fonctionne Sur l'agent (Linux)
+- Pour vérification que ça fonctionne Sur l'agent (Linux)
 
 ```sh
 sudo wazuh-control info | grep -i "vulnerability"
 ```
 
-> Dans l'interface Wazuh : `Modules > agent01 > Vulnerabilities`
+- Dans l'interface Wazuh : `Modules > agent01 > Vulnerabilities`
 
-> **Lab #4:** Auditd
+- **Lab #4:** Auditd
 
-> Installation Auditd
+  - Installation Auditd
 
 ```sh
 apt install auditd -y
 systemctl enable --now auditd
 ```
 
-> Configuration Auditd
+- Configuration Auditd
 
 ```sh
 cd /var/log/audit/ && tail -f audit.log
@@ -467,27 +467,27 @@ cd /var/log/audit/ && tail -f audit.log
 nano /etc/audit/audit.rules
 ```
 
-> Ajout ces règles dans /etc/audit/audit.rules
+- Ajout ces règles dans /etc/audit/audit.rules
 
 ```sh
 -a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
 -a exit,always -F euid=0 -F arch=b32 -S execve -k audit-wazuh-c
 ```
 
-> Si nécessaire, configurez : **Management > CDB lists > audit-keys**
+- Si nécessaire, configurez : **Management > CDB lists > audit-keys**
 
 ```sh
 auditctl -R /etc/audit/audit.rules
 netstat
 ```
 
-> Configuration Wazuh pour Auditd
+- Configuration Wazuh pour Auditd
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Manager
+- Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -502,17 +502,17 @@ nano /var/ossec/etc/ossec.conf
 systemctl restart auditd wazuh-agent
 ```
 
-> Dans l'interface Wazuh : **Modules > agent01 > Security events**
+- Dans l'interface Wazuh : **Modules > agent01 > Security events**
 
-> **Lab #5:** Detecting and Blocking SSH brute force attacks
+- **Lab #5:** Detecting and Blocking SSH brute force attacks
 
-> Configuration Manager pour SSH brute force
+  - Configuration Manager pour SSH brute force
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Manager
+- Ajout ceci dans le fichier de configuration de Wazuh Manager
 
 ```sh
 <ossec_config>
@@ -530,9 +530,9 @@ nano /var/ossec/etc/ossec.conf
 service wazuh-manager restart
 ```
 
-> Modifiez : **Management > Rules > Manage rules files > 0095-sshd_rules.xml**
+- Modifiez : **Management > Rules > Manage rules files > 0095-sshd_rules.xml**
 
-> Configuration Agent pour les réponses actives
+- Configuration Agent pour les réponses actives
 
 ```sh
 root@wazuh:/# cd /var/ossec/active-response/bin/
@@ -543,7 +543,7 @@ firewall-drop          ip-customblock  kaspersky.py  restart-wazuh  wazuh-slack
 root@wazuh:/var/ossec/active-response/bin#
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Agent
+- Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ![agent](/Wazuh/assets/03.png)
 
@@ -584,13 +584,13 @@ nano /var/ossec/etc/ossec.conf
 </ossec_config>
 ```
 
-> N'oubliez pas de remplacer YOUR_VIRUSTOTAL_API_KEY par votre clé API VirusTotal.
+- N'oubliez pas de remplacer YOUR_VIRUSTOTAL_API_KEY par votre clé API VirusTotal.
 
 ```sh
 service wazuh-manager restart
 ```
 
-> Dans l'interface Wazuh : `Modules > agent01 > Security events`
+- Dans l'interface Wazuh : `Modules > agent01 > Security events`
 
 #### Pour tester l'attaque par force brute SSH
 
@@ -598,15 +598,15 @@ service wazuh-manager restart
 hydra -t 4 -l root pass.txt <IP_VICTIME> ssh
 ```
 
-> **Lab #6:** Detecting Malicious files using virustotal
+- **Lab #6:** Detecting Malicious files using virustotal
 
-> Configuration FIM
+  - Configuration FIM
 
 ```sh
 nano /var/ossec/etc/ossec.conf
 ```
 
-> Ajout ceci dans le fichier de configuration de Wazuh Agent
+- Ajout ceci dans le fichier de configuration de Wazuh Agent
 
 ```sh
 # <!-- File integrity monitoring -->
@@ -634,7 +634,7 @@ nano /var/ossec/etc/ossec.conf
 systemctl restart wazuh-agent
 ```
 
-> Modification : `Management > Rules > Manage rules files > Edit local_rules.xml`
+- Modification : `Management > Rules > Manage rules files > Edit local_rules.xml`
 
 ```sh
 <!-- Local rules -->
@@ -669,10 +669,10 @@ systemctl restart wazuh-agent
 </group>
 ```
 
-> Téléchargement un fichier de test [EICAR](https://www.eicar.org/)
+- Téléchargement un fichier de test [EICAR](https://www.eicar.org/)
 
 ```sh
 root@agent:~# curl -Lo /root/eicar.com https://secure.eicar.org/eicar.com && sudo ls -lah /root/eicar.com
 ```
 
-> Vérification les logs dans l'interface Wazuh : `Modules > Security events`
+- Vérification les logs dans l'interface Wazuh : `Modules > Security events`
