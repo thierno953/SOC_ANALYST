@@ -1,13 +1,13 @@
 # ELK Stack (Elasticsearch, Logstash, Kibana) avec configuration de sécurité et du Fleet Server
 
-> Mise à jour et installation de Java
+- Mise à jour et installation de Java
 
 ```sh
 sudo apt update && sudo apt upgrade -y
 sudo apt install openjdk-11-jdk -y
 ```
 
-> Ajout du dépôt Elastic
+- Ajout du dépôt Elastic
 
 ```sh
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
@@ -15,7 +15,7 @@ echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee 
 sudo apt update
 ```
 
-> Installation d’Elasticsearch
+- Installation d’Elasticsearch
 
 ```sh
 sudo apt install elasticsearch -y
@@ -23,13 +23,13 @@ sudo systemctl enable --now elasticsearch
 sudo systemctl status elasticsearch
 ```
 
-> Configuration d'Elasticsearch
+- Configuration d'Elasticsearch
 
 ```sh
 sudo nano /etc/elasticsearch/elasticsearch.yml
 ```
 
-> Modifie ou ajoute :
+- Modifie ou ajoute :
 
 ```sh
 network.host: 0.0.0.0
@@ -41,7 +41,7 @@ sudo systemctl restart elasticsearch
 sudo systemctl status elasticsearch
 ```
 
-> Installation de Logstash
+- Installation de Logstash
 
 ```sh
 sudo apt install logstash -y
@@ -49,7 +49,7 @@ sudo systemctl enable --now logstash
 sudo systemctl status logstash
 ```
 
-> Installation de Kibana
+- Installation de Kibana
 
 ```sh
 sudo apt install kibana -y
@@ -57,13 +57,13 @@ sudo systemctl enable --now kibana
 sudo systemctl status kibana
 ```
 
-> Configuration de Kibana
+- Configuration de Kibana
 
 ```sh
 sudo nano /etc/kibana/kibana.yml
 ```
 
-> Ajoute/modifie :
+- Ajoute/modifie :
 
 ```sh
 server.port: 5601
@@ -75,14 +75,14 @@ sudo systemctl restart kibana
 sudo systemctl status kibana
 ```
 
-> Configuration des clés de chiffrement dans Kibana
+- Configuration des clés de chiffrement dans Kibana
 
 ```sh
 cd /usr/share/kibana/bin/
 sudo ./kibana-encryption-keys generate
 ```
 
-> Ajoute les clés générées dans le keystore :
+- Ajoute les clés générées dans le keystore :
 
 ```sh
 ./kibana-keystore add xpack.security.encryptionKey
@@ -95,7 +95,7 @@ sudo systemctl restart kibana
 sudo systemctl status kibana
 ```
 
-> Pare-feu (UFW)
+- Pare-feu (UFW)
 
 ```sh
 sudo ufw enable
@@ -104,7 +104,7 @@ sudo ufw allow 5601/tcp
 sudo ufw reload
 ```
 
-> Réinitialisation des mots de passe
+- Réinitialisation des mots de passe
 
 ```sh
 # Pour l'utilisateur kibana_system :
@@ -114,7 +114,7 @@ sudo /usr/share/elasticsearch/bin/elasticsearch-reset-password -u kibana_system
 sudo /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
 ```
 
-> Jeton d’enrôlement & vérification Kibana
+- Jeton d’enrôlement & vérification Kibana
 
 ```sh
 cd /usr/share/elasticsearch/bin/
@@ -126,7 +126,7 @@ cd /usr/share/kibana/bin/
 
 #### Configuration du Fleet Server
 
-> Sur la machine fleet-agent
+- Sur la machine fleet-agent
 
 ```sh
 sudo ufw enable
@@ -135,11 +135,11 @@ sudo ufw allow 9200/tcp
 sudo ufw reload
 ```
 
-> Sur Kibana :
+- Sur Kibana :
 
 `Management > Fleet > Add Fleet Server > Generate Fleet Server policy`
 
-> Ensuite, sur l'agent :
+- Ensuite, sur l'agent :
 
 ```sh
 sudo ./elastic-agent install \

@@ -1,51 +1,53 @@
 # Investigation des modifications suspectes du Registre Windows
 
-> Vérifier que Sysmon est installé avec une configuration incluant le monitoring du Registre
+#### Vérification préalable
 
-> S'assurer que la configuration Splunk inclut bien les logs Sysmon
+- **Vérifier que Sysmon est installé** avec une configuration qui collecte les événements liés au Registre (EventID 12, 13, 14).
 
-> `Start > Registry Editor`
+- **Confirmer que Splunk Universal Forwarder collecte bien les logs Sysmon** (`index=sysmon_logs`).
 
-#### Simulation d'attaque et analyse
+- Ouvrir l’éditeur de Registre : `Start > Registry Editor`
+
+#### Simulation d’attaque : modification malveillante du Registre
 
 > Simulation de modification malveillante du Registre
 
 ```sh
-PS C:\Users\Administrator> New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest" -Value "C:\malwaretest.exe"
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest" -Value "C:\malwaretest.exe"
 
 # Création d'une clé de démarrage automatique
-PS C:\Users\Administrator> New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest" -Value "C:\malwaretest.exe" -PropertyType String
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest" -Value "C:\malwaretest.exe" -PropertyType String
 
 # Vérification de la création
-PS C:\Users\Administrator> Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 ```
 
-> `Recherche générale des modifications du Registre`
+- `Recherche générale des événements Registre Sysmon`
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" EventID=12 OR EventID=13 OR EventID=14
 ```
 
-> `Requêtes dans Search & Reporting`
+- `Requêtes dans Search & Reporting`
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*malwaretest*"
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "CurrentVersion\Run"
 ```
 
-#### Réponse à incident
+#### Réponse à incident : suppression de la clé malveillante
 
 ```sh
 # Suppression de la clé malveillante
-PS C:\Users\Administrator> Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest"
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest"
 
 # Vérification de la suppression
-PS C:\Users\Administrator> Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 ```
 
 #### Mesures de protection à long terme
 
-> Configuration de règles AppLocker
+- Configuration de règles AppLocker
 
 ```sh
 # Exemple de politique pour restreindre les exécutables
@@ -53,8 +55,9 @@ New-AppLockerPolicy -RuleType Publisher,Hash,Path -FilePath "C:\Policy.xml" -Use
 Set-AppLockerPolicy -XmlPolicy "C:\Policy.xml"
 ```
 
-- Surveillance avec règles Sysmon supplémentaires
-  > Ajouter dans la configuration Sysmon :
+#### Surveillance renforcée avec Sysmon
+
+- Ajouter dans la configuration Sysmon la surveillance des clés critiques du Registre
 
 ```sh
 <RuleGroup name="" groupRelation="or">
@@ -66,7 +69,7 @@ Set-AppLockerPolicy -XmlPolicy "C:\Policy.xml"
 </RuleGroup>
 ```
 
-> Alerte Splunk pour détection automatique pour les modifications critiques :
+#### Alerte Splunk pour détection automatique
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" (EventID=12 OR EventID=13 OR EventID=14)

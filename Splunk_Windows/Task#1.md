@@ -11,24 +11,29 @@
 #### Commandes d'installation
 
 ```sh
-# Installation avec configuration SwiftOnSecurity
+# Installer Sysmon avec configuration recommandée
 C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 
-# Vérification du service
+# Vérifier que le service Sysmon fonctionne
 C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
 
-# Mise à jour de configuration
+# Mettre à jour la configuration Sysmon
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-export.xml
+
+# Désinstaller ou mettre à jour la configuration
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
-> Visualisation des logs
+- Visualisation des logs
+  - Ouvrir l'Observateur d'événements Windows :
 
-> `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
+`Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
-#### Configuration de Splunk
+#### Configuration de Splunk Universal Forwarder
 
-> `C:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf`
+- Modifier `outputs.conf` pour envoyer les logs au serveur Splunk indexeur
+
+`C:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf`
 
 ```sh
 [tcpout]
@@ -40,7 +45,9 @@ server = <IP_INDEXEUR>:9997
 [tcpout-server://<IP_INDEXEUR>:9997]
 ```
 
-> `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
+- Modifier `inputs.conf` pour récupérer les logs Sysmon et autres
+
+`C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
 [WinEventLog://Microsoft-Windows-Sysmon/Operational]
@@ -65,7 +72,7 @@ index = windows_event_logs
 sourcetype = WinEventLog:System
 ```
 
-> Gestion du service Splunk
+- Gestion du service Splunk Universal Forwarder
 
 ```sh
 cd "C:\Program Files\SplunkUniversalForwarder\bin"
@@ -74,29 +81,43 @@ cd "C:\Program Files\SplunkUniversalForwarder\bin"
 .\splunk.exe list forward-server
 ```
 
-#### Simulation d'attaque et visualisation
+#### Simulation d'attaque de force brute RDP
 
-> Simulation avec Hydra (machine attaquante Linux)
+- Sur une machine Linux (attacker) :
 
 ```sh
-# Sur la machine d'attaque (Linux)
 apt install hydra -y
 hydra -l administrator -P password.txt <IP_VICTIME> rdp
 ```
 
-> `Requêtes dans Search & Reporting`
+`Requêtes dans Search & Reporting`
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
+
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" sourceIp="<IP_Attach_Machine>"
 ```
 
 #### Réponse à incident
 
-> Blocage via Pare-feu Windows
+- **Blocage via interface graphique Windows Defender Firewall**
 
-`Start > Windows Defender Firewall > Inbound Rules > New Rules > Ports > TCP (Specific local ports: 3389) > Block the connection > (Domain, Private, and Public) > Provide a Name for the "Block RDP Brute Force"`
+- Ouvrir : `Start > Windows Defender Firewall > Inbound Rules`
 
-> Alternative en PowerShell
+- Créer une nouvelle règle :
 
-`New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>`
+  - Type : Ports TCP
+
+  - Port local spécifique : 3389
+
+  - Action : Bloquer la connexion
+
+  - Profils : Domain, Private, Public
+
+  - Nommer la règle : "Block RDP Brute Force"
+
+- **Blocage via PowerShell**
+
+```sh
+New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>
+```

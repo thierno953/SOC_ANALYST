@@ -16,7 +16,7 @@ systemctl start auditd
 systemctl status auditd
 ```
 
-> Vérification des logs
+- Vérification des logs
 
 ```sh
 tail -f /var/log/audit/audit.log
@@ -24,13 +24,13 @@ tail -f /var/log/audit/audit.log
 
 #### Configuration d’Auditd
 
-> Modifier les règles d’audi
+- Modifier les règles d’audi
 
 ```sh
 nano /etc/audit/rules.d/audit.rules
 ```
 
-> Contenu
+- Contenu
 
 ```sh
 ## Réinitialiser les règles
@@ -50,7 +50,7 @@ nano /etc/audit/rules.d/audit.rules
 -w /etc/shadow -p wa -k shadow_changes
 ```
 
-> Redémarrer le service
+- Redémarrer le service
 
 ```sh
 systemctl restart auditd
@@ -58,13 +58,13 @@ systemctl restart auditd
 
 #### Préparer ELK pour la détection
 
-> Aller dans Kibana → `Management > Integrations`
+- Aller dans Kibana → `Management > Integrations`
 
-> Rechercher Auditd Logs → Ajouter l’intégration
+- Rechercher Auditd Logs → Ajouter l’intégration
 
-> Chemins : `/var/log/audit/audit.log*`
+- Chemins : `/var/log/audit/audit.log*`
 
-> Associer l’agent existant → Continuer → Valider
+- Associer l’agent existant → Continuer → Valider
 
 - Dashboards disponibles :
 
@@ -72,7 +72,7 @@ systemctl restart auditd
 
 #### Simuler l'attaque et visualiser les événements
 
-> Simuler un changement dans /etc/passwd
+- Simuler un changement dans /etc/passwd
 
 ```sh
 # Ajouter un utilisateur
@@ -90,7 +90,7 @@ tail -f /var/log/audit/audit.log
 ausearch -k passwd_changes
 ```
 
-> Vérifier localement avec `ausearch`
+- Vérifier localement avec `ausearch`
 
 - Visualiser dans Kibana
 
@@ -103,7 +103,7 @@ message: "/etc/passwd"
 
 #### Réponse à l'incident
 
-> Supprimer la ligne manuelle ajoutée (ou commenter)
+- Supprimer la ligne manuelle ajoutée (ou commenter)
 
 ```sh
 nano /etc/passwd

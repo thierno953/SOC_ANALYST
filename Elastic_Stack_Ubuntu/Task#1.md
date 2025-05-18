@@ -15,7 +15,7 @@
 
 #### Simulation d’une attaque brute-force SSH et visualisation des logs
 
-> Depuis la machine d’attaque (par exemple attack-ubuntu)
+- Depuis la machine d’attaque (par exemple attack-ubuntu)
 
 ```sh
 # Installer Hydra
@@ -35,7 +35,7 @@ hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
 tail -f /var/log/auth.log
 ```
 
-> Répéter avec un autre utilisateur
+- Répéter avec un autre utilisateur
 
 ```sh
 hydra -l root -P password.txt <IP_FLEET_AGENT> ssh

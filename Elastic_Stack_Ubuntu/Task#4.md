@@ -18,7 +18,7 @@ sudo add-apt-repository ppa:oisf/suricata-stable -y
 sudo apt-get install suricata -y
 ```
 
-> Ajout des règles de détection
+- Ajout des règles de détection
 
 ```sh
 cd /etc/suricata && mkdir rules
@@ -29,7 +29,7 @@ sudo mv rules/*.rules /etc/suricata/rules/
 sudo chmod 640 /etc/suricata/rules/*.rules
 ```
 
-> Configuration de `suricata.yaml`
+- Configuration de `suricata.yaml`
 
 ```sh
 default-rule-path: /etc/suricata/rules
@@ -52,7 +52,7 @@ stats:
   enabled: yes
 ```
 
-> Démarrage
+- Démarrage
 
 ```sh
 sudo systemctl restart suricata
@@ -60,7 +60,7 @@ sudo systemctl status suricata
 suricata-update
 ```
 
-> Logs :
+- Logs :
 
 ```sh
 cd /var/log/suricata/
@@ -83,9 +83,9 @@ nano emerging-malware.rules
 
 #### Dashboards :
 
-> `[Logs Suricata] Alert Overview`
+- `[Logs Suricata] Alert Overview`
 
-> `[Logs Suricata] Events Overview`
+- `[Logs Suricata] Events Overview`
 
 #### Simuler une attaque et visualiser les alertes
 
@@ -104,7 +104,7 @@ tail -f /var/log/suricata/fast.log
 
 #### Analyse dans Kibana :
 
-> `Discover > Requêtes KQL`
+- `Discover > Requêtes KQL`
 
 ```sh
 suricata.eve.alert.signature_id: *

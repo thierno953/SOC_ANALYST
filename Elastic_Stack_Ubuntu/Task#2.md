@@ -26,7 +26,7 @@ sudo apt-get update
 sudo apt-get install sysmonforlinux
 ```
 
-> Créer un fichier de configuration personnalisé
+- Créer un fichier de configuration personnalisé
 
 ```sh
 nano sysmon-config.xml
@@ -60,7 +60,7 @@ tail -f /var/log/syslog | grep sysmon
 
 - Valider → Dashboards disponibles : `[Sysmon] Sysmon for Linux Logs Overview`
 
-> Kibana Discover (recherche rapide) :
+- Kibana Discover (recherche rapide) :
 
 ```sh
 process.name: sysmon
@@ -68,7 +68,7 @@ process.name: sysmon
 
 #### Simulation d’une activité malveillante
 
-> Simuler une configuration malicieuse (c’est-à-dire une configuration système suspecte qui pourrait être utilisée à des fins de compromission). [MalwareBazaar](https://bazaar.abuse.ch/)
+- Simuler une configuration malicieuse (c’est-à-dire une configuration système suspecte qui pourrait être utilisée à des fins de compromission). [MalwareBazaar](https://bazaar.abuse.ch/)
 
 ```sh
 touch /etc/apt/apt.conf.d/99-suspicious-config
@@ -97,7 +97,7 @@ rm -rf /etc/apt/apt.conf.d/99-malicious-config
 find / -name "99-malicious-config" -type f
 ```
 
-> Vérifier les connexions réseau actives
+- Vérifier les connexions réseau actives
 
 ```sh
 netstat -ltnp
