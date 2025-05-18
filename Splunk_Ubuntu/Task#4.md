@@ -115,7 +115,7 @@ nmap -sS <IP_VICTIM_MACHINE>
 
 ## Visualisation dans Splunk (Search & Reporting)
 
-> `Requêtes dans Search & Reporting>`
+> `Requêtes dans Search & Reporting`
 
 ```sh
 index="network_security_logs" sourcetype="suricata"

@@ -18,10 +18,8 @@
 # Ajouter le dépôt Microsoft
 wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
-
-# Mise à jour et installation
-apt-get update
-apt-get install sysmonforlinux -y
+sudo apt-get update
+sudo apt-get install sysmonforlinux -y
 ```
 
 #### Créer et appliquer un fichier de configuration Sysmon
@@ -66,6 +64,21 @@ nano /opt/splunkforwarder/etc/system/local/inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
+
+[monitor:///var/log/auth.log]
+disabled = false
+index = linux_os_logs
+sourcetype = linux_secure
+```
+
+- Modifier `outputs.conf` si nécessaire
+
+```sh
+[tcpout]
+defaultGroup = default-autolb-group
+
+[tcpout:default-autolb-group]
+server = <IP_INDEXEUR>:9997
 ```
 
 - **NB** : Ajout recommandé dans Splunk Web `Apps > Browse More Apps > Splunk Add-on for Sysmon for Linux`
@@ -86,29 +99,32 @@ echo "maluser:Password123!" | chpasswd
 ```sh
 # Vérifier les traces dans syslog
 tail -f /var/log/syslog | grep maluser
+tail -f /var/log/auth.log | grep maluser
 ```
 
-> `Requêtes dans Search & Reporting>`
+> `Requêtes dans Search & Reporting`
 
 ```sh
-index="linux_os_logs"
-index="linux_os_logs" sysmon
-index="linux_os_logs" process=sysmon
-
 index="linux_os_logs"
 index="linux_os_logs" sourcetype=syslog "Process Create"
 index="linux_os_logs" sourcetype=syslog CommandLine="*adduser*"
 index="linux_os_logs" sourcetype=syslog User="maluser"
 index="linux_os_logs" process=sysmon maluser
+index="linux_os_logs" sourcetype=linux_secure "Accepted password for"
+```
+
+#### Création d'une alerte dans Splunk
+
+```sh
+index="linux_os_logs" sourcetype=syslog CommandLine="/usr/sbin/adduser*"
 ```
 
 #### Réponse à l’incident
 
-```sh
-# Vérifier les détails du compte
-less /etc/passwd
-chage -l maluser
+- Vérifier et supprimer le compte malveillant
 
-# Supprimer l'utilisateur suspect
-deluser --remove-home maluser
+```sh
+less /etc/passwd
+sudo chage -l maluser
+sudo deluser --remove-home maluser
 ```

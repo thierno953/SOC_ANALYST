@@ -151,7 +151,7 @@ sourcetype = kernlog
 
 - **Exemple** : `syslog`, `authlog`, `kernlog`
 
-#### Requêtes de recherche dans Splunk
+> `Requêtes dans Search & Reporting`
 
 ```sh
 index="linux_os_logs"
