@@ -1,5 +1,15 @@
 # Wireshark
 
+## Présentation de Wireshark
+
+#### Parcourez Wireshark
+
+#### Analyse du trafic réseau
+
+#### Enquête de sécurité
+
+#### Qu'est-ce que Wireshark ?
+
 - Wireshark est un analyseur de protocole réseau qui capture et inspecte les données circulant sur un réseau en temps réel.
 
 - Il capture les paquets (petits morceaux de données) lorsqu'ils sont envoyés sur un réseau et les décode dans un format lisible par l'homme.
@@ -9,7 +19,7 @@
   - Surveillance de sécurité et criminalistique.
   - Apprentissage et analyse du comportement du réseau.
 
-## Principales caractéristiques de Wireshark
+# Principales caractéristiques de Wireshark
 
 ```sh
 ---------------------------------- |-------------------------------|
@@ -72,20 +82,20 @@ DNS                       | port udp 53             | dns                       
   - a - La première est votre couche physique où vous touver toutes les informations, toutes les trames et combien de morsures ont été traversées.
   - b - La deuxième est votre couches de liaison des données où les données sont commutées en fonction de l'addresse MAC. Vous trouverez donc l'adresse MAC source, l'adresse MAC de destination.
   - c - La troisiéme est votre couche reseau où vous trouverez toutes les données et les données transmises en fonction du routage. Vous trouverez donc toutes toutes les adresses IP. Adresse IP source et Adresse IP destination.
-  - d - La quatrième couche qui est la couche de transport où vous trouverez tous les services de PCP ou UDP et ajouterez leurs numéro de port associé. Port source et port de destination.
+  - d - La quatrième couche qui est la couche de transport où vous trouverez tous les services de TCP ou UDP et ajouterez leurs numéro de port associé. Port source et port de destination.
 
 - 3 - Et celle ci est le paquet qui est visible sous la forme hexadécimale, ce sont donc les informations sur les paquet, que c'est sous la forme hexadécimale.
 
-![Wireshark](/Network-Investigation/assets/01.png)
-![Wireshark](/Network-Investigation/assets/02.png)
-![Wireshark](/Network-Investigation/assets/03.png)
-![Wireshark](/Network-Investigation/assets/04.png)
-![Wireshark](/Network-Investigation/assets/05.png)
+  ![Wireshark](/Network-Investigation/assets/01.png)
+  ![Wireshark](/Network-Investigation/assets/02.png)
+  ![Wireshark](/Network-Investigation/assets/03.png)
+  ![Wireshark](/Network-Investigation/assets/04.png)
+  ![Wireshark](/Network-Investigation/assets/05.png)
 
 #### Colorisation du trafic
 
 ![Wireshark](/Network-Investigation/assets/06.png)
-![Wireshark](/Network-Investigation/assets/07.png) 
+![Wireshark](/Network-Investigation/assets/07.png)
 ![Wireshark](/Network-Investigation/assets/08.png)
 
 #### Port TCP et UDP

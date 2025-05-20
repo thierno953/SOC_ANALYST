@@ -26,7 +26,7 @@
 - Acquisition de trafic réseau
 - Persing et analyse de paquets
 - Correspondance de signature
-- Inspection approfondie des paquets (en option) 
+- Inspection approfondie des paquets (en option)
 - Action et journalisation
 
 ```sh

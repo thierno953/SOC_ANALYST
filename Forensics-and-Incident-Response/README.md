@@ -12,8 +12,8 @@
 
 > **Analyse**
 
-> **Récupération** 
- 
+> **Récupération**
+
 - Ce processus aide les organisations **à réagir efficacement à une violation de sécurité**, à en tirer des leçons, et à **renforcer leur défense** contre les menaces futures.
 
 #### Objectifs d'une enquête forensique
@@ -44,4 +44,8 @@
 
 > **Forensique Linux** – Investigation sur les systèmes Linux.
 
-> **Forensique Clou**d – Collecte et analyse de données dans les environnements cloud.
+> **Forensique Cloud** – Collecte et analyse de données dans les environnements cloud.
+
+#### Description
+
+- Ce projet propose une exploration complète des investigations sur les terminaux, en particulier dans les environnements Linux et Windows. Développez des compétences essentielles en matière d'investigation et de réponse aux incidents pour gérer les violations, analyser les preuves numériques et intervenir efficacement en cas d'incident.
