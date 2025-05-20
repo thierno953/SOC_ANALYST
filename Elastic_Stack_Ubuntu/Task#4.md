@@ -32,14 +32,6 @@ sudo chmod 640 /etc/suricata/rules/*.rules
 - Configuration de `suricata.yaml`
 
 ```sh
-default-rule-path: /etc/suricata/rules
-
-rule-files:
-  - emerging-web_client.rules
-  - emerging-malware.rules
-  - emerging-attack_response.rules
-  - emerging-trojan.rules
-
 vars:
   address-groups:
     HOME_NET: "[IP_FLEET_AGENT]"   # Adresse IP de l'hôte à surveiller
@@ -47,6 +39,10 @@ vars:
 
 af-packet:
   - interface: enp0s3
+
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - "*.rules"
 
 stats:
   enabled: yes
