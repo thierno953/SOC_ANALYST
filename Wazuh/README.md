@@ -401,8 +401,8 @@ nano /var/ossec/etc/ossec.conf
 ```sh
 <vulnerability-detection>
   <enabled>yes</enabled>
-  <interval>10m</interval>
-  <min_full_scan_interval>12h</min_full_scan_interval>
+  <interval>5m</interval>
+  <min_full_scan_interval>6h</min_full_scan_interval>
   <run_on_start>yes</run_on_start>
   <alert_if_above>high</alert_if_above>
 
