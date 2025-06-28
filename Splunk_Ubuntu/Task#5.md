@@ -27,13 +27,6 @@ sudo apt-get install sysmonforlinux -y
 ```sh
 # Télécharger ou copier un fichier de configuration XML personnalisé
 nano sysmon-config.xml
-
-# Exemple de ligne de base (à adapter selon les besoins)
-<RuleGroup name="default" groupRelation="or">
-  <ProcessCreate onmatch="include" />
-  <FileCreateTime onmatch="include" />
-  <NetworkConnect onmatch="include" />
-</RuleGroup>
 ```
 
 - [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
@@ -64,24 +57,7 @@ nano /opt/splunkforwarder/etc/system/local/inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
-
-[monitor:///var/log/auth.log]
-disabled = false
-index = linux_os_logs
-sourcetype = linux_secure
 ```
-
-- Modifier `outputs.conf` si nécessaire
-
-```sh
-[tcpout]
-defaultGroup = default-autolb-group
-
-[tcpout:default-autolb-group]
-server = <IP_INDEXEUR>:9997
-```
-
-- **NB** : Ajout recommandé dans Splunk Web `Apps > Browse More Apps > Splunk Add-on for Sysmon for Linux`
 
 ```sh
 # Redémarrer le Forwarder Splunk

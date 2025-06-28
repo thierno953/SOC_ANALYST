@@ -20,8 +20,7 @@ systemctl status auditd
 #### Configuration des règles d'intégrité :
 
 ```sh
-cd /etc/audit/rules.d
-nano audit.rules
+nano /etc/audit/rules.d/audit.rules
 ```
 
 #### Contenu de audit.rules
@@ -46,7 +45,6 @@ nano audit.rules
 #### Appliquer les règles
 
 ```sh
-cd ../../..
 systemctl restart auditd
 auditctl -l   # Vérifier que la règle est bien en place
 ```

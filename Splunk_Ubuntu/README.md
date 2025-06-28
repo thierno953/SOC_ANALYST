@@ -1,6 +1,6 @@
 # Investigation de sécurité d'une machine Ubuntu avec Splunk
 
-- [Splunk Enterprise Previous Releases](https://www.splunk.com/en_us/download/previous-releases.html?locale=en_us)
+- [Splunk Enterprise 9.4.3](https://www.splunk.com/en_us/download/splunk-enterprise.html)
 
 ![Enterprise](/assets/splunk_linux_01.png)
 
@@ -10,9 +10,9 @@
 
 ```sh
 apt update
-wget -O splunk-9.3.1-0b8d769cb912-linux-2.6-amd64.deb "https://download.splunk.com/products/splunk/releases/9.3.1/linux/splunk-9.3.1-0b8d769cb912-linux-2.6-amd64.deb"
-chmod +x splunk-9.3.1-0b8d769cb912-linux-2.6-amd64.deb
-dpkg -i splunk-9.3.1-0b8d769cb912-linux-2.6-amd64.deb
+wget -O splunk-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/9.4.3/linux/splunk-9.4.3-237ebbd22314-linux-amd64.deb"
+chmod +x splunk-9.4.3-237ebbd22314-linux-amd64.deb
+dpkg -i splunk-9.4.3-237ebbd22314-linux-amd64.deb
 ```
 
 #### Activer démarrage automatique + Pare-feu
@@ -29,26 +29,31 @@ ufw status
 #### Démarrer Splunk
 
 ```sh
-/opt/splunk/bin/splunk start
+/opt/splunk/bin/splunk start --accept-license
 ```
 
 ![Enterprise](/assets/splunk_linux_02.png)
+
 ![Enterprise](/assets/splunk_linux_03.png)
+
 ![Enterprise](/assets/splunk_linux_04.png)
+
 ![Enterprise](/assets/splunk_linux_05.png)
+
 ![Enterprise](/assets/splunk_linux_06.png)
+
 ![Enterprise](/assets/splunk_linux_07.png)
 
 ## Installation du Splunk Universal Forwarder (Client)
 
 #### Télécharger et installer
 
-- [Splunk Universal Forwarder Previous Releases](https://www.splunk.com/en_us/download/previous-releases-universal-forwarder.html)
+- [Splunk Universal Forwarder 9.4.3](https://www.splunk.com/en_us/download/universal-forwarder.html)
 
 ```sh
-wget -O splunkforwarder-9.3.1-0b8d769cb912-linux-2.6-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/9.3.1/linux/splunkforwarder-9.3.1-0b8d769cb912-linux-2.6-amd64.deb"
-chmod +x splunkforwarder-9.3.1-0b8d769cb912-linux-2.6-amd64.deb
-dpkg -i splunkforwarder-9.3.1-0b8d769cb912-linux-2.6-amd64.deb
+wget -O splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/9.4.3/linux/splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb"
+chmod +x splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
+dpkg -i splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
 ```
 
 #### Activer le démarrage et démarrer le service
@@ -116,19 +121,6 @@ nano inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
-
-
-# Ont peux ajouter d'autres logs ici, comme `auth.log` ou `kern.log`
-
-[monitor:///var/log/auth.log]
-disabled = false
-index = linux_os_logs
-sourcetype = authlog
-
-[monitor:///var/log/kern.log]
-disabled = false
-index = linux_os_logs
-sourcetype = kernlog
 ```
 
 #### Redémarrer le Forwarder
@@ -149,13 +141,11 @@ sourcetype = kernlog
 
 - `Settings > Source types > New Source Type`
 
-- **Exemple** : `syslog`, `authlog`, `kernlog`
+- **Exemple** : `syslog`
 
 > `Requêtes dans Search & Reporting`
 
 ```sh
 index="linux_os_logs"
 index="linux_os_logs" sourcetype=syslog
-index="linux_os_logs" sourcetype=authlog "Failed password"
-index="linux_os_logs" | stats count by host, sourcetype
 ```

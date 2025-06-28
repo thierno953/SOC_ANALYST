@@ -82,8 +82,7 @@ sourcetype = fail2ban
 #### Sur la machine attacker, installer Hydra
 
 ```sh
-apt update
-apt install hydra -y
+apt update && apt install hydra -y
 ```
 
 #### Lancer une attaque brute force SSH
@@ -120,8 +119,4 @@ index="fail2ban_logs" | search "<IP_ATTACKER>"
 
 ```sh
 index="security_incidents" sourcetype="linux_secure" "Failed password"
-```
-
-```sh
-index="fail2ban_logs" | stats count by src, action
 ```

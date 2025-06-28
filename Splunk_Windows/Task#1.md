@@ -31,20 +31,6 @@ PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-exp
 
 #### Configuration de Splunk Universal Forwarder
 
-- Modifier `outputs.conf` pour envoyer les logs au serveur Splunk indexeur
-
-`C:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf`
-
-```sh
-[tcpout]
-defaultGroup = default-autolb-group
-
-[tcpout:default-autolb-group]
-server = <IP_INDEXEUR>:9997
-
-[tcpout-server://<IP_INDEXEUR>:9997]
-```
-
 - Modifier `inputs.conf` pour récupérer les logs Sysmon et autres
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
@@ -86,8 +72,17 @@ cd "C:\Program Files\SplunkUniversalForwarder\bin"
 - Sur une machine Linux (attacker) :
 
 ```sh
+# nano password.txt
+
+password123
+admin
+letmein
+Password1
+```
+
+```sh
 apt install hydra -y
-hydra -l administrator -P password.txt <IP_VICTIME> rdp
+hydra -l administrator -P password.txt <IP_VICTIM_MACHINE> rdp
 ```
 
 `Requêtes dans Search & Reporting`
@@ -95,7 +90,7 @@ hydra -l administrator -P password.txt <IP_VICTIME> rdp
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
 
-index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" sourceIp="<IP_Attach_Machine>"
+index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP_Attach_Machine>"
 ```
 
 #### Réponse à incident

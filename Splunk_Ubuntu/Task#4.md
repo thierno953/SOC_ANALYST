@@ -23,8 +23,7 @@ apt-get install suricata -y
 #### Téléchargement des règles ET (Emerging Threats) :
 
 ```sh
-cd /etc/suricata && mkdir rules && cd
-cd /tmp/
+cd /etc/suricata && mkdir rules && cd && cd /tmp/
 curl -LO https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
 tar -xvzf emerging.rules.tar.gz
 mv rules/*.rules /etc/suricata/rules/
@@ -56,14 +55,13 @@ af-packet:
   - interface: enp0s3
 ```
 
-- **NB** : Remplace [`IP_ADDRESS`] par l’adresse IP réelle de ta machine cible (victime)
+- **NB** : Remplace [`IP_ADDRESS`] par l’adresse IP réelle de la machine cible (victime)
 
 #### Démarrage et test de Suricata
 
 ```sh
 systemctl restart suricata
 systemctl status suricata
-suricata-update
 cd /var/log/suricata/
 tail -f fast.log
 ```
@@ -106,7 +104,7 @@ sourcetype = suricata
 #### Depuis la machine attacker
 
 ```sh
-nmap -sS <IP_VICTIM_MACHINE>
+nmap -sS <victim_IP>
 ```
 
 ## Visualisation dans Splunk (Search & Reporting)

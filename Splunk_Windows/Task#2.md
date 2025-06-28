@@ -65,8 +65,8 @@ index="powershell_logs" sourcetype="WinEventLog:PowerShell"
 `Recherche spécifique liée au fichier EICAR`
 
 ```sh
+index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
-index="powershell_logs" sourcetype="WinEventLog:PowerShell" "*eicar*"
 ```
 
 #### Réponse à incident
@@ -92,7 +92,4 @@ index="powershell_logs" sourcetype="WinEventLog:PowerShell" "*eicar*"
 ```sh
 # Bloquer tout le trafic sortant (à utiliser avec précaution)
 New-NetFirewallRule -DisplayName "Block All Traffic" -Direction Outbound -Action Block
-
-# Bloquer uniquement l'accès Internet de PowerShell
-New-NetFirewallRule -DisplayName "Block PowerShell Internet Access" -Program "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Direction Outbound -Action Block
 ```

@@ -9,7 +9,7 @@ index = windows_event_logs
 sourcetype = WinEventLog:Application
 
 [WinEventLog://Security]
-disabled = 0
+disabled = 0 
 index = windows_event_logs
 sourcetype = WinEventLog:Security
 
