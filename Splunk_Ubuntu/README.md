@@ -2,8 +2,6 @@
 
 - [Splunk Enterprise 9.4.3](https://www.splunk.com/en_us/download/splunk-enterprise.html)
 
-![Enterprise](/assets/splunk_linux_01.png)
-
 ## Installation de Splunk Enterprise (Serveur)
 
 #### Mise à jour et téléchargement
@@ -32,7 +30,7 @@ ufw status
 /opt/splunk/bin/splunk start --accept-license
 ```
 
-![Enterprise](/assets/splunk_linux_02.png) 
+![Enterprise](/assets/splunk_linux_02.png)
 
 ![Enterprise](/assets/splunk_linux_03.png)
 
