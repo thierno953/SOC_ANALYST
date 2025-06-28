@@ -32,7 +32,7 @@ ufw status
 /opt/splunk/bin/splunk start --accept-license
 ```
 
-![Enterprise](/assets/splunk_linux_02.png)
+![Enterprise](/assets/splunk_linux_02.png) 
 
 ![Enterprise](/assets/splunk_linux_03.png)
 

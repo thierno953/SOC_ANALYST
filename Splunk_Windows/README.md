@@ -13,7 +13,7 @@ disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:Security
 
-[WinEventLog://System]
+[WinEventLog://System] 
 disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:System

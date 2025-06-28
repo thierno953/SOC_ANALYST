@@ -76,7 +76,7 @@ index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
 - Interface graphique :
 
   - `Start > Windows Defender Firewall > Outbound Rules > New Rule`
-
+ 
   - Type : Program
 
   - Cible : Tous les programmes ou uniquement PowerShell

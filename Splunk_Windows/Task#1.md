@@ -35,7 +35,7 @@ PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-exp
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
-```sh
+```sh 
 [WinEventLog://Microsoft-Windows-Sysmon/Operational]
 disabled = 0
 index = sysmon_logs

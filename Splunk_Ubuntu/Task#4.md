@@ -96,7 +96,7 @@ sourcetype = suricata
 #### Redémarrer le Forwarder
 
 ```sh
-/opt/splunkforwarder/bin/splunk restart
+/opt/splunkforwarder/bin/splunk restart 
 ```
 
 ## Simulation d’une attaque (Scan TCP SYN)

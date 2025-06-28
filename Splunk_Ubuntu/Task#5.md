@@ -74,7 +74,7 @@ echo "maluser:Password123!" | chpasswd
 
 ```sh
 # Vérifier les traces dans syslog
-tail -f /var/log/syslog | grep maluser
+tail -f /var/log/syslog | grep maluser 
 tail -f /var/log/auth.log | grep maluser
 ```
 

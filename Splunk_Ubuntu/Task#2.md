@@ -33,7 +33,7 @@ sysmon -i sysmon-config.xml
 ```
 
 #### Vérifier que Sysmon fonctionne
-
+ 
 ```sh
 sudo systemctl restart sysmon
 sudo systemctl status sysmon
