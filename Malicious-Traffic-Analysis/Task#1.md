@@ -10,7 +10,7 @@
 
 - Enable Network Resolution
 
-`Go to View > Name Resolution > Check both`
+`Go to View > Name Resolution > Check both` 
 
 ```sh
 ✓ Resolve Physical Addresses
