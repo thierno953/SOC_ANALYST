@@ -6,13 +6,13 @@
 
 - Son intérêt majeur réside dans sa capacité à fournir une visibilité granulaire sur les activités du système, ce qui est crucial pour :
 
-  > la détection d’activités suspectes ou malveillantes,
+  - la détection d’activités suspectes ou malveillantes,
 
-  > le répondant à incident,
+  - le répondant à incident,
 
-  > la chasse aux menaces (threat hunting),
+  - la chasse aux menaces (threat hunting),
 
-  > l’investigation post-incident, et la corrélation avec des outils de sécurité comme l’ELK Stack (Elasticsearch, Logstash, Kibana).
+  - l’investigation post-incident, et la corrélation avec des outils de sécurité comme l’ELK Stack (Elasticsearch, Logstash, Kibana).
 
 - En intégrant Sysmon for Linux avec une plateforme comme Kibana, les analystes SOC et les professionnels de la cybersécurité peuvent surveiller les comportements anormaux, déclencher des alertes, et établir des dashboards de sécurité centralisés et dynamiques.
 
@@ -54,9 +54,9 @@ tail -f /var/log/syslog | grep sysmon
 
 - Ajouter l’intégration et configurer :
 
-  > Paths : `/var/log/syslog*`
+  - Paths : `/var/log/syslog*`
 
-  > Associer à une **Agent Policy**
+  - Associer à une **Agent Policy**
 
 - Valider → Dashboards disponibles : `[Sysmon] Sysmon for Linux Logs Overview`
 
@@ -82,13 +82,14 @@ curl -X GET "https://bazaar.abuse.ch/" -v
 - `Visualiser les événements dans Kibana`
 
 ```sh
+process.name: sysmon and message: "*malicious"
 process.name: sysmon and message: "99"
 process.name: sysmon and message: "bazaar.abuse.ch"
 ```
 
 #### Réponse à l’incident
 
-> Identifier et supprimer les fichiers suspects
+- Identifier et supprimer les fichiers suspects
 
 ```sh
 find / -name "99-malicious-config" -type f
@@ -100,5 +101,6 @@ find / -name "99-malicious-config" -type f
 - Vérifier les connexions réseau actives
 
 ```sh
+apt install net-tools -y
 netstat -ltnp
 ```

@@ -12,7 +12,7 @@
 
 #### Vérifier l’intégration dans ELK
 
-> Dans Kibana
+- **Dans Kibana**
 
 - `Management > Fleet > Agents` : vérifier que l'agent Fleet est en ligne sur la machine cible (Windows).
 
@@ -26,29 +26,29 @@
 
 #### Simulation d'une attaque : persistance via la base de registre
 
-> Commande PowerShell
+- Commande PowerShell
 
 ```sh
-New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest2" -Value "C:\malwaretest2.exe"
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest1" -Value "C:\malwaretest1.exe"
 ```
 
-> Cette commande ajoute une entrée de persistance dans la clé `Run`, typique des malwares
+- Cette commande ajoute une entrée de persistance dans la clé `Run`, typique des malwares
 
 #### Visualisation dans Kibana
 
-> Interface : `Analystics > Discover`
+- Interface : `Analystics > Discover`
 
 ```sh
 event.code:13
 ```
 
-> **Sysmon Event ID 13** : Activité sur une clé de registre (création/modification).
+- **Sysmon Event ID 13** : Activité sur une clé de registre (création/modification).
 
 - Filtres additionnels :
 
 ```sh
 winlog.event_data.TargetObject : "*CurrentVersion\\Run*"
-winlog.event_data.Details : "*malwaretest2.exe*"
+winlog.event_data.Details : "*malwaretest1.exe*"
 ```
 
 #### Incident Response
@@ -60,5 +60,5 @@ winlog.event_data.Details : "*malwaretest2.exe*"
   - **Supprimer** la clé suspecte si elle est malveillante
 
 ```sh
-Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest2"
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest1"
 ```

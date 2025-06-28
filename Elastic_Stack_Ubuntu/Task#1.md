@@ -9,7 +9,7 @@
 
 - Accède à Kibana :
 
-  > Vérifie que l’agent est online et collecte bien les logs système.
+  - Vérifie que l’agent est online et collecte bien les logs système.
 
   `Management > Fleet > Fleet-Agent > View more agent metrics > Agent Info`
 
@@ -47,9 +47,7 @@ tail -f /var/log/auth.log
 
 #### Visualiser les événements dans Kibana Discover
 
-- Aller dans:
-
-  `Analytics > Discover`
+- Aller dans: `Analytics > Discover`
 
 - Filtrer avec KQL
 
@@ -64,43 +62,45 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 
 - Aller dans :
 
-  > `Security > Rules > Detection Rules > Create new rule`
+  - `Security > Rules > Detection Rules > Add Elastic rules`
 
 - Ajouter des règles existantes Elastic :
 
-  > Cliquer sur Add Elastic rules
+  - Cliquer sur Add Elastic rules
 
-  > Rechercher ssh brute, installer et activer
+  - Rechercher ssh brute, installer et activer
 
   - Activer les règles pertinentes :
 
-    > Potential Successful SSH Brute Force Attack
+    - Potential Successful SSH Brute Force Attack
 
-    > Potential External Linux SSH Brute Force
+    - Potential External Linux SSH Brute Force
 
-    > Potential Internal Linux SSH Brute Force
+    - Potential Internal Linux SSH Brute Force
 
 #### Génération et gestion d’une alerte de sécurité
 
-> Déclencher à nouveau l'attaque pour générer une alerte
+- Déclencher à nouveau l'attaque pour générer une alerte
 
 ```sh
 hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
 hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
+
+for i in {1..5}; do ssh fleet-server@<IP>; done 
 ```
 
 - Aller dans :
 
-  > `Security > Alerts`
+  - `Security > Alerts`
 
 - Créer un cas d’investigation :
 
-  > Cliquer sur l’alerte
+  - Cliquer sur l’alerte
 
-  > `Take action > Add to new case`
+  - `Take action > Add to new case`
 
-  > Nom du cas : `SSH brute force attempt`
+  - Nom du cas : `SSH brute force attempt`
 
-  > Description : `Tentative d'attaque par force brute SSH`
+  - Description : `Tentative d'attaque par force brute SSH`
 
-  > Valider avec `Create case`
+  - Valider avec `Create case`

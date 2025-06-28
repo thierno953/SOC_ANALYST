@@ -68,7 +68,7 @@ systemctl restart auditd
 
 - Dashboards disponibles :
 
-  > `[Logs Auditd] Audit Events`
+  - `[Logs Auditd] Audit Events`
 
 #### Simuler l'attaque et visualiser les événements
 
@@ -92,9 +92,7 @@ ausearch -k passwd_changes
 
 - Vérifier localement avec `ausearch`
 
-- Visualiser dans Kibana
-
-  > `Analytics > Discover`
+- Visualiser dans Kibana `Analytics > Discover`
 
 ```sh
 auditd.log.key:"passwd_changes"

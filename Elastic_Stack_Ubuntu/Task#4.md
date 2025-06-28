@@ -53,7 +53,6 @@ stats:
 ```sh
 sudo systemctl restart suricata
 sudo systemctl status suricata
-suricata-update
 ```
 
 - Logs :
@@ -63,8 +62,7 @@ cd /var/log/suricata/
 tail -f fast.log
 tail -f eve.json
 
-cd /etc/suricata/rules
-nano emerging-malware.rules
+nano /etc/suricata/rules/emerging-malware.rules
 ```
 
 #### Intégrer Suricata dans ELK

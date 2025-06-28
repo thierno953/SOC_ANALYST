@@ -12,9 +12,9 @@
 
 - Télécharger Sysmon et le fichier de configuration :
 
-  > [Sysmon (Microsoft)](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+  - [Sysmon (Microsoft)](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-  > [SwiftOnSecurity Sysmon Config](https://github.com/SwiftOnSecurity/sysmon-config)
+  - [SwiftOnSecurity Sysmon Config](https://github.com/SwiftOnSecurity/sysmon-config)
 
 #### Emplacement recommandé : `C:\Sysmon\`
 
@@ -43,11 +43,23 @@ Get-Service Sysmon*
 
 #### Intégrer à ELK (Fleet/Elastic Agent)
 
-- Dans l’interface Kibana (ELK) :
+- Dans l’interface Kibana :
 
-- Aller dans : `Management > Integrations > Windows`
+- Aller dans :
 
-- Ajouter l’intégration sur l’hôte Windows.
+`Management > Integrations > Windows`
+
+- Vérifier que les sources suivantes sont **actives** :
+
+  - Forwarded
+
+  - PowerShell
+
+  - PowerShell Operational
+
+  - Sysmon Operational
+
+- Ces journaux doivent être collectés par l’Elastic Agent installé sur la machine cible
 
 #### Simulation d’attaque RDP
 
@@ -68,29 +80,6 @@ hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
 
 ```sh
 winlog.channel:"Microsoft-Windows-Security-Auditing"
-event.code:4625 AND source.ip:"<IP_ATTACKER>"
+event.code: 3 and source.ip: "<IP_ATTACKER>"
+event.code: 3 and source.ip:"<IP_ATTACKER>" and rule.name: "RDP"
 ```
-
-> Event ID `4625` : Échec de tentative de connexion
-
-- **Exemple de requête Lucene**
-
-```sh
-event.code:4625 AND winlog.event_data.LogonType:10 AND source.ip:"<IP_ATTACKER>"
-```
-
-> `LogonType:10` correspond aux connexions RDP.
-
-#### Résolution / Réponse à l'incident
-
-- Vérifier les connexions répétées
-
-- Bloquer l’IP de l’attaquant
-
-- Activer la limitation des connexions RDP
-
-- Configurer une alerte dans Kibana :
-
-  - `Stack Management > Rules > Create Rule`
-
-  - Condition : `event.code:4625 AND count > 10 from same IP`
