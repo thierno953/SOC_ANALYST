@@ -60,7 +60,7 @@
 
 #### 1 - Analyse des logs système avec journalctl
 
-> `journalctl` permet d’afficher et de filtrer les journaux du système `systemd`.
+- `journalctl` permet d’afficher et de filtrer les journaux du système `systemd`.
 
 ```sh
 journalctl -n 100

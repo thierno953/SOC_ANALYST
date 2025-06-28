@@ -1,54 +1,54 @@
 # Forensics Windows
 
-> La pratique consistant à collecter et analyser des données provenant de systèmes Windows pour identifier, enquêter et se remettre d’incidents de sécurité.
+- La pratique consistant à collecter et analyser des données provenant de systèmes Windows pour identifier, enquêter et se remettre d’incidents de sécurité.
 
 - **Objectifs** :
 
-  > Identifier les activités malveillantes
-  > Récupérer des preuves
-  > Prévenir d'autres attaques
+  - Identifier les activités malveillantes
+  - Récupérer des preuves
+  - Prévenir d'autres attaques
 
-> **Domaines d’analyse principaux** : `système de fichiers, registre, journaux d’événements, mémoire, activité réseau`.
+- **Domaines d’analyse principaux** : `système de fichiers, registre, journaux d’événements, mémoire, activité réseau`.
 
 # Vue d'ensemble du processus d'intervention sur incident
 
 #### Composants clés de Forensics Windows
 
-> **Système de fichiers** : analyser les fichiers, dossiers, horodatages et données cachées.
+- **Système de fichiers** : analyser les fichiers, dossiers, horodatages et données cachées.
 
-> **Registre** : suivre les modifications de configuration, l'activité utilisateur et les paramètres d’applications.
+- **Registre** : suivre les modifications de configuration, l'activité utilisateur et les paramètres d’applications.
 
-> **Journaux d’événements** : examiner les journaux Sécurité, Application et Système pour détecter les événements pertinents.
+- **Journaux d’événements** : examiner les journaux Sécurité, Application et Système pour détecter les événements pertinents.
 
-> **Mémoire (RAM)** : capturer les données volatiles, y compris les processus en cours et les connexions réseau.
+- **Mémoire (RAM)** : capturer les données volatiles, y compris les processus en cours et les connexions réseau.
 
 #### Pourquoi Forensics Windows est importante
 
-> **Réponse aux incidents** : détecter et analyser l’étendue et l’impact d’une compromission.
+- **Réponse aux incidents** : détecter et analyser l’étendue et l’impact d’une compromission.
 
-> **Preuve légale** : garantir l'intégrité des données pour qu’elles soient recevables au tribunal.
+- **Preuve légale** : garantir l'intégrité des données pour qu’elles soient recevables au tribunal.
 
-> **Récupération** : aider à restaurer les systèmes à un état opérationnel après une attaque.
+- **Récupération** : aider à restaurer les systèmes à un état opérationnel après une attaque.
 
-> **Sécurité proactive** : améliorer les défenses en apprenant des incidents passés.
+- **Sécurité proactive** : améliorer les défenses en apprenant des incidents passés.
 
 #### Pourquoi utiliser PowerShell pour Forensics
 
-> **Outil en ligne de commande puissant** : intégré à Windows, donc facilement accessible.
+- **Outil en ligne de commande puissant** : intégré à Windows, donc facilement accessible.
 
-> **Automatisation** : permet d’automatiser les tâches récurrentes d’analyse et de réponse aux incidents.
+- **Automatisation** : permet d’automatiser les tâches récurrentes d’analyse et de réponse aux incidents.
 
-> **Accès au système** : accès direct aux fichiers, processus, journaux et réseau, sans outils tiers.
+- **Accès au système** : accès direct aux fichiers, processus, journaux et réseau, sans outils tiers.
 
-> **Souplesse de script** : possibilité de créer des scripts personnalisés pour les besoins spécifiques.
+- **Souplesse de script** : possibilité de créer des scripts personnalisés pour les besoins spécifiques.
 
 #### Cmdlets PowerShell clés pour Forensics
 
-> `Get-Process` : lister tous les processus en cours avec détails (mémoire, CPU, etc.).
-> `Get-EventLog` : récupérer et filtrer les journaux d’événements Windows.
-> `Get-FileHash` : générer des hachages (MD5, SHA256) pour vérifier l’intégrité des fichiers.
-> `Get-ChildItem` : lister récursivement les fichiers/dossiers avec métadonnées.
-> `Get-WmiObject` : accéder aux infos système (logiciels installés, éléments de démarrage, configurations...).
+- `Get-Process` : lister tous les processus en cours avec détails (mémoire, CPU, etc.).
+- `Get-EventLog` : récupérer et filtrer les journaux d’événements Windows.
+- `Get-FileHash` : générer des hachages (MD5, SHA256) pour vérifier l’intégrité des fichiers.
+- `Get-ChildItem` : lister récursivement les fichiers/dossiers avec métadonnées.
+- `Get-WmiObject` : accéder aux infos système (logiciels installés, éléments de démarrage, configurations...).
 
 #### 1 - Collecte d'informations système avec PowerShell
 
@@ -62,20 +62,20 @@ Get-Process | Format-Table -AutoSize | Out-File -FilePath C:\Users\Administrator
 
 #### 2 - Enquête sur les comptes utilisateurs
 
-> Lister tous les comptes AD
+- Lister tous les comptes AD
 
 ```sh
 Get-ADUser -Filter *
 Get-ADUser -Filter * | Select-Object Name, Enabled | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ADUserAccounts.txt
 ```
 
-> Lister les membres du groupe "Domain Admins" :
+- Lister les membres du groupe "Domain Admins" :
 
 ```sh
 Get-ADGroupMember -Identity "Domain Admins"
 ```
 
-> Obtenir les détails d’un utilisateur AD spécifique :
+- Obtenir les détails d’un utilisateur AD spécifique :
 
 ```sh
 Get-ADUser -Identity "thierno" -Properties *
