@@ -104,8 +104,6 @@ https://<IP_SERVER>:8889
 
 ![Velociraptor](/Velociraptor-Linux/assets/01.png)
 
-##### 2 - Velociraptor Client Set Up
-
 ```sh
 root@server:/opt/velociraptor# nano client.config.yaml
 ```
@@ -120,6 +118,8 @@ Client:
 root@server:/opt/velociraptor# ./velociraptor-v0.74.1-linux-amd64 --config client.config.yaml debian client
 root@server:/opt/velociraptor# scp velociraptor_client_0.73.1_amd64.deb client@<IP_CLIENT>:/tmp
 ```
+
+##### 2 - Velociraptor Client Set Up
 
 ```sh
 root@client:~# cd /tmp/
