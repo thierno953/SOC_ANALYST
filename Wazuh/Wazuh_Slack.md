@@ -13,67 +13,67 @@
 
 - Nous allons d'abord implémenter cela, nous allons créer notre canal Slack en utilisant ce guide.
 
-![Slack](/Wazuh/Wazuh_Slack/Wazuh_Slack/00.png)
+![Slack](/Wazuh/assets/00_slack.png)
 
 - Envoi de messages à l'aide du Web Hook entrant. Premiers pas avec le Web Hook entrant. Créez une application Slack
 
-![Slack](/Wazuh/Wazuh_Slack/01.png)
+![Slack](/Wazuh/assets/01_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/02.png)
+![Slack](/Wazuh/assets/02_slack.png)
 
 - Connecter ou nous allons créer un compte à cet effet vous avez besoin d'un email professionel ou d'une adresse e-mail d'entreprise. Je vais donc utiliser mon adresse Gmail
 
-![Slack](/Wazuh/Wazuh_Slack/03.png)
+![Slack](/Wazuh/assets/03_slack.png)
 
 - Nous avons reçu l'e-mail de confirmation sur notre cette adresse e-mail
 
-![Slack](/Wazuh/Wazuh_Slack/04.png)
+![Slack](/Wazuh/assets/04_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/05.png)
+![Slack](/Wazuh/assets/05_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/06.png)
+![Slack](/Wazuh/assets/06_slack.png)
 
 - Nous allons créer un nom d'espace de travail avec Wazuh
 
-![Slack](/Wazuh/Wazuh_Slack/07.png)
+![Slack](/Wazuh/assets/07_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/08.png)
+![Slack](/Wazuh/assets/08_slack.png)
 
 - Je vais ajouter de collègue par e-mail
 
-![Slack](/Wazuh/Wazuh_Slack/09.png)
+![Slack](/Wazuh/assets/09_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/10.png)
+![Slack](/Wazuh/assets/10_slack.png)
 
 - Nous devons créer notre application Slack
 
-![Slack](/Wazuh/Wazuh_Slack/11.png)
+![Slack](/Wazuh/assets/11_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/12.png)
+![Slack](/Wazuh/assets/12_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/13.png)
+![Slack](/Wazuh/assets/13_slack.png)
 
 - Activer le WebHook entrant, vous serez redirigé vers la page de configuration de votre nouvelle application ou si vous utilisez une application existante tableau de bord de gestion des applications à partir d'ici sélectionnez les webhooks entrants
 
-![Slack](/Wazuh/Wazuh_Slack/14.png)
+![Slack](/Wazuh/assets/14_slack.png)
 
-![Slack](/Wazuh/Wazuh_Slack/15.png)
+![Slack](/Wazuh/assets/15_slack.png)
 
 - Activer les webhooks entrants
 
-![Slack](/Wazuh/Wazuh_Slack/16.png)
+![Slack](/Wazuh/assets/16_slack.png)
 
 - Ajouter un nouveau webhook à l'espace d travail
 
-![Slack](/Wazuh/Wazuh_Slack/17.png)
+![Slack](/Wazuh/assets/17_slack.png)
 
 - Choisissez un canal sur lequel l'application publiera pour sélectionner, autoriser si vous devez ajouter le webhook entrant à un canal privé
 
-![Slack](/Wazuh/Wazuh_Slack/18.png)
+![Slack](/Wazuh/assets/18_slack.png)
 
 - Maintenant si vous devez ajouter le webhook entrant à un canal privé vous devez d'abord être dans ce canal vous serez renvoyé aux paramètres de l'application où devriez voir une nouvelle entrée sous l'URL du webhook, votre URL webhook ressemblera à quelque chose comme ça
 
-![Slack](/Wazuh/Wazuh_Slack/19.png)
+![Slack](/Wazuh/assets/19_slack.png)
 
 - Ajoutez la configuration ci-dessus à ce ficher `URL` sur le serveur Wazuh, remplacez l'URL du webhook par votre webhook entrant.
 
@@ -103,7 +103,7 @@ chown root:ossec /var/ossec/etc/ossec.conf
 service wazuh-manager restart
 ```
 
-![Slack](/Wazuh/Wazuh_Slack/20.png)
+![Slack](/Wazuh/assets/20_slack.png)
 
 #### Tester le fonctionnement
 
