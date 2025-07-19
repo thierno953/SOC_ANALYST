@@ -7,8 +7,7 @@
 #### Mise à jour & installation de Fail2Ban
 
 ```sh
-apt update
-apt install fail2ban -y
+apt update && apt install fail2ban -y
 ```
 
 #### Configuration de la prison SSH (jail.local)
@@ -88,7 +87,7 @@ apt update && apt install hydra -y
 #### Lancer une attaque brute force SSH
 
 ```sh
-hydra -l admin -P passwords.txt <IP_VICTIME> ssh
+hydra -l admin -P password.txt <IP_VICTIME> ssh
 ```
 
 - Assurez-vous que `admin` est un utilisateur existant et que le port SSH est accessible.
@@ -101,22 +100,16 @@ tail -f /var/log/fail2ban.log
 
 ## Analyse des événements sur Splunk
 
-#### Accéder à Splunk Web : `http://<IP_SPLUNK_SERVER>:8000`
-
-> `Requêtes dans Search & Reporting` 
+> `Requêtes dans Search & Reporting`
 
 ```sh
-index="fail2ban_logs"
+index="fail2ban_logs" sourcetype="fail2ban" | search "192.168.129.239"
 ```
 
-```sh
-index="fail2ban_logs" sourcetype="fail2ban" src="<IP_ATTACKER>"
-```
-
-```sh
-index="fail2ban_logs" | search "<IP_ATTACKER>"
-```
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_09.png)
 
 ```sh
 index="security_incidents" sourcetype="linux_secure" "Failed password"
 ```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_10.png)

@@ -44,9 +44,6 @@ vars:
     HOME_NET: "[IP_ADDRESS]"
     EXTERNAL_NET: "any"
 
-stats:
-  enabled: yes
-
 default-rule-path: /etc/suricata/rules
 rule-files:
   - "*.rules"
@@ -87,7 +84,8 @@ disabled = false
 sourcetype = auditd
 index = linux_file_integrity
 
-[monitor:///var/log/suricata/fast.log]
+#[monitor:///var/log/suricata/fast.log]
+[monitor:///var/log/suricata/eve.json]
 disabled = false
 index = network_security_logs
 sourcetype = suricata
@@ -96,7 +94,7 @@ sourcetype = suricata
 #### Redémarrer le Forwarder
 
 ```sh
-/opt/splunkforwarder/bin/splunk restart 
+/opt/splunkforwarder/bin/splunk restart
 ```
 
 ## Simulation d’une attaque (Scan TCP SYN)
@@ -112,6 +110,7 @@ nmap -sS <victim_IP>
 > `Requêtes dans Search & Reporting`
 
 ```sh
-index="network_security_logs" sourcetype="suricata"
 index="network_security_logs" sourcetype="suricata" src_ip="<IP_ATTACK_MACHINE>"
 ```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_14.png)

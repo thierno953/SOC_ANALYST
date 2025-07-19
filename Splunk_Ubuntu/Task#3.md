@@ -26,16 +26,17 @@ nano /etc/audit/rules.d/audit.rules
 #### Contenu de audit.rules
 
 ```sh
-## Supprimer toutes les règles existantes
+## First rule - delete all
 -D
 
-## Augmenter la taille du buffer pour les systèmes chargés
+## Increase the buffers to survive stress events.
+## Make this bigger for busy systems
 -b 8192
 
-## Temps d’attente en cas de surcharge
+## This determine how long to wait in burst of events
 --backlog_wait_time 60000
 
-## En cas d’échec, envoyer les logs au syslog
+## Set failure mode to syslog
 -f 1
 
 ## Surveiller les modifications dans /etc/
@@ -67,8 +68,8 @@ sourcetype = syslog
 
 [monitor:///var/log/audit/audit.log]
 disabled = false
-sourcetype = auditd
 index = linux_file_integrity
+sourcetype = auditd
 
 [monitor:///var/log/suricata/eve.json]
 disabled = false
@@ -107,11 +108,17 @@ ausearch -k file_integrity | grep myfirstfile
 ```
 
 > `Requêtes dans Search & Reporting`
- 
+
 - Utilise ces requêtes dans l’interface Splunk pour analyser
 
 ```sh
-index=linux_file_integrity sourcetype=auditd
 index=linux_file_integrity sourcetype=auditd "myfirstfile"
+```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_12.png)
+
+```sh
 index=linux_file_integrity sourcetype=auditd key=file_integrity
 ```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_13.png)

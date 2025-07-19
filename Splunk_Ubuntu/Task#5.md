@@ -74,25 +74,14 @@ echo "maluser:Password123!" | chpasswd
 
 ```sh
 # Vérifier les traces dans syslog
-tail -f /var/log/syslog | grep maluser 
+tail -f /var/log/syslog | grep maluser
 tail -f /var/log/auth.log | grep maluser
 ```
 
 > `Requêtes dans Search & Reporting`
 
 ```sh
-index="linux_os_logs"
-index="linux_os_logs" sourcetype=syslog "Process Create"
-index="linux_os_logs" sourcetype=syslog CommandLine="*adduser*"
-index="linux_os_logs" sourcetype=syslog User="maluser"
 index="linux_os_logs" process=sysmon maluser
-index="linux_os_logs" sourcetype=linux_secure "Accepted password for"
-```
-
-#### Création d'une alerte dans Splunk
-
-```sh
-index="linux_os_logs" sourcetype=syslog CommandLine="/usr/sbin/adduser*"
 ```
 
 #### Réponse à l’incident

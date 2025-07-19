@@ -33,7 +33,7 @@ sysmon -i sysmon-config.xml
 ```
 
 #### Vérifier que Sysmon fonctionne
- 
+
 ```sh
 sudo systemctl restart sysmon
 sudo systemctl status sysmon
@@ -44,8 +44,20 @@ sudo systemctl status sysmon
 #### Sur la machine d’attaque
 
 ```sh
-apt install ncat net-tools -y
-ncat -lnvp 4444
+root@attack:~# apt install ncat net-tools -y
+root@attack:~# ncat -lnvp 4444
+Ncat: Version 7.80 ( https://nmap.org/ncat )
+Ncat: Listening on :::4444
+Ncat: Listening on 0.0.0.0:4444
+Ncat: Connection from 192.168.129.166.
+Ncat: Connection from 192.168.129.166:33790.
+ls
+packages-microsoft-prod.deb
+snap
+splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
+sysmon-config.xml
+pwd
+/root
 ```
 
 #### Sur la machine compromise (victime) :
@@ -66,20 +78,12 @@ netstat -tulnp | grep 4444
 
 > `Requêtes dans Search & Reporting`
 
-- Affiche tous les logs liés à Sysmon.
-
-```sh
-index="linux_os_logs" process=sysmon
-```
-
+- Affiche tous les logs liés à Sysmon
 - Filtre sur les événements identifiés comme techniques de type Command.
-
-```sh
-index="linux_os_logs" process=sysmon TechniqueName=Command
-```
-
 - Recherche spécifique d’utilisation de ncat.
 
 ```sh
 index="linux_os_logs" process=sysmon TechniqueName=Command ncat
 ```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_11.png)

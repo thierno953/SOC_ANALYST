@@ -30,17 +30,17 @@ ufw status
 /opt/splunk/bin/splunk start --accept-license
 ```
 
-![Enterprise](/assets/splunk_linux_02.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_02.png)
 
-![Enterprise](/assets/splunk_linux_03.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_03.png)
 
-![Enterprise](/assets/splunk_linux_04.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_04.png)
 
-![Enterprise](/assets/splunk_linux_05.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_05.png)
 
-![Enterprise](/assets/splunk_linux_06.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_06.png)
 
-![Enterprise](/assets/splunk_linux_07.png)
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_07.png)
 
 ## Installation du Splunk Universal Forwarder (Client)
 
@@ -100,16 +100,10 @@ tail -f /var/log/syslog
 
 ## Configuration avancée : inputs.conf
 
-#### Accès au répertoire
-
-```sh
-cd /opt/splunkforwarder/etc/system/local/
-```
-
 #### Créer/éditer le fichier inputs.conf
 
 ```sh
-nano inputs.conf
+nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 #### Contenu du fichier inputs.conf
@@ -127,23 +121,10 @@ sourcetype = syslog
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-## Configuration sur l’interface Web Splunk
-
-#### Créer un index personnalisé
-
-- Aller dans `Settings > Indexes > New Index`
-
-- Nom : `linux_os_logs`
-
-#### (Optionnel) Créer un nouveau sourcetype
-
-- `Settings > Source types > New Source Type`
-
-- **Exemple** : `syslog`
-
-> `Requêtes dans Search & Reporting`
+#### `Requêtes dans Search & Reporting`
 
 ```sh
-index="linux_os_logs"
 index="linux_os_logs" sourcetype=syslog
 ```
+
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_08.png)
