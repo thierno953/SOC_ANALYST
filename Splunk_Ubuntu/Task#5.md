@@ -84,6 +84,8 @@ tail -f /var/log/auth.log | grep maluser
 index="linux_os_logs" process=sysmon maluser
 ```
 
+![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_15.png)
+
 #### Réponse à l’incident
 
 - Vérifier et supprimer le compte malveillant
