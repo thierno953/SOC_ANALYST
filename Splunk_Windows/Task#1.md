@@ -29,19 +29,15 @@ PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-exp
 
 `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
+![Enterprise](/Splunk_Windows/assets/splunk_windows_02.png)
+
 #### Configuration de Splunk Universal Forwarder
 
 - Modifier `inputs.conf` pour récupérer les logs Sysmon et autres
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
-```sh 
-[WinEventLog://Microsoft-Windows-Sysmon/Operational]
-disabled = 0
-index = sysmon_logs
-sourcetype = XmlWinEventLog:Sysmon
-renderXml = false
-
+```sh
 [WinEventLog://Application]
 disabled = 0
 index = windows_event_logs
@@ -56,6 +52,12 @@ sourcetype = WinEventLog:Security
 disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:System
+
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+disabled = 0
+index = sysmon_logs
+sourcetype = XmlWinEventLog:Sysmon
+renderXml = false
 ```
 
 - Gestion du service Splunk Universal Forwarder
@@ -88,10 +90,10 @@ hydra -l administrator -P password.txt <IP_VICTIM_MACHINE> rdp
 `Requêtes dans Search & Reporting`
 
 ```sh
-index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
-
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP_Attach_Machine>"
 ```
+
+![Enterprise](/Splunk_Windows/assets/splunk_windows_03.png)
 
 #### Réponse à incident
 
@@ -116,3 +118,5 @@ index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP_Attach_Mach
 ```sh
 New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>
 ```
+
+![Enterprise](/Splunk_Windows/assets/splunk_windows_04.png)

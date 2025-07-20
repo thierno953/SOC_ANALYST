@@ -9,11 +9,11 @@ index = windows_event_logs
 sourcetype = WinEventLog:Application
 
 [WinEventLog://Security]
-disabled = 0 
+disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:Security
 
-[WinEventLog://System] 
+[WinEventLog://System]
 disabled = 0
 index = windows_event_logs
 sourcetype = WinEventLog:System
@@ -24,6 +24,7 @@ sourcetype = WinEventLog:System
 ```sh
 PS C:\Users\Administrator> cd "C:\Program Files\SplunkUniversalForwarder\bin"
 PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
+PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe status
 ```
 
 #### Analyse des événements Windows dans le tableau de bord Splunk
@@ -33,3 +34,5 @@ PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
 ```sh
 index="windows_event_logs"
 ```
+
+![Enterprise](/Splunk_Windows/assets/splunk_windows_01.png)
