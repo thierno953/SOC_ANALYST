@@ -33,16 +33,17 @@ nano /etc/audit/rules.d/audit.rules
 - Contenu
 
 ```sh
-## Réinitialiser les règles
+## First rule - delete all
 -D
 
-## Buffers pour systèmes actifs
+## Increase the buffers to survive stress events.
+## Make this bigger for busy systems
 -b 8192
 
-## Délai d’attente en rafale
+## This determine how long to wait in burst of events
 --backlog_wait_time 60000
 
-## En cas d’échec, loguer dans syslog
+## Set failure mode to syslog
 -f 1
 
 ## Surveillance des fichiers sensibles
@@ -70,6 +71,10 @@ systemctl restart auditd
 
   - `[Logs Auditd] Audit Events`
 
+![ELK](/Elastic_Stack_Ubuntu/assets/08.png)
+
+![ELK](/Elastic_Stack_Ubuntu/assets/09.png)
+
 #### Simuler l'attaque et visualiser les événements
 
 - Simuler un changement dans /etc/passwd
@@ -96,8 +101,15 @@ ausearch -k passwd_changes
 
 ```sh
 auditd.log.key:"passwd_changes"
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/10.png)
+
+```sh
 message: "/etc/passwd"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/11.png)
 
 #### Réponse à l'incident
 

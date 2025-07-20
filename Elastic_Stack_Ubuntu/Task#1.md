@@ -52,11 +52,10 @@ tail -f /var/log/auth.log
 - Filtrer avec KQL
 
 ```sh
-event.outcome: "failure" and process.name: "sshd"
-
-# ou plus précisément
 event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/03.png)
 
 #### Création de règles de sécurité Elastic SIEM
 
@@ -86,7 +85,7 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
 hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
 
-for i in {1..5}; do ssh fleet-server@<IP>; done 
+for i in {1..5}; do ssh fleet-server@<IP>; done
 ```
 
 - Aller dans :

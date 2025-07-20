@@ -66,6 +66,8 @@ tail -f /var/log/syslog | grep sysmon
 process.name: sysmon
 ```
 
+![ELK](/Elastic_Stack_Ubuntu/assets/04.png)
+
 #### Simulation d’une activité malveillante
 
 - Simuler une configuration malicieuse (c’est-à-dire une configuration système suspecte qui pourrait être utilisée à des fins de compromission). [MalwareBazaar](https://bazaar.abuse.ch/)
@@ -83,9 +85,21 @@ curl -X GET "https://bazaar.abuse.ch/" -v
 
 ```sh
 process.name: sysmon and message: "*malicious"
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/05.png)
+
+```sh
 process.name: sysmon and message: "99"
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/06.png)
+
+```sh
 process.name: sysmon and message: "bazaar.abuse.ch"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/07.png)
 
 #### Réponse à l’incident
 

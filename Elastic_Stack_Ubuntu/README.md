@@ -153,3 +153,4 @@ sudo ./elastic-agent install \
 ```
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/02.png)
+
