@@ -41,13 +41,15 @@ Get-Service Sysmon*
 
 - Chemin : `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
+![ELK](/Elastic_Stack_Windows/assets/01.png)
+
 #### Intégrer à ELK (Fleet/Elastic Agent)
 
 - Dans l’interface Kibana :
 
 - Aller dans :
 
-`Management > Integrations > Windows`
+`Management > Integrations > Windows` 
 
 - Vérifier que les sources suivantes sont **actives** :
 
@@ -79,7 +81,7 @@ hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
   > Filtres à utiliser
 
 ```sh
-winlog.channel:"Microsoft-Windows-Security-Auditing"
-event.code: 3 and source.ip: "<IP_ATTACKER>"
-event.code: 3 and source.ip:"<IP_ATTACKER>" and rule.name: "RDP"
+event.code: 3 and source.ip: "<IP_ATTACKER>" and rule.name: "RDP"
 ```
+
+![ELK](/Elastic_Stack_Windows/assets/02.png)

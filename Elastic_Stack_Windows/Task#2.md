@@ -33,7 +33,7 @@
 ##### Simulation de l'attaque PowerShell
 
 - Commande PowerShell (à lancer depuis une session administrateur) [Anti Malware Testfile](https://www.eicar.org/download-anti-malware-testfile/)
-
+ 
 ```sh
 Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:USERPROFILE\Downloads\eicar.com.txt"
 ```
@@ -44,10 +44,12 @@ Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:U
 
 - Interface : `Analystics > Discover`
 
-#### Requêtes utiles
+#### Requêtes utiles 
 
 ```sh
 event.code:11
 ```
+
+![ELK](/Elastic_Stack_Windows/assets/03.png)
 
 - **Sysmon Event ID 11** : Détection de fichier créé, utilisé pour observer la génération du fichier malveillant.

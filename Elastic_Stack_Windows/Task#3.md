@@ -34,7 +34,7 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Na
 
 - Cette commande ajoute une entrée de persistance dans la clé `Run`, typique des malwares
 
-#### Visualisation dans Kibana
+#### Visualisation dans Kibana 
 
 - Interface : `Analystics > Discover`
 
@@ -42,14 +42,9 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Na
 event.code:13
 ```
 
+![ELK](/Elastic_Stack_Windows/assets/04.png)
+
 - **Sysmon Event ID 13** : Activité sur une clé de registre (création/modification).
-
-- Filtres additionnels :
-
-```sh
-winlog.event_data.TargetObject : "*CurrentVersion\\Run*"
-winlog.event_data.Details : "*malwaretest1.exe*"
-```
 
 #### Incident Response
 
