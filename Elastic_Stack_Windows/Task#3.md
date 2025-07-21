@@ -38,7 +38,7 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Na
 
 - Interface : `Analystics > Discover`
 
-```sh
+```sh 
 event.code:13
 ```
 

@@ -53,7 +53,7 @@ Get-Service Sysmon*
 
 - Vérifier que les sources suivantes sont **actives** :
 
-  - Forwarded
+  - Forwarded 
 
   - PowerShell
 
