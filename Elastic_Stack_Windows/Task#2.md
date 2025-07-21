@@ -51,6 +51,6 @@ event.code:11
 ```
 
 ![ELK](/Elastic_Stack_Windows/assets/03.png)
-
+ 
 - **Sysmon Event ID 11** : Détection de fichier créé, utilisé pour observer la génération du fichier malveillant.
  

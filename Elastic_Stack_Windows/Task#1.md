@@ -52,7 +52,7 @@ Get-Service Sysmon*
 `Management > Integrations > Windows` 
 
 - Vérifier que les sources suivantes sont **actives** :
-
+ 
   - Forwarded 
 
   - PowerShell

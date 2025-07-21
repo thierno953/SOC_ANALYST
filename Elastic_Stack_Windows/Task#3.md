@@ -51,7 +51,7 @@ event.code:13
 - Étapes de réponse :
 
   - **Vérifier** l’origine de l’ajout dans la base de registre.
-
+ 
   - **Supprimer** la clé suspecte si elle est malveillante
 
 ```sh
