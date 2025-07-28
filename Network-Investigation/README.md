@@ -1,5 +1,3 @@
-# Enquête sur les réseaux (détection des menaces, criminalistique et réponse aux incidents)
+# Network Investigation(Threat detection, Forensics and Incident Response)
 
-#### Description
-
-- Ce projet permet d'acquérir les compétences essentielles pour l'investigation réseau et la détection des menaces à l'aide d'outils standards. Bénéficiez d'une expérience pratique de l'analyse du trafic réseau, de l'identification des anomalies et de l'investigation des menaces potentielles.
+- This project provides hands-on experience in applying network traffic analysis techniques, detecting anomalies, and conducting threat investigations within a simulated environment using industry-standard tools.
