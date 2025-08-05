@@ -1,38 +1,38 @@
-# Investigation des modifications suspectes du Registre Windows
+# Investigation of Suspicious Windows Registry Modifications
 
-#### Vérification préalable
+- Preliminary Checks
 
-- **Vérifier que Sysmon est installé** avec une configuration qui collecte les événements liés au Registre (EventID 12, 13, 14).
+  - **Verify that Sysmon is installed** with a configuration that collects Registry-related events (Event IDs 12, 13, and 14).
 
-- **Confirmer que Splunk Universal Forwarder collecte bien les logs Sysmon** (`index=sysmon_logs`).
+  - **Confirm that Splunk Universal Forwarder is properly collecting Sysmon logs** (`index=sysmon_logs`).
 
-- Ouvrir l’éditeur de Registre : `Start > Registry Editor`
+  - Open the Registry Editor: `Start > Registry Editor`
 
-#### Simulation d’attaque : modification malveillante du Registre
+## Attack Simulation: Malicious Registry Modification
 
-> Simulation de modification malveillante du Registre
+#### Simulate a malicious registry modification:
 
 ```sh
 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest" -Value "C:\malwaretest.exe"
 
-# Vérification de la création
+# Verify the creation
 Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" | Select-Object MalwareTest
 echo 'echo malwaretest' > C:\malwaretest.exe
 ```
 
-- `Requêtes dans Search & Reporting`
+#### Search & Reporting Query in Splunk
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*malwaretest*"
 ```
 
-#### Réponse à incident : suppression de la clé malveillante
+## Incident Response: Delete Malicious Registry Key
 
 ```sh
-# Suppression de la clé malveillante
+# Remove the malicious key
 Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest"
 
-# Vérification de la suppression
+# Confirm the removal
 Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 ```

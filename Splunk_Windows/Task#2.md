@@ -1,17 +1,16 @@
-# Investigation des abus PowerShell sur les machines Windows
+# Investigation of PowerShell Abuse on Windows Machines
 
-#### Vérification de la collecte des logs PowerShell et Sysmon
-
-- Visualisation des logs PowerShell
-  - Ouvrir l’Observateur d’événements Windows
+- Verify PowerShell and Sysmon log collection
+  - Viewing PowerShell logs:
+  - Open Windows Event Viewer:
 
 `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > PowerShell > Operational`
 
 ![Enterprise](/Splunk_Windows/assets/splunk_windows_05.png)
 
-#### Configuration Splunk Universal Forwarder
+#### Splunk Universal Forwarder Configuration
 
-- Fichier `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
+- File `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
 ```sh
 [WinEventLog://Application]
@@ -42,15 +41,15 @@ sourcetype = WinEventLog:PowerShell
 renderXml = false
 ```
 
-- Redémarrage du service Splunk
+#### Restart Splunk service
 
 ```sh
 PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
 ```
 
-#### Simulation d’attaque PowerShell
+#### PowerShell attack simulation
 
-> [Télécharger un fichier de test EICAR (test anti-malware standard) pour simuler une activité suspecte](https://www.eicar.org/download-anti-malware-testfile/)
+> [Download the EICAR test file (standard anti-malware test) to simulate suspicious activity](https://www.eicar.org/download-anti-malware-testfile/)
 
 ```sh
 PS C:\Users\Administrator> Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:USERPROFILE\Downloads\eicar.com.txt"
@@ -58,15 +57,15 @@ PS C:\Users\Administrator> schtasks /create /tn "MaliciousTasks" /tr "C:\Malware
 PS C:\Users\Administrator> schtasks /run /tn "MaliciousTasks"
 ```
 
-#### Requêtes d’investigation dans Splunk
+#### Investigation queries in Splunk
 
-`Recherche d'activité PowerShell générale`
+- General PowerShell activity search
 
 ```sh
 index="powershell_logs" sourcetype="WinEventLog:PowerShell"
 ```
 
-`Recherche spécifique liée au fichier EICAR`
+- Specific search related to the `EICAR` file
 
 ```sh
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
@@ -74,28 +73,28 @@ index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
 
 ![Enterprise](/Splunk_Windows/assets/splunk_windows_06.png)
 
-#### Réponse à incident
+## Incident response
 
-- **Blocage via Windows Defender Firewall (sortant)**
+#### Blocking outbound via Windows Defender Firewall
 
-- Interface graphique :
+- GUI:
 
   - `Start > Windows Defender Firewall > Outbound Rules > New Rule`
 
-  - Type : Program
+  - Type: Program
 
-  - Cible : Tous les programmes ou uniquement PowerShell
+  - Target: All programs or PowerShell only
 
-  - Action : Bloquer la connexion
+  - Action: Block the connection
 
-  - Profils : Domain, Private, Public
+  - Profiles: Domain, Private, Public
 
-  - Nommer la règle, par exemple : "Block PowerShell Internet Access"
+  - Name the rule, e.g. "Block PowerShell Internet Access"
 
-- **Blocage via PowerShell**
+#### Blocking via PowerShell
 
 ```sh
-# Bloquer tout le trafic sortant (à utiliser avec précaution)
+# Block all outbound traffic (use with caution)
 New-NetFirewallRule -DisplayName "Block All Traffic" -Direction Outbound -Action Block
 ```
 

@@ -1,4 +1,4 @@
-# Installation et configuration du Splunk Universal Forwarder sur Windows Server 2022
+# Installation and Configuration of Splunk Universal Forwarder on Windows Server 2022
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
@@ -19,7 +19,7 @@ index = windows_event_logs
 sourcetype = WinEventLog:System
 ```
 
-> Redémarrage du service Splunk
+#### Restarting the Splunk service
 
 ```sh
 PS C:\Users\Administrator> cd "C:\Program Files\SplunkUniversalForwarder\bin"
@@ -27,9 +27,9 @@ PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe restart
 PS C:\Program Files\SplunkUniversalForwarder\bin> .\splunk.exe status
 ```
 
-#### Analyse des événements Windows dans le tableau de bord Splunk
+#### Windows Event Log Analysis in Splunk Dashboard
 
-> `Requêtes dans Search & Reporting`
+- Search queries in `Search & Reporting`
 
 ```sh
 index="windows_event_logs"

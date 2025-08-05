@@ -1,39 +1,37 @@
-# Investigation des attaques de force brute RDP sur les connexions Windows
+# Investigating RDP Brute Force Attacks on Windows Connections
 
-#### Installation et configuration de Sysmon
+#### Installation and Configuration of Sysmon
 
-> Téléchargement des composants :
+- [Sysmon for Windows](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-> [Sysmon pour Windows](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+- [Recommended Sysmon Configuration](https://github.com/SwiftOnSecurity/sysmon-config)
 
-> [Configuration Sysmon recommandée](https://github.com/SwiftOnSecurity/sysmon-config)
-
-#### Commandes d'installation
+#### Installation commands
 
 ```sh
-# Installer Sysmon avec configuration recommandée
+# Install Sysmon with recommended configuration
 C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 
-# Vérifier que le service Sysmon fonctionne
+# Check Sysmon service status
 C:\Users\Administrator\Downloads\Sysmon> Get-Service Sysmon*
 
-# Mettre à jour la configuration Sysmon
+# Update Sysmon configuration
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -c .\sysmonconfig-export.xml
 
-# Désinstaller ou mettre à jour la configuration
+# Uninstall or update configuration
 PS C:\Users\Administrator\Downloads\Sysmon> .\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
-- Visualisation des logs
-  - Ouvrir l'Observateur d'événements Windows :
+- Viewing logs:
+  - Open Windows `Event Viewer`:
 
 `Start > Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
 ![Enterprise](/Splunk_Windows/assets/splunk_windows_02.png)
 
-#### Configuration de Splunk Universal Forwarder
+## Configure Splunk Universal Forwarder
 
-- Modifier `inputs.conf` pour récupérer les logs Sysmon et autres
+- Edit `inputs.conf` to collect Sysmon and other logs:
 
 `C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf`
 
@@ -60,7 +58,7 @@ sourcetype = XmlWinEventLog:Sysmon
 renderXml = false
 ```
 
-- Gestion du service Splunk Universal Forwarder
+#### Managing Splunk Universal Forwarder service:
 
 ```sh
 cd "C:\Program Files\SplunkUniversalForwarder\bin"
@@ -69,54 +67,45 @@ cd "C:\Program Files\SplunkUniversalForwarder\bin"
 .\splunk.exe list forward-server
 ```
 
-#### Simulation d'attaque de force brute RDP
+## Simulate RDP brute force attack
 
-- Sur une machine Linux (attacker) :
-
-```sh
-# nano password.txt
-
-password123
-admin
-letmein
-Password1
-```
+- On a Linux attacker machine:
 
 ```sh
 apt install hydra -y
 hydra -l administrator -P password.txt <IP_VICTIM_MACHINE> rdp
 ```
 
-`Requêtes dans Search & Reporting`
+#### Search query in Splunk (Search & Reporting)
 
 ```sh
-index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP_Attach_Machine>"
+index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" SourceIp="<ATTACKER_IP>"
 ```
 
 ![Enterprise](/Splunk_Windows/assets/splunk_windows_03.png)
 
-#### Réponse à incident
+## Incident response
 
-- **Blocage via interface graphique Windows Defender Firewall**
+#### Block via Windows Defender Firewall GUI
 
-- Ouvrir : `Start > Windows Defender Firewall > Inbound Rules`
+- Open: `Start > Windows Defender Firewall > Inbound Rules`
 
-- Créer une nouvelle règle :
+- Create a new rule:
 
-  - Type : Ports TCP
+  - Type: TCP Ports
 
-  - Port local spécifique : 3389
+  - Specific local port: 3389
 
-  - Action : Bloquer la connexion
+  - Action: Block the connection
 
-  - Profils : Domain, Private, Public
+  - Profiles: Domain, Private, Public
 
-  - Nommer la règle : "Block RDP Brute Force"
+  - Name the rule: "Block RDP Brute Force"
 
-- **Blocage via PowerShell**
+#### Block via PowerShell
 
 ```sh
-New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP_ATTACK>
+New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <ATTACKER_IP>
 ```
 
 ![Enterprise](/Splunk_Windows/assets/splunk_windows_04.png)
