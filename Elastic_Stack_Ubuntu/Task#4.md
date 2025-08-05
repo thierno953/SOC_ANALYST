@@ -1,16 +1,16 @@
-# Enquête sur le trafic réseau avec Suricata et ELK
+# Network Traffic Investigation with Suricata and ELK
 
-#### Objectif
+#### Objective
 
-Détecter des activités réseau malveillantes ou suspectes en utilisant **Suricata** (IDS/IPS) et visualiser les événements dans **ELK Stack** (Elasticsearch, Logstash, Kibana).
+- Detect malicious or suspicious network activities using **Suricata** (IDS/IPS) and visualize the events in the **ELK Stack** (Elasticsearch, Logstash, Kibana).
 
-#### Installer et configurer Suricata
+## Installing and Configuring Suricata
 
-- **Suricata** est un moteur de détection d'intrusion réseau (IDS) et de prévention d'intrusion (IPS) open source. Il analyse le trafic réseau en temps réel et permet d’identifier des **comportements malveillants, des attaques, ou des anomalies** grâce à des règles de détection (comme celles d’**Emerging Threats**).
+- **Suricata** is an open-source Intrusion Detection System (IDS) and Intrusion Prevention System (IPS). It analyzes network traffic in real-time and can identify **malicious behavior, attacks, or anomalies** using detection rules (such as **Emerging Threats** rules).
 
-- Dans ce projet, Suricata est utilisé pour **surveiller les communications réseau de l’hôte analysé** et remonter les alertes de sécurité dans **ELK SIEM**. Cela permet aux analystes de **détecter des scans de ports, des connexions suspectes, ou des transferts de fichiers anormaux**, et de prendre des mesures de remédiation rapides.
+- In this project, Suricata is used to **monitor network communications on the target host** and forward security alerts to **ELK SIEM**. This enables analysts to **detect port scans, suspicious connections, or unusual file transfers**, and respond quickly.
 
-- [Pro of point Emerging Threats Rules](https://rules.emergingthreats.net/)
+- [Emerging Threats Rules Link](https://rules.emergingthreats.net/)
 
 ```sh
 sudo apt-get update
@@ -18,7 +18,7 @@ sudo add-apt-repository ppa:oisf/suricata-stable -y
 sudo apt-get install suricata -y
 ```
 
-- Ajout des règles de détection
+- Add detection rules:
 
 ```sh
 cd /etc/suricata && mkdir rules
@@ -29,12 +29,12 @@ sudo mv rules/*.rules /etc/suricata/rules/
 sudo chmod 640 /etc/suricata/rules/*.rules
 ```
 
-- Configuration de `suricata.yaml`
+- Configuration of `suricata.yaml`
 
 ```sh
 vars:
   address-groups:
-    HOME_NET: "[IP_FLEET_AGENT]"   # Adresse IP de l'hôte à surveiller
+    HOME_NET: "[IP_FLEET_AGENT]"   # IP address of the monitored host
     EXTERNAL_NET: "any"
 
 af-packet:
@@ -48,14 +48,14 @@ stats:
   enabled: yes
 ```
 
-- Démarrage
+- Start the service:
 
 ```sh
 sudo systemctl restart suricata
 sudo systemctl status suricata
 ```
 
-- Logs :
+- View logs:
 
 ```sh
 cd /var/log/suricata/
@@ -65,25 +65,25 @@ tail -f eve.json
 nano /etc/suricata/rules/emerging-malware.rules
 ```
 
-#### Intégrer Suricata dans ELK
+## Integrate Suricata with ELK
 
-- Aller dans Kibana → `Management > Integrations`
+- In Kibana ->` Management > Integrations`
 
-- Rechercher Suricata → Ajouter l’intégration
+- Search for **Suricata** -> Add the integration
 
-- Fichier source : `/var/log/suricata/eve.json`
+- File path: `/var/log/suricata/eve.json`
 
-- Sélectionner l’agent existant → **Save and Continue**
+- Select existing agent -> **Save and Continue**
 
 #### Dashboards :
 
-- **`[Logs Suricata] Alert Overview`**
+- `[Logs Suricata] Alert Overview`
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/12.png)
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/13.png)
 
-- **`[Logs Suricata] Events Overview`**
+- `[Logs Suricata] Events Overview`
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/14.png)
 
@@ -91,39 +91,37 @@ nano /etc/suricata/rules/emerging-malware.rules
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/16.png)
 
-#### Simuler une attaque et visualiser les alertes
+## Simulate an Attack and Visualize Alerts
 
-- Depuis une autre machine (attaquant) :
+- From another machine (attacker):
 
 ```sh
 nmap -sS <IP_FLEET_AGENT>
 nmap -A -T4 <IP_FLEET_AGENT>
 ```
 
-- Sur la machine surveillée
+- On the monitored host:
 
 ```sh
 tail -f /var/log/suricata/eve.json
 tail -f /var/log/suricata/fast.log
 ```
 
-#### Analyse dans Kibana :
-
-- `Discover > Requêtes KQL`
+#### Analysis in Kibana Go to `Discover > KQL Queries`:
 
 ```sh
 suricata.eve.alert.signature_id: *
-source.address: "<IP_ATTAQUANT>"
+source.address: "<ATTACKER_IP>"
 ```
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/17.png)
 
-#### Réponse à l'incident
+#### Incident Response
 
-- Identifier la signature et l'adresse IP source
+- Identify the signature and source IP address
 
-- Vérifier si l'activité est légitime ou malveillante
+- Check whether the activity is legitimate or malicious
 
-- Isoler l’hôte source ou bloquer le trafic si nécessaire
+- Isolate the source host or block the traffic if necessary
 
-- Mettre à jour les règles Suricata si besoin
+- Update Suricata rules if required

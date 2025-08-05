@@ -1,12 +1,12 @@
-# Enquête sur l'intégrité des fichiers à l'aide d'Auditd
+# Investigating File Integrity Using Auditd
 
-#### Objectif
+#### Objective
 
-Surveiller l’intégrité des fichiers critiques (ex: `/etc/passwd`, `/etc/shadow`) pour détecter des modifications suspectes sur un hôte Linux via **Auditd** et l'intégrer à **ELK SIEM** pour l'analyse centralisée.
+- Monitor the integrity of critical files (e.g., `/etc/passwd`, `/etc/shadow`) to detect suspicious changes on a Linux host using **Auditd**, and integrate it with **ELK SIEM** for centralized analysis.
 
-#### Installation d’Auditd
+## Installing Auditd
 
-- **Auditd** est un service de journalisation de sécurité intégré à Linux, utilisé pour **surveiller l'intégrité des fichiers critiques et détecter toute action suspecte** sur un hôte. Dans le cadre de notre projet, il est couplé avec **ELK SIEM** pour visualiser et analyser les événements en temps réel, renforçant ainsi notre capacité à réagir rapidement en cas de tentative de compromission.
+- **Auditd** is a security auditing service built into Linux, used to** monitor critical file integrity and detect any suspicious activity** on a host. In this project, it's integrated with **ELK SIEM** to visualize and analyze events in real time, enhancing our ability to respond quickly to potential compromises.
 
 ```sh
 apt update
@@ -16,58 +16,57 @@ systemctl start auditd
 systemctl status auditd
 ```
 
-- Vérification des logs
+- Check the logs:
 
 ```sh
 tail -f /var/log/audit/audit.log
 ```
 
-#### Configuration d’Auditd
+## Configuring Auditd
 
-- Modifier les règles d’audi
+- Edit the audit rules:
 
 ```sh
 nano /etc/audit/rules.d/audit.rules
 ```
 
-- Contenu
+- Example content:
 
 ```sh
-## First rule - delete all
+## First rule - delete all existing rules
 -D
 
-## Increase the buffers to survive stress events.
-## Make this bigger for busy systems
+## Increase buffers to handle stress events
 -b 8192
 
-## This determine how long to wait in burst of events
+## How long to wait for bursts of events
 --backlog_wait_time 60000
 
-## Set failure mode to syslog
+## Set failure mode to log to syslog
 -f 1
 
-## Surveillance des fichiers sensibles
+## Monitor sensitive files
 -w /etc/passwd -p wa -k passwd_changes
 -w /etc/shadow -p wa -k shadow_changes
 ```
 
-- Redémarrer le service
+-Restart the service:
 
 ```sh
 systemctl restart auditd
 ```
 
-#### Préparer ELK pour la détection
+## Preparing ELK for Detection
 
-- Aller dans Kibana → `Management > Integrations`
+- In **Kibana** -> `Management -> Integrations`
 
-- Rechercher Auditd Logs → Ajouter l’intégration
+- Search for `Auditd Logs` -> Add the integration
 
-- Chemins : `/var/log/audit/audit.log*`
+- Set file paths: `/var/log/audit/audit.log*`
 
-- Associer l’agent existant → Continuer → Valider
+- Assign to an existing **Agent Policy** -> Continue -> Confirm
 
-- Dashboards disponibles :
+- Available Dashboards:
 
   - `[Logs Auditd] Audit Events`
 
@@ -75,29 +74,29 @@ systemctl restart auditd
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/09.png)
 
-#### Simuler l'attaque et visualiser les événements
+## Simulating an Attack and Viewing Events
 
-- Simuler un changement dans /etc/passwd
+- Simulate a change to `/etc/passwd`:
 
 ```sh
-# Ajouter un utilisateur
+# Add a user
 adduser linuxuser
 passwd linuxuser
 
-# Modifier manuellement le fichier (simulation attaque)
+# Manually modify the file (simulate an attack)
 echo "testuser:x:1001:1001::/home/testuser:/bin/bash" >> /etc/passwd
 ```
 
-#### Visualiser les logs
+#### Viewing Logs
 
 ```sh
 tail -f /var/log/audit/audit.log
 ausearch -k passwd_changes
 ```
 
-- Vérifier localement avec `ausearch`
+- View locally using `ausearch`
 
-- Visualiser dans Kibana `Analytics > Discover`
+- View in Kibana -> `Analytics > Discover`
 
 ```sh
 auditd.log.key:"passwd_changes"
@@ -111,13 +110,13 @@ message: "/etc/passwd"
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/11.png)
 
-#### Réponse à l'incident
+## Incident Response
 
-- Supprimer la ligne manuelle ajoutée (ou commenter)
+- Remove the manually added line (or comment it out):
 
 ```sh
 nano /etc/passwd
 
-# Supprimer ou commenter :
+# Remove or comment out:
 # testuser:x:1001:1001::/home/testuser:/bin/bash
 ```

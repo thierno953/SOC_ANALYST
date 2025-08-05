@@ -1,55 +1,47 @@
-# Investigation des tentatives d'accès SSH non autorisées avec ELK SIEM
+# Investigating Unauthorized SSH Access Attempts with ELK SIEM
 
-- Vérifiez l'ELK et l'agent
-- Simulez l'attaque et visualisez les événements
-- Créez des règles de sécurité élastiques, détectez et enquêtez
-- Réponse aux incidents
+## Check ELK Stack and Fleet Agent
 
-#### Vérification du bon fonctionnement d'ELK et de l'agent Fleet
+- Access Kibana and verify that the agent is online and collecting system logs:
 
-- Accède à Kibana :
+  - Navigate to:
 
-  - Vérifie que l’agent est online et collecte bien les logs système.
+  `Management > Fleet > Fleet Agent > View more agent metrics > Agent Info`
 
-  `Management > Fleet > Fleet-Agent > View more agent metrics > Agent Info`
+## Simulate an SSH Brute-Force Attack and View Logs
 
-#### Simulation d’une attaque brute-force SSH et visualisation des logs
-
-- Depuis la machine d’attaque (par exemple attack-ubuntu)
+- From the attack machine (e.g., `attack-ubuntu`):
 
 ```sh
-# Installer Hydra
+# Install Hydra
 sudo apt install hydra -y
 
-# Créer une liste de mots de passe
+# Create a password list
 echo -e "password\n123456\nadmin\nroot\nthierno" > password.txt
 
-# Lancer une attaque brute-force SSH contre l’agent Fleet
-hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
+# Launch a brute-force SSH attack against the Fleet Agent
+hydra -l thierno -P password.txt <FLEET_AGENT_IP> ssh
 ```
 
-#### Sur la machine Fleet Agent
+#### On the Fleet Agent machine:
 
 ```sh
-# Observer les logs d’authentification en temps réel
+# Monitor authentication logs in real time
 tail -f /var/log/auth.log
 ```
 
-- Répéter avec un autre utilisateur
+- Repeat with another user:
 
 ```sh
-hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
-```
-
-```sh
+hydra -l root -P password.txt <FLEET_AGENT_IP> ssh
 tail -f /var/log/auth.log
 ```
 
-#### Visualiser les événements dans Kibana Discover
+#### View SSH Logs in Kibana Discover
 
-- Aller dans: `Analytics > Discover`
+- Navigate to: `Analytics > Discover`
 
-- Filtrer avec KQL
+- Use **KQL (Kibana Query Language)** to filter SSH failure logs:
 
 ```sh
 event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
@@ -57,49 +49,46 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 
 ![ELK](/Elastic_Stack_Ubuntu/assets/03.png)
 
-#### Création de règles de sécurité Elastic SIEM
+## Create Elastic SIEM Detection Rules
 
-- Aller dans :
+- Go to:` Security > Rules > Detection Rules > Add Elastic rules`
 
-  - `Security > Rules > Detection Rules > Add Elastic rules`
+- Add existing Elastic rules:
 
-- Ajouter des règles existantes Elastic :
+  - Click **Add Elastic rules**
 
-  - Cliquer sur Add Elastic rules
+  - Search for: `ssh brute`
 
-  - Rechercher ssh brute, installer et activer
+  - Install and **enable** relevant rules such as:
 
-  - Activer les règles pertinentes :
+    - **Potential Successful SSH Brute Force Attack**
 
-    - Potential Successful SSH Brute Force Attack
+    - **Potential External Linux SSH Brute Force**
 
-    - Potential External Linux SSH Brute Force
+    - **Potential Internal Linux SSH Brute Force**
 
-    - Potential Internal Linux SSH Brute Force
+## Generate and Manage a Security Alert
 
-#### Génération et gestion d’une alerte de sécurité
-
-- Déclencher à nouveau l'attaque pour générer une alerte
+- Trigger the attack again to generate alerts:
 
 ```sh
-hydra -l thierno -P password.txt <IP_FLEET_AGENT> ssh
-hydra -l root -P password.txt <IP_FLEET_AGENT> ssh
+hydra -l thierno -P password.txt <FLEET_AGENT_IP> ssh
+hydra -l root -P password.txt <FLEET_AGENT_IP> ssh
 
+# Trigger additional failed login attempts
 for i in {1..5}; do ssh fleet-server@<IP>; done
 ```
 
-- Aller dans :
+- Go to: `Security > Alerts`
 
-  - `Security > Alerts`
+- Create an investigation case:
 
-- Créer un cas d’investigation :
+  - Click the alert
 
-  - Cliquer sur l’alerte
+  - Click `Take action > Add to new case`
 
-  - `Take action > Add to new case`
+  - Name the case: `SSH brute force attempt`
 
-  - Nom du cas : `SSH brute force attempt`
+  - Description: `Attempted SSH brute-force attack`
 
-  - Description : `Tentative d'attaque par force brute SSH`
-
-  - Valider avec `Create case`
+  - Confirm with: `Create case`
