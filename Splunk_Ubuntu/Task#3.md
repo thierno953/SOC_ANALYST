@@ -1,14 +1,14 @@
-# Surveillance de l'intégrité des fichiers sensibles
+# Sensitive File Integrity Monitoring
 
-- Installer et configurer auditd pour la surveillance des fichiers sensibles
+- Install and configure **auditd** to monitor sensitive files
 
-- Configurer l'envoi des logs vers Splunk
+- Configure sending logs to Splunk
 
-- Simuler une attaque (modification non autorisée)
+- Simulate an attack (unauthorized modification)
 
-- Analyser les logs et répondre à l'incident
+- Analyze logs and respond to the incident
 
-#### Installation et configuration de auditd
+#### Installing and configuring auditd
 
 ```sh
 apt-get update
@@ -17,48 +17,47 @@ systemctl start auditd
 systemctl status auditd
 ```
 
-#### Configuration des règles d'intégrité :
+#### Configure integrity rules:
 
 ```sh
 nano /etc/audit/rules.d/audit.rules
 ```
 
-#### Contenu de audit.rules
+#### Content of audit.rules
 
 ```sh
-## First rule - delete all
+## First rule - delete all existing rules
 -D
 
-## Increase the buffers to survive stress events.
-## Make this bigger for busy systems
+## Increase buffers to handle burst events (increase for busy systems)
 -b 8192
 
-## This determine how long to wait in burst of events
+## Time to wait during event bursts
 --backlog_wait_time 60000
 
 ## Set failure mode to syslog
 -f 1
 
-## Surveiller les modifications dans /etc/
+## Watch for changes in /etc/
 -w /etc/ -p wa -k file_integrity
 ```
 
-#### Appliquer les règles
+#### Apply the rules
 
 ```sh
 systemctl restart auditd
-auditctl -l   # Vérifier que la règle est bien en place
+auditctl -l   # Verify that the rules are loaded
 ```
 
-## Configuration de Splunk Universal Forwarder
+## Configure Splunk Universal Forwarder
 
-#### Modifier inputs.conf
+- Edit `inputs.conf`
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
-#### Contenu du fichier inputs.conf
+- Content of `inputs.conf`
 
 ```sh
 [monitor:///var/log/syslog]
@@ -77,39 +76,39 @@ index = network_security_logs
 sourcetype = suricata
 ```
 
-#### Redémarrer Splunk Forwarder
+#### Restart the Splunk Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-## Simulation d'une attaque (modification non autorisée)
+## Simulate an attack (unauthorized modification)
 
-#### Créer ou modifier un fichier dans /etc/
+- Create or modify a file in `/etc/`
 
 ```sh
 nano /etc/myfirstfile.txt
 
-# Contenu du fichier
+# File content
 This is my first file.
 ```
 
-#### Surveiller les logs en temps réel
+#### Monitor logs in real time
 
 ```sh
 tail -f /var/log/audit/audit.log
 ```
 
-#### Rechercher les logs liés à la clé file_integrity
+#### Search logs related to the key `file_integrity`
 
 ```sh
 ausearch -k file_integrity
 ausearch -k file_integrity | grep myfirstfile
 ```
 
-> `Requêtes dans Search & Reporting`
+#### Search queries in Splunk `Search & Reporting`
 
-- Utilise ces requêtes dans l’interface Splunk pour analyser
+- Use these queries in Splunk UI to analyze the events
 
 ```sh
 index=linux_file_integrity sourcetype=auditd "myfirstfile"

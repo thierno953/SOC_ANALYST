@@ -1,16 +1,16 @@
-# Détection du trafic réseau anormal
+# Detection of Abnormal Network Traffic
 
-- Installer et configurer Suricata IDS
+- Install and configure Suricata IDS
 
-- Intégrer les logs dans Splunk
+- Integrate logs into Splunk
 
-- Simuler un scan malveillant
+- Simulate a malicious scan
 
-- Visualiser et analyser les alertes
+- Visualize and analyze alerts
 
-- Réagir à l’incident
+- Respond to the incident
 
-#### Installation et configuration de Suricata
+#### Installing and configuring Suricata
 
 - [Proofpoint Emerging Threats Rules](https://rules.emergingthreats.net/)
 
@@ -20,7 +20,7 @@ add-apt-repository ppa:oisf/suricata-stable -y
 apt-get install suricata -y
 ```
 
-#### Téléchargement des règles ET (Emerging Threats) :
+#### Download Emerging Threats (ET) rules:
 
 ```sh
 cd /etc/suricata && mkdir rules && cd && cd /tmp/
@@ -30,13 +30,13 @@ mv rules/*.rules /etc/suricata/rules/
 chmod 640 /etc/suricata/rules/*.rules
 ```
 
-#### Exemple d’édition de règle spécifique
+#### Example: Editing a specific rule
 
 ```sh
 nano /etc/suricata/rules/emerging-malware.rules
 ```
 
-#### Configuration de Suricata (/etc/suricata/suricata.yaml)
+#### Suricata configuration file (`/etc/suricata/suricata.yaml`)
 
 ```sh
 vars:
@@ -52,9 +52,9 @@ af-packet:
   - interface: enp0s3
 ```
 
-- **NB** : Remplace [`IP_ADDRESS`] par l’adresse IP réelle de la machine cible (victime)
+- **Note**: Replace [`IP_ADDRESS`] with the actual IP address of the target machine (`victim`).
 
-#### Démarrage et test de Suricata
+#### Starting and testing Suricata
 
 ```sh
 systemctl restart suricata
@@ -63,15 +63,15 @@ cd /var/log/suricata/
 tail -f fast.log
 ```
 
-## Configuration de Splunk Universal Forwarder
+## Configure Splunk Universal Forwarder
 
-#### Modifier inputs.conf
+- Edit `inputs.conf`
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
-#### Contenu du fichier
+- Content of `inputs.conf`
 
 ```sh
 [monitor:///var/log/syslog]
@@ -91,23 +91,23 @@ index = network_security_logs
 sourcetype = suricata
 ```
 
-#### Redémarrer le Forwarder
+#### Restart the Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-## Simulation d’une attaque (Scan TCP SYN)
+## Simulate an attack (TCP SYN scan)
 
-#### Depuis la machine attacker
+#### From the attacker machine:
 
 ```sh
 nmap -sS <victim_IP>
 ```
 
-## Visualisation dans Splunk (Search & Reporting)
+## Visualization in Splunk (Search & Reporting)
 
-> `Requêtes dans Search & Reporting`
+- `Search queries`
 
 ```sh
 index="network_security_logs" sourcetype="suricata" src_ip="<IP_ATTACK_MACHINE>"

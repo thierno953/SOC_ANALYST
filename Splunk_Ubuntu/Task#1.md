@@ -1,22 +1,22 @@
-# Détection d'accès non autorisé par Fail2Ban
+# Unauthorized Access Detection with Fail2Ban
 
-- Détection d'accès non autorisé via SSH sur Linux à l'aide de Fail2Ban, avec envoi des logs vers Splunk via Universal Forwarder.
+- Detect unauthorized SSH access on Linux using **Fail2Ban**, with logs sent to **Splunk** via the **Universal Forwarder**.
 
-## Installer et configurer Fail2Ban sur la machine cible
+## Install and Configure Fail2Ban on the Target Machine
 
-#### Mise à jour & installation de Fail2Ban
+#### Update and install Fail2Ban
 
 ```sh
 apt update && apt install fail2ban -y
 ```
 
-#### Configuration de la prison SSH (jail.local)
+#### Configure the SSH jail (`jail.local`)
 
 ```sh
 nano /etc/fail2ban/jail.local
 ```
 
-#### Contenu du fichier :
+- Content of the file:
 
 ```sh
 [sshd]
@@ -28,7 +28,7 @@ bantime = 600
 findtime = 600
 ```
 
-#### Redémarrer et vérifier l’état de Fail2Ban
+#### Restart and check Fail2Ban status
 
 ```sh
 systemctl restart fail2ban
@@ -36,21 +36,21 @@ fail2ban-client status
 tail -f /var/log/fail2ban.log
 ```
 
-## Configurer le Splunk Universal Forwarder pour collecter les logs
+## Configure the Splunk Universal Forwarder to Collect Logs
 
-#### Ajout du suivi des fichiers de log
+#### Add monitoring of the log files
 
 ```sh
 /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
 ```
 
-#### Modifier inputs.conf pour ajouter les logs Fail2Ban et SSH
+#### Edit `inputs.conf` to include Fail2Ban and SSH logs
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
-#### Contenu du fichier :
+- Content of the file:
 
 ```sh
 [monitor:///var/log/syslog]
@@ -70,37 +70,37 @@ index = fail2ban_logs
 sourcetype = fail2ban
 ```
 
-#### Redémarrage du Forwarder
+#### Restart the Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-## Simuler une attaque SSH brute force
+## Simulate an SSH Brute Force Attack
 
-#### Sur la machine attacker, installer Hydra
+#### On the attacking machine, install Hydra
 
 ```sh
 apt update && apt install hydra -y
 ```
 
-#### Lancer une attaque brute force SSH
+#### Launch an SSH brute force attack
 
 ```sh
 hydra -l admin -P password.txt <IP_VICTIME> ssh
 ```
 
-- Assurez-vous que `admin` est un utilisateur existant et que le port SSH est accessible.
+- Make sure `admin` is an existing user and the SSH port is reachable.
 
-#### Observer les logs sur la machine victime
+#### Observe logs on the victim machine
 
 ```sh
 tail -f /var/log/fail2ban.log
 ```
 
-## Analyse des événements sur Splunk
+## Event Analysis in Splunk
 
-> `Requêtes dans Search & Reporting`
+#### Search queries in Splunk's Search & Reporting App:
 
 ```sh
 index="fail2ban_logs" sourcetype="fail2ban" | search "192.168.129.239"

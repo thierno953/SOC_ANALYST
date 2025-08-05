@@ -1,54 +1,54 @@
-# Surveillance de l'activité des comptes utilisateurs
+# User Account Activity Monitoring
 
-- Installer Sysmon for Linux
+- Install Sysmon for Linux
 
-- Configurer l’ingestion des logs avec Splunk
+- Configure log ingestion with Splunk
 
-- Simuler une activité malveillante
+- Simulate malicious activity
 
-- Visualiser les événements dans Splunk
+- Visualize events in Splunk
 
-- Réagir à l’incident
+- Respond to the incident
 
-#### Installateur Sysmon pour Linux
+#### Install Sysmon for Linux
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
 ```sh
-# Ajouter le dépôt Microsoft
+# Add Microsoft repository
 wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
 sudo apt-get update
 sudo apt-get install sysmonforlinux -y
 ```
 
-#### Créer et appliquer un fichier de configuration Sysmon
+#### Create and apply a Sysmon configuration file
 
 ```sh
-# Télécharger ou copier un fichier de configuration XML personnalisé
+# Download or create a custom XML config file
 nano sysmon-config.xml
 ```
 
 - [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
 
 ```sh
-# Appliquer la configuration
+# Apply the configuration
 sysmon -i sysmon-config.xml
 
-# Vérification du statut
+# Check service status
 systemctl restart sysmon
 systemctl status sysmon
 ```
 
-#### Configurer Splunk Universal Forwarder
+#### Configure Splunk Universal Forwarder
 
 ```sh
-# Vérifier la présence de logs sysmon dans syslog
+# Check for sysmon logs in syslog
 grep -i sysmon /var/log/syslog
 ```
 
 ```sh
-# Modifier la configuration d’entrée de Splunk
+# Edit Splunk input configuration
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
@@ -60,25 +60,25 @@ sourcetype = syslog
 ```
 
 ```sh
-# Redémarrer le Forwarder Splunk
+# Restart Splunk Forwarder
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-#### Simuler une activité malveillante
+#### Simulate malicious activity
 
 ```sh
-# Création d’un faux utilisateur
+# Create a fake user
 adduser maluser --disabled-password --gecos ""
 echo "maluser:Password123!" | chpasswd
 ```
 
 ```sh
-# Vérifier les traces dans syslog
+# Monitor traces in syslog and auth.log
 tail -f /var/log/syslog | grep maluser
 tail -f /var/log/auth.log | grep maluser
 ```
 
-> `Requêtes dans Search & Reporting`
+#### Search queries in Splunk `Search & Reporting`
 
 ```sh
 index="linux_os_logs" process=sysmon maluser
@@ -86,9 +86,9 @@ index="linux_os_logs" process=sysmon maluser
 
 ![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_15.png)
 
-#### Réponse à l’incident
+## Incident Response
 
-- Vérifier et supprimer le compte malveillant
+- Verify and remove the malicious account
 
 ```sh
 less /etc/passwd
