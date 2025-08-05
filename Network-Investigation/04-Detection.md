@@ -88,11 +88,13 @@ sudo nano suricata.yaml
 vars:
   address-groups:
     HOME_NET: "[192.168.0.0/24]"
+    
     EXTERNAL_NET: "!$HOME_NET"
 
 default-rule-path: /var/lib/suricata/rules
 
 rule-files:
+# - suricata.rules
   - custom.rules
 
 stats:
@@ -131,7 +133,7 @@ sudo suricata -c /etc/suricata/suricata.yaml -i enp0s8
 ```sh
 cd /var/log/suricata/
 tail -f fast.log
-```
+``` 
 
 ## Lab: Detect Nmap Scan
 
