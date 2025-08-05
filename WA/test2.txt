@@ -1,0 +1,708 @@
+# ================INSTALL & INTEGRATE WAZUH===================
+
+```sh
+
+sudo su 
+
+df -h /
+sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
+df -h /
+
+#https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/installation-assistant.html
+
+curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh
+curl -sO https://packages.wazuh.com/4.12/config.yml
+nano config.yml
+bash wazuh-install.sh --generate-config-files
+curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh
+bash wazuh-install.sh --wazuh-indexer node-1
+bash wazuh-install.sh --start-cluster
+tar -axf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt -O | grep -P "\'admin\'" -A 1
+curl -k -u admin:<ADMIN_PASSWORD> https://<WAZUH_INDEXER_IP>:9200
+curl -k -u admin:<ADMIN_PASSWORD> https://<WAZUH_INDEXER_IP>:9200/_cat/nodes?v
+
+#https://documentation.wazuh.com/current/installation-guide/wazuh-server/installation-assistant.html
+
+bash wazuh-install.sh --wazuh-server wazuh-1
+
+#https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/installation-assistant.html
+
+bash wazuh-install.sh --wazuh-dashboard dashboard
+
+sudo ufw allow 1514/tcp  # Agent Wazuh
+sudo ufw allow 55000/tcp # API
+sudo ufw allow 9200/tcp  # Indexer
+sudo ufw allow 5601/tcp  # Dashboard
+sudo ufw allow OpenSSH   # Connexion SSH
+sudo ufw enable
+
+nano /var/ossec/etc/internal_options.conf
+
+```sh
+vulnerability-detection.disable_scan_manager=1 --> vulnerability-detection.disable_scan_manager=0
+```
+
+nano /var/ossec/etc/ossec.conf
+
+```sh
+<ossec_config>
+  ...
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/var/log/wazuh/wazuh.log</location>
+  </localfile>
+</ossec_config>
+```
+
+sudo systemctl restart wazuh-manager
+
+#######################################################################################################
+
+# https://documentation.wazuh.com/current/proof-of-concept-guide/integrate-network-ids-suricata.html
+
+root@agent01:~# sudo add-apt-repository ppa:oisf/suricata-stable
+root@agent01:~# sudo apt-get update
+root@agent01:~# sudo apt-get install suricata -y
+root@agent01:~# cd /tmp/ && curl -LO https://rules.emergingthreats.net/open/suricata-6.0.8/emerging.rules.tar.gz
+root@agent01:~# sudo tar -xvzf emerging.rules.tar.gz && sudo mkdir /etc/suricata/rules && sudo mv rules/*.rules /etc/suricata/rules/
+root@agent01:~# sudo chmod 640 /etc/suricata/rules/*.rules
+
+root@agent01:~# nano /etc/suricata/rules/local.rules
+
+```sh
+alert tcp any any -> any any (msg:"[CUSTOM] Nmap SYN Scan Detected"; flags:S; threshold:type both, track by_src, count 10, seconds 30; sid:10000001; rev:1;)
+alert icmp any any -> any any (msg:"[CUSTOM] ICMP Flood Detected"; itype:8; threshold:type both, track by_src, count 100, seconds 10; sid:10000002; rev:1;)
+alert tcp any any -> any any (msg:"[CUSTOM] TCP SYN Flood Detected"; flags:S; threshold:type both, track by_src, count 50, seconds 10; sid:10000003; rev:1;)
+alert tcp any any -> any any (msg:"[CUSTOM] Nmap SYN Scan Detected"; flags:S; threshold:type both, track by_src, count 10, seconds 30; classtype:attempted-recon; sid:10000001; rev:1;)
+```
+
+root@agent01:~# nano /etc/suricata/suricata.yaml
+
+```sh
+HOME_NET: "<UBUNTU_IP>"
+EXTERNAL_NET: "any"
+
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - "*.rules"
+  - local.rules
+
+# Global stats configuration
+stats:
+enabled: yes
+
+# Linux high speed capture support
+af-packet:
+  - interface: enp0s3
+```
+
+root@agent01:/home/agent01# sudo systemctl restart suricata
+root@agent01:/home/agent01# nano /var/ossec/etc/ossec.conf
+
+```sh
+<ossec_config>
+  <localfile>
+    <log_format>json</log_format>
+    <location>/var/log/suricata/eve.json</location>
+  </localfile>
+</ossec_config>
+```
+
+root@agent01:/home/agent01# sudo systemctl restart wazuh-agent
+root@agent01:~# tail -f /var/log/suricata/fast.log
+root@agent01:~# tail -f /var/log/suricata/eve.json
+
+```sh 
+root@barry-HP:~# nmap -sS -T5 192.168.129.99
+root@barry-HP:~# ping -c 100 192.168.129.99
+root@barry-HP:~# sudo hping3 -1 --flood 192.168.129.102
+root@barry-HP:~# sudo hping3 --icmp --flood 192.168.129.99
+root@barry-HP:~# sudo hping3 -S --flood --rand-source -p 80 192.168.129.99
+```
+
+#######################################################################################################
+
+# https://documentation.wazuh.com/current/proof-of-concept-guide/poc-file-integrity-monitoring.html
+
+root@agent01:~# nano /var/ossec/etc/ossec.conf
+
+```sh
+<!-- FIM Linux -->
+<directories check_all="yes" report_changes="yes" realtime="yes">/root</directories>
+<directories check_all="yes" report_changes="yes" realtime="yes">/etc/shadow</directories>
+<directories check_all="yes" report_changes="yes" realtime="yes">/etc/group</directories>
+<directories check_all="yes" report_changes="yes" realtime="yes">/etc/passwd</directories>
+```
+
+root@agent01:~# sudo systemctl restart wazuh-agent
+
+root@agent01:~# nano beta
+
+```sh
+This is my Under monitoring
+```
+
+```sh
+<directories check_all="yes" report_changes="yes" realtime="yes">C:\Users\Administrator\Desktop</directories>
+```
+PS C:\Users\Administrator> Restart-Service -Name wazuh
+PS C:\Users\Administrator> echo test > C:\Users\Administrator\Desktop\test123.txt
+
+#######################################################################################################
+
+#SSH Brute Force Attack Detection Using WAZUH
+
+sudo apt install openssh-server 
+sudo systemctl start ssh 
+sudo systemctl status ssh 
+
+-------------
+# Users.lst
+root
+admin
+test
+
+-----------
+# nano Passwords.lst
+123456
+admin
+password
+
+#https://documentation.wazuh.com/current/proof-of-concept-guide/detect-brute-force-attack.html
+
+root@barry-HP:~# medusa -U Users.lst -P Passwords.lst -h 192.168.129.99 -M ssh
+root@barry-HP:~# nmap -p 22 192.168.129.99
+root@barry-HP:~# medusa -U Users.lst -P Passwords.lst -h 192.168.129.99 -M ssh -vV
+
+22/tcp open  ssh
+
+root@agent01:~# nano /var/ossec/etc/ossec.conf
+
+```sh
+<!-- SSH logs -->
+<localfile>
+  <log_format>syslog</log_format>
+  <location>/var/log/auth.log</location>
+</localfile>
+
+<localfile>
+  <log_format>syslog</log_format>
+  <location>/var/log/fail2ban.log</location>
+</localfile>
+```
+
+root@agent01:~# sudo systemctl restart wazuh-agent
+
+#######################################################################################################
+
+#https://documentation.wazuh.com/current/user-manual/capabilities/active-response/ar-use-cases/blocking-ssh-brute-force.html
+
+#Brute Force Detection and Active Response
+root@barry-HP:~# hydra -L Users.lst -P Passwords.lst 192.168.129.99 ssh 
+
+root@siem:/home/siem# nano /var/ossec/etc/ossec.conf
+
+<command>
+  <name>firewall-drop</name>
+  <executable>firewall-drop</executable>
+  <timeout_allowed>yes</timeout_allowed>
+</command>
+
+<ossec_config>
+  <active-response>
+    <disabled>no</disabled>
+    <command>firewall-drop</command>
+    <location>local</location>
+    <rules_id>5710</rules_id>
+    <timeout>180</timeout>
+  </active-response>
+</ossec_config>
+
+root@siem:/home/siem# sudo systemctl restart wazuh-manager
+root@barry-HP:~# hydra -t 4 -l Users.lst -P Passwords.lst 192.168.129.102 ssh
+root@barry-HP:~# ping 192.168.129.102
+root@barry-HP:~# for i in {1..10}; do ssh wronguser@yourserver -p 22; done
+
+###################################################################################################
+
+#SYSMON ( WINDOWS ) - WAZUH - DNS QUERY Event Catch
+
+# https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+#https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.
+
+sysmonconfig-export.xml
+
+```sh
+<EventFiltering>
+  <DnsQuery onmatch="include">
+    <Image condition="contains">svchost.exe</Image>
+  </DnsQuery>
+</EventFiltering>
+```
+
+PS C:\Users\Administrator> cd C:\Users\Administrator\Desktop\Sysmon\
+PS C:\Users\Administrator\Desktop\Sysmon> .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
+
+```sh
+<!-- Sysmon (Windows) -->
+<ossec_config>
+  <localfile>
+    <location>Microsoft-Windows-Sysmon/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+</ossec_config>
+```
+
+PS C:\Users\Administrator\Desktop\Sysmon> Restart-Service wazuh
+PS C:\Users\Administrator\Desktop\Sysmon> nslookup wazuh.com
+
+root@siem:/home/siem# nano /var/ossec/ruleset/rules/0999-custom_sysmon_rules.xml
+
+```sh
+<group name="custom_sysmon_rules">
+  <rule id="61650" level="3" overwrite="yes">
+    <if_sid>61600</if_sid>
+    <field name="win.system.eventID">^22$</field>
+    <description>Sysmon - Driver ID 22: DNSEvent (DNS query)</description>
+    <options>no_full_log</options>
+    <group>sysmon_event_22</group>
+  </rule>
+
+  <rule id="255001" level="8">
+    <if_sid>61600</if_sid>
+    <field name="win.system.eventID">^22$</field>
+    <description>Sysmon - Driver ID 22: DNSEvent (DNS query)</description>
+    <options>no_full_log</options>
+    <group>sysmon_event_22</group>
+  </rule>
+
+  <rule id="61650" level="5">
+    <if_sid>61600</if_sid>
+    <field name="win.system.providerName">Microsoft-Windows-Sysmon</field>
+    <field name="win.system.eventID">22</field>
+    <description>DNS query detected via Sysmon</description>
+  </rule>
+
+</group>
+```
+
+root@siem:/home/siem# sudo systemctl restart wazuh-manager
+
+
+###################################################################################################
+
+#https://documentation.wazuh.com/current/proof-of-concept-guide/detect-web-attack-sql-injection.html
+
+# Detecting an SQL injection attack
+
+root@agent01:/home/agent01# sudo apt update && sudo apt install apache2
+
+root@agent01:/home/agent01# nano /var/ossec/etc/ossec.conf
+
+```sh
+<ossec_config>
+  <localfile>
+    <log_format>apache</log_format>
+    <location>/var/log/apache2/access.log</location>
+  </localfile>
+</ossec_config>
+```
+
+root@agent01:/home/agent01# tail -f /var/log/apache2/access.log
+root@agent01:/home/agent01# sudo systemctl restart wazuh-agent
+
+root@barry-HP:~# curl "http://192.168.129.102/users/?=id,select*FROM,TABLE,users,password();"
+root@barry-HP:~# curl "http://192.168.129.102/users/?=SELECT*FROM*TABLE;"
+root@barry-HP:~# curl "http://192.168.129.102/users/?=SELECT*FROM*TABLE;"
+root@barry-HP:~# sqlmap http://192.168.129.102
+root@barry-HP:~# curl -XGET "http://192.168.129.102/users/?id=SELECT+*+FROM+users";
+
+
+###################################################################################################
+
+# https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html
+
+#Increasing visibility - Linux auditd
+
+root@agent01:/home/agent01# apt install auditd -y && systemctl enable --now auditd
+root@agent01:/home/agent01# tail -f /var/log/audit/audit.log
+root@agent01:/home/agent01# nano /etc/audit/audit.rules
+
+```sh
+-a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
+-a exit,always -F euid=0 -F arch=b32 -S execve -k audit-wazuh-c
+```
+
+root@agent01:/home/agent01# auditctl -R /etc/audit/audit.rules
+root@agent01:/home/agent01# netstat
+
+root@agent01:/home/agent01# nano /var/ossec/etc/ossec.conf
+
+```sh
+<localfile>
+  <log_format>audit</log_format>
+  <location>/var/log/audit/audit.log</location>
+</localfile>
+```
+root@agent01:/home/agent01# systemctl restart wazuh-agent auditd
+root@agent01:/home/agent01# cd /etc/audit/rules.d/
+root@agent01:/etc/audit/rules.d# lsmod
+root@agent01:/etc/audit/rules.d# modinfo intel_rapl_common
+root@agent01:/etc/audit/rules.d# useradd malicious
+root@agent01:/var/log/audit# cat audit.log | grep malicious
+root@agent01:/home/agent01# mkdir -p /var/ossec/etc/rules
+root@agent01:/home/agent01# nano /var/ossec/etc/rules/local_rules.xml
+
+```sh
+<ruleset>
+  <group name="audit">
+    <rule id="100014" level="12">
+      <if_sid>80700</if_sid>
+      <field name="audit.type">SYSCALL</field>
+      <field name="audit.euid">0</field>
+      <description>Audit : Command exécutée par root (euid=0)</description>
+      <group>audit_command</group>
+    </rule>
+  </group>
+</ruleset>
+```
+
+root@agent01:/home/agent01# systemctl restart wazuh-agent
+
+###################################################################################################
+
+#Virus Total WAZUH Integration And Virus Detection and Response
+
+# https://www.python.org/downloads/windows/
+# https://documentation.wazuh.com/current/proof-of-concept-guide/detect-remove-malware-virustotal.html#windows-endpoint
+
+<directories realtime="yes">C:\Users\Administrator\Downloads</directories>
+
+PS C:\Users\Administrator> pip install pyinstaller
+PS C:\Users\Administrator> pyinstaller --version
+
+"remove-threat.py"
+
+```sh 
+# Copyright (C) 2015-2025, Wazuh Inc.
+# All rights reserved.
+
+import os
+import sys
+import json
+import datetime
+import stat
+import tempfile
+import pathlib
+
+if os.name == 'nt':
+    LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
+else:
+    LOG_FILE = "/var/ossec/logs/active-responses.log"
+
+ADD_COMMAND = 0
+DELETE_COMMAND = 1
+CONTINUE_COMMAND = 2
+ABORT_COMMAND = 3
+
+OS_SUCCESS = 0
+OS_INVALID = -1
+
+class message:
+    def __init__(self):
+        self.alert = ""
+        self.command = 0
+
+def write_debug_file(ar_name, msg):
+    with open(LOG_FILE, mode="a") as log_file:
+        log_file.write(str(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + ar_name + ": " + msg +"\n")
+
+def setup_and_check_message(argv):
+    input_str = ""
+    for line in sys.stdin:
+        input_str = line
+        break
+
+    msg_obj = message()
+    try:
+        data = json.loads(input_str)
+    except ValueError:
+        write_debug_file(argv[0], 'Decoding JSON has failed, invalid input format')
+        msg_obj.command = OS_INVALID
+        return msg_obj
+
+    msg_obj.alert = data
+    command = data.get("command")
+
+    if command == "add":
+        msg_obj.command = ADD_COMMAND
+    elif command == "delete":
+        msg_obj.command = DELETE_COMMAND
+    else:
+        msg_obj.command = OS_INVALID
+        write_debug_file(argv[0], 'Not valid command: ' + command)
+
+    return msg_obj
+
+def send_keys_and_check_message(argv, keys):
+    keys_msg = json.dumps({"version": 1,"origin":{"name": argv[0],"module":"active-response"},"command":"check_keys","parameters":{"keys":keys}})
+    write_debug_file(argv[0], keys_msg)
+
+    print(keys_msg)
+    sys.stdout.flush()
+
+    input_str = ""
+    while True:
+        line = sys.stdin.readline()
+        if line:
+            input_str = line
+            break
+
+    try:
+        data = json.loads(input_str)
+    except ValueError:
+        write_debug_file(argv[0], 'Decoding JSON has failed, invalid input format')
+        return OS_INVALID
+
+    action = data.get("command")
+    if action == "continue":
+        return CONTINUE_COMMAND
+    elif action == "abort":
+        return ABORT_COMMAND
+    else:
+        write_debug_file(argv[0], "Invalid value of 'command'")
+        return OS_INVALID
+
+def secure_delete_file(filepath_str, ar_name):
+    filepath = pathlib.Path(filepath_str)
+
+    # Reject NTFS alternate data streams
+    if '::' in filepath_str:
+        raise Exception(f"Refusing to delete ADS or NTFS stream: {filepath_str}")
+
+    # Reject symbolic links and reparse points
+    if os.path.islink(filepath):
+        raise Exception(f"Refusing to delete symbolic link: {filepath}")
+
+    attrs = os.lstat(filepath).st_file_attributes
+    if attrs & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+        raise Exception(f"Refusing to delete reparse point: {filepath}")
+
+    resolved_filepath = filepath.resolve()
+
+    # Ensure it's a regular file
+    if not resolved_filepath.is_file():
+        raise Exception(f"Target is not a regular file: {resolved_filepath}")
+
+  # Perform deletion
+    os.remove(resolved_filepath)
+
+def main(argv):
+    write_debug_file(argv[0], "Started")
+    msg = setup_and_check_message(argv)
+
+    if msg.command < 0:
+        sys.exit(OS_INVALID)
+
+    if msg.command == ADD_COMMAND:
+        alert = msg.alert["parameters"]["alert"]
+        keys = [alert["rule"]["id"]]
+        action = send_keys_and_check_message(argv, keys)
+
+        if action != CONTINUE_COMMAND:
+            if action == ABORT_COMMAND:
+                write_debug_file(argv[0], "Aborted")
+                sys.exit(OS_SUCCESS)
+            else:
+                write_debug_file(argv[0], "Invalid command")
+                sys.exit(OS_INVALID)
+
+        try:
+            file_path = alert["data"]["virustotal"]["source"]["file"]
+            if os.path.exists(file_path):
+                secure_delete_file(file_path, argv[0])
+                write_debug_file(argv[0], json.dumps(msg.alert) + " Successfully removed threat")
+            else:
+                write_debug_file(argv[0], f"File does not exist: {file_path}")
+        except OSError as error:
+            write_debug_file(argv[0], json.dumps(msg.alert) + "Error removing threat")
+        except Exception as e:
+            write_debug_file(argv[0], f"{json.dumps(msg.alert)}: Error removing threat: {str(e)}")
+    else:
+        write_debug_file(argv[0], "Invalid command")
+
+    write_debug_file(argv[0], "Ended")
+    sys.exit(OS_SUCCESS)
+
+if __name__ == "__main__":
+    main(sys.argv)
+```
+
+PS C:\Users\Administrator> cd .\Desktop
+PS C:\Users\Administrator\Desktop> pyinstaller -F remove-threat.py
+PS C:\Users\Administrator\Desktop> cd dist
+PS C:\Users\Administrator> Restart-Service -Name wazuh
+
+root@siem:/home/siem# nano /var/ossec/etc/ossec.conf
+
+```sh
+<integration>
+  <name>virustotal</name>
+  <api_key><YOUR_VIRUS_TOTAL_API_KEY></api_key> <!-- Replace with your VirusTotal API key -->
+  <group>syscheck</group>
+  <alert_format>json</alert_format>
+</integration>
+
+<command>
+  <name>remove-threat</name>
+  <executable>remove-threat.exe</executable>
+  <timeout_allowed>no</timeout_allowed>
+</command>
+
+<active-response>
+  <disabled>no</disabled>
+  <command>remove-threat</command>
+  <location>local</location>
+  <rules_id>87105</rules_id>
+</active-response>
+```
+
+root@siem:/home/siem# nano /var/ossec/etc/rules/local_rules.xml
+
+```sh
+<group name="virustotal,">
+  <rule id="100092" level="12">
+      <if_sid>657</if_sid>
+      <match>Successfully removed threat</match>
+      <description>$(parameters.program) removed threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+
+  <rule id="100093" level="12">
+    <if_sid>657</if_sid>
+    <match>Error removing threat</match>
+    <description>Error removing threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+</group>
+```
+
+root@siem:/home/siem# sudo systemctl restart wazuh-manager
+
+
+PS C:\Users\Administrator> Invoke-WebRequest -Uri https://secure.eicar.org/eicar.com.txt -OutFile eicar.txt
+PS C:\Users\Administrator> cp .\eicar.txt C:\Users\Administrator\Downloads
+
+
+##############################################################################################################
+
+(DFIR-IRIS PART)
+
+https://docs.dfir-iris.org/getting_started/
+
+### Wazuh & IRIS Integration ###
+
+https://github.com/nateuribe/Wazuh-IRIS-integration
+
+root@siem:/home/siem# nano /var/ossec/etc/ossec.conf
+
+```sh 
+<ossec_config>
+  <!-- IRIS integration -->
+  <integration>
+    <name>custom-wazuh_iris.py</name>
+    <hook_url>https://<IRIS_IP_ADDRESS>/alerts/add</hook_url>
+    <level>7</level>
+    <api_key><IRIS_API_KEY></api_key> <!-- Replace with your IRIS API key -->
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
+```
+
+root@siem:/home/siem# sudo systemctl restart wazuh-manager
+
+
+##############################################################################################################
+
+# https://wazuh.com/blog/integrating-wazuh-with-shuffle/
+
+root@siem:/home/siem# nano /var/ossec/etc/ossec.conf
+
+```sh 
+<integration>
+  <name>shuffle</name>
+  <hook_url>http://<YOUR_SHUFFLE_URL>/api/v1/hooks/<HOOK_ID></hook_url>
+  <level>3</level>
+  <alert_format>json</alert_format>
+</integration>
+```
+
+root@siem:/home/siem# sudo systemctl restart wazuh-manager
+
+############################################################################################################
+
+
+[Install Velociraptor]
+
+- sudo apt update -y
+
+[https://github.com/Velocidex/velociraptor/releases]
+- mkdir velo && cd velo && wget https://github.com/Velocidex/velociraptor/releases/download/v0.72/velociraptor-v0.72.0-linux-amd64
+
+- sudo cp velociraptor-v0.72-rc1-linux-amd64 /usr/local/bin/velociraptor
+
+- sudo chmod +x /usr/local/bin/velociraptor
+
+- velociraptor config generate -i
+
+- sudo mv  *.config.yaml /etc/
+
+- sudo nano /etc/server.config.yaml 
+bind_address: *VM-IP*
+
+- sudo nano /lib/systemd/system/velociraptor.service
+
+---------------------------------------
+
+[Unit]
+Description=Velociraptor linux amd64
+After=syslog.target network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=120
+LimitNOFILE=20000
+Environment=LANG=en_US.UTF-8
+ExecStart=/usr/local/bin/velociraptor --config /etc/server.config.yaml frontend -v
+
+[Install]
+WantedBy=multi-user.target
+
+----------------------------------------
+
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now velociraptor
+- systemctl status velociraptor
+
+===========================================================
+
+https://*VM -IP*:8889/ 
+
+[Windows Agent]
+
+Wget https://github.com/Velocidex/velociraptor/releases/download/v0.72/velociraptor-v0.72-rc1-windows-amd64.msi
+chmod +x velociraptor-v0.72-rc1-linux-amd64
+chmod +x velociraptor-v0.72-rc1-windows-amd64.msi
+./velociraptor-v0.72-rc1-linux-amd64 config repack --msi velociraptor-v0.72-rc1-windows-amd64.msi /etc/client.config.yaml windows-agent.msi
+
+[Install Windows Agent]
+
+Just run it by admin
+
+[Linux Agent]
+
+./velociraptor-v0.72-rc1-linux-amd64 --config /etc/client.config.yaml debian client
+
+[Install Linux Agent]
+
+sudo dpkg -i velociraptor_client_0.72.rc1_amd64.deb
