@@ -1,59 +1,53 @@
-# Enquête sur les attaques par force brute RDP sur les connexions Windows
+# Investigation of RDP Brute-Force Attacks on Windows Connections
 
-#### Objectif
+## Objective
 
-- Détecter une attaque par force brute via RDP sur un hôte Windows.
+- Detect a brute-force attack via RDP on a Windows host.
 
-- Utiliser Sysmon pour journaliser les connexions.
+- Use **Sysmon** to log the connections.
 
-- Utiliser ELK pour visualiser les événements.
+- Use the **ELK Stack** to visualize the events.
 
-#### Installation de Sysmon
+## Installing Sysmon
 
-- Télécharger Sysmon et le fichier de configuration :
+- Download Sysmon and the configuration file:
 
   - [Sysmon (Microsoft)](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
   - [SwiftOnSecurity Sysmon Config](https://github.com/SwiftOnSecurity/sysmon-config)
 
-#### Emplacement recommandé : `C:\Sysmon\`
+#### Recommended location: `C:\Sysmon\`
 
-- Commandes PowerShell
+- PowerShell Commands:
 
 ```sh
-# Se placer dans le dossier Sysmon
+# Navigate to the Sysmon directory
 cd C:\Sysmon\
 
-# Installer Sysmon avec la configuration
+# Install Sysmon with the configuration file
 .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 
-# Vérifier le service
+# Check the service status
 Get-Service Sysmon*
 
-# Mettre à jour la configuration
+# Update configuration
 .\Sysmon64.exe -c .\sysmonconfig-export.xml
 
-# Relancer avec une configuration mise à jour
+# Restart with updated configuration
 .\Sysmon64.exe -u .\sysmonconfig-export.xml
 ```
 
-#### Fichier de log
-
-- Chemin : `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
+#### Log File Location Path: `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
 ![ELK](/Elastic_Stack_Windows/assets/01.png)
 
-#### Intégrer à ELK (Fleet/Elastic Agent)
+## Integration with ELK (Fleet/Elastic Agent)
 
-- Dans l’interface Kibana :
+- In the Kibana interface Go to: `Management > Integrations > Windows`
 
-- Aller dans :
+- Ensure the following sources are **enabled**:
 
-`Management > Integrations > Windows` 
-
-- Vérifier que les sources suivantes sont **actives** :
- 
-  - Forwarded 
+  - Forwarded
 
   - PowerShell
 
@@ -61,24 +55,21 @@ Get-Service Sysmon*
 
   - Sysmon Operational
 
-- Ces journaux doivent être collectés par l’Elastic Agent installé sur la machine cible
+- These logs must be collected by the Elastic Agent installed on the target machine.
 
-#### Simulation d’attaque RDP
-
-- Machine attaquante (Ubuntu)
+## RDP Attack Simulation Attacking machine (Ubuntu):
 
 ```sh
-# Installer hydra
+# Install hydra
 apt install hydra -y
 
-# Lancer une attaque brute-force RDP
+# Launch a brute-force RDP attack
 hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
 ```
 
-#### Visualisation dans Kibana (ELK)
+#### Visualization in Kibana (ELK)
 
-- Interface : `Analytics > Discover`
-  > Filtres à utiliser
+- Interface: `Analytics > Discover` use the following filters:
 
 ```sh
 event.code: 3 and source.ip: "<IP_ATTACKER>" and rule.name: "RDP"

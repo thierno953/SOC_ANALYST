@@ -1,22 +1,21 @@
-# Enquête sur les abus de PowerShell sur les machines Windows
+# Investigating PowerShell Abuse on Windows Machines
 
-#### Objectif
+#### Objective
 
-- Détecter une utilisation malveillante de PowerShell.
+- Verify ELK and Fleet Agent setup
 
-- Utiliser ELK avec Sysmon et Windows Event Logs pour la visibilité.
+- Simulate the attack using PowerShell and visualize the alert
 
-- Déclencher et analyser un comportement suspect (ex : téléchargement de fichier de test EICAR via PowerShell).
+- Perform incident response
 
-#### Vérifier l’intégration des logs dans ELK
+## Verify Log Integration in ELK
 
-- Dans l’interface Kibana :
-
-- Aller dans :
+- In the Kibana interface:
+- Navigate to:
 
 `Management > Integrations > Windows`
 
-- Vérifier que les sources suivantes sont **actives** :
+- Ensure the following sources are **enabled**:
 
   - Forwarded
 
@@ -28,29 +27,28 @@
 
   - Windows Defender
 
-- Ces journaux doivent être collectés par l’Elastic Agent installé sur la machine cible
+- These logs must be collected by the Elastic Agent installed on the target machine.
 
-##### Simulation de l'attaque PowerShell
+## PowerShell Attack Simulation
 
-- Commande PowerShell (à lancer depuis une session administrateur) [Anti Malware Testfile](https://www.eicar.org/download-anti-malware-testfile/)
- 
+- PowerShell command (to be run from an Administrator session)[Anti Malware Testfile](https://www.eicar.org/download-anti-malware-testfile/)
+
 ```sh
 Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:USERPROFILE\Downloads\eicar.com.txt"
 ```
 
-- Cette commande télécharge un fichier de test antivirus (inoffensif mais déclencheur pour les moteurs de détection)
+- This command downloads an antivirus test file (harmless but designed to trigger detection engines)
 
-#### Visualisation dans Kibana (ELK)
+## Visualization in Kibana (ELK)
 
-- Interface : `Analystics > Discover`
+- Interface: `Analytics > Discover`
 
-#### Requêtes utiles 
+#### Useful Query
 
 ```sh
 event.code:11
 ```
 
 ![ELK](/Elastic_Stack_Windows/assets/03.png)
- 
-- **Sysmon Event ID 11** : Détection de fichier créé, utilisé pour observer la génération du fichier malveillant.
- 
+
+- **Sysmon Event ID 11**: File creation detection, used to observe the creation of potentially malicious files.

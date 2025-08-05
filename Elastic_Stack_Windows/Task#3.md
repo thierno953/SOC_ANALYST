@@ -1,58 +1,58 @@
-# Surveillance des modifications du registre Windows
+# Monitoring Windows Registry Changes
 
-#### Objectif
+#### Objective
 
-- Détecter la création ou la modification de clés dans la base de registre Windows.
+- Detect the creation or modification of keys in the Windows Registry.
 
-- Utiliser Sysmon et ELK pour surveiller les manipulations suspectes.
+- Use Sysmon and ELK to monitor suspicious behavior.
 
-- Réagir à une tentative de persistance typique via la clé
+- Respond to a common persistence attempt via the registry key:
 
   `HKCU:\Software\Microsoft\Windows\CurrentVersion\Run`.
 
-#### Vérifier l’intégration dans ELK
+## Verify Integration in ELK
 
-- **Dans Kibana**
+- In Kibana:
 
-- `Management > Fleet > Agents` : vérifier que l'agent Fleet est en ligne sur la machine cible (Windows).
+- `Management > Fleet > Agents` : Ensure the Fleet Agent is online on the target Windows machine.
 
-- `Management > Integrations > integration policies` :
+- `Management > Integrations > Integration Policies` :
 
-  - **Windows**
+  - Select the **Windows** integration.
 
-  - **Sysmon Operational** doit être **actif**.
+  - Ensure **Sysmon Operational** is **enabled**.
 
-  - S’assurer que l’événement **Sysmon Event ID 13** est collecté.
+  - Make sure that **Sysmon Event ID 13** is being collected.
 
-#### Simulation d'une attaque : persistance via la base de registre
+## Attack Simulation: `Registry Persistence`
 
-- Commande PowerShell
+- PowerShell command:
 
 ```sh
 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest1" -Value "C:\malwaretest1.exe"
 ```
 
-- Cette commande ajoute une entrée de persistance dans la clé `Run`, typique des malwares
+- This command adds a persistence entry to the `Run` key, which is commonly used by malware.
 
-#### Visualisation dans Kibana 
+#### Visualization in Kibana
 
-- Interface : `Analystics > Discover`
+- Interface : `Analytics > Discover`
 
-```sh 
+```sh
 event.code:13
 ```
 
 ![ELK](/Elastic_Stack_Windows/assets/04.png)
 
-- **Sysmon Event ID 13** : Activité sur une clé de registre (création/modification).
+- **Sysmon Event ID 13**: Activity on a registry key (creation/modification)
 
-#### Incident Response
+## Incident Response
 
-- Étapes de réponse :
+- Response steps:
 
-  - **Vérifier** l’origine de l’ajout dans la base de registre.
- 
-  - **Supprimer** la clé suspecte si elle est malveillante
+  - **Verify** the source of the registry key creation.
+
+  - **Remove** the suspicious key if identified as malicious:
 
 ```sh
 Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "MalwareTest1"
