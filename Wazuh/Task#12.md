@@ -100,7 +100,7 @@ chmod +x /usr/local/bin/velociraptor
 #### Deploying Velociraptor Agent on Linux
 
 - Build the Linux Agent (`.deb`) from Config
-
+ 
 ```sh
 velociraptor --config /etc/client.config.yaml debian client
 ```

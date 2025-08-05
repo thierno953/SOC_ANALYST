@@ -24,7 +24,7 @@ echo \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Update apt package index
+# Update apt package index 
 sudo apt-get update
 
 # Install Docker components

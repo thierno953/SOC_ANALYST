@@ -21,7 +21,7 @@ sudo nano /var/ossec/etc/ossec.conf
   <hook_url>http://<YOUR_SHUFFLE_URL>/api/v1/hooks/<HOOK_ID></hook_url>
   <level>3</level>
   <alert_format>json</alert_format>
-</integration>
+</integration> 
 ```
 
 #### Restart the Wazuh Manager
