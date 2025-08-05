@@ -1,28 +1,38 @@
-# Scan simple d'une machine
+# Basic Host Scan
+
+- Scans a single target to identify open ports and basic services.
 
 ```sh
 nmap scanme.nmap.org
 ```
 
-# Scan d'un réseau entier (ex. /24 = 254 hôtes)
+# Scan an Entire Network (/24 = 254 hosts)
+
+- Scans all hosts in the `192.168.10.0/24` subnet.
 
 ```sh
 nmap 192.168.10.0/24
 ```
 
-# Scan avec détection avancée des services et OS
+# Advanced Service and OS Detection
+
+- Enables aggressive scan: OS detection, version detection, script scanning, and traceroute.
 
 ```sh
 sudo nmap -A scanme.nmap.org
 ```
 
-# Scan furtif (SYN Scan - souvent non détecté par les IDS)
+# Stealth Scan (SYN Scan – often undetected by IDS)
+
+- Performs a stealth SYN scan that does not complete the TCP handshake, making it less likely to be logged by the target.
 
 ```sh
 sudo nmap -sS scanme.nmap.org
 ```
 
-# Lister tous les appareils sur le réseau (via cache ARP)
+# List All Devices on Local Network (via ARP Cache)
+
+- Displays IP and MAC addresses of devices that the local machine has communicated with recently.
 
 ```sh
 arp -a
