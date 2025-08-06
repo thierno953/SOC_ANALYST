@@ -77,6 +77,8 @@ sudo nano /var/ossec/etc/ossec.conf
 sudo systemctl restart wazuh-agent
 ```
 
+#### Simulate SSH brute force (attacker machine)
+
 ```sh
 hydra -L Users.lst -P Passwords.lst <Wazuh agent> ssh
 ```
