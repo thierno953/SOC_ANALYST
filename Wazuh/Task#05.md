@@ -72,6 +72,8 @@ for i in {1..10}; do ssh wronguser@<Wazuh agent> -p 22; done
 ping <Wazuh agent>
 ```
 
+![WAZUH](/Wazuh/assets/09.png)
+
 #### Troubleshooting
 
 - Check Wazuh logs:
