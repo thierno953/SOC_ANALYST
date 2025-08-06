@@ -124,7 +124,9 @@ nano /var/ossec/etc/internal_options.conf
 
 ## CONFIGURE LOG MONITORING
 
+```sh
 nano /var/ossec/etc/ossec.conf
+```
 
 #### Add the following inside <ossec_config>:
 
