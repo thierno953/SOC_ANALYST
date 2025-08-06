@@ -55,14 +55,14 @@ hydra -L Users.lst -P Passwords.lst <Wazuh agent> ssh
 ```
 
 ![WAZUH](/Wazuh/assets/09.png)
-
+ 
 - Try manual brute force:
 
 ```sh
 for i in {1..10}; do ssh wronguser@<Wazuh agent> -p 22; done
 ```
 
-#### Verify the result
+#### Verify the result  
 
 - After a few failed attempts:
 
