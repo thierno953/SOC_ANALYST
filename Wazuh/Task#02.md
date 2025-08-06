@@ -92,6 +92,12 @@ sudo hping3 --icmp --flood <Wazuh agent>
 sudo hping3 -S --flood --rand-source -p 80 <Wazuh agent>
 ```
 
+## Visualize the alerts
+
+```sh
+rule.groups:suricata
+```
+
 ![WAZUH](/Wazuh/assets/02.png)
 
 ![WAZUH](/Wazuh/assets/03.png)
