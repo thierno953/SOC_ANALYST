@@ -38,6 +38,10 @@ nano /root/beta
 This is my Under monitoring
 ```
 
+![WAZUH](/Wazuh/assets/04.png)
+
+![WAZUH](/Wazuh/assets/05.png)
+
 ## On Windows Agent (PowerShell as Administrator):
 
 - Edit the `ossec.conf` (usually in `C:\Program Files (x86)\ossec-agent\ossec.conf`) and **add**:
