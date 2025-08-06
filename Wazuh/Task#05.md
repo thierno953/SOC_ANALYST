@@ -51,8 +51,10 @@ sudo systemctl restart wazuh-manager
 - Try a more aggressive SSH brute force:
 
 ```sh
-hydra -t 4 -L Users.lst -P Passwords.lst <Wazuh agent> ssh
+hydra -L Users.lst -P Passwords.lst <Wazuh agent> ssh
 ```
+
+![WAZUH](/Wazuh/assets/09.png)
 
 - Try manual brute force:
 
@@ -71,8 +73,6 @@ for i in {1..10}; do ssh wronguser@<Wazuh agent> -p 22; done
 ```sh
 ping <Wazuh agent>
 ```
-
-![WAZUH](/Wazuh/assets/09.png)
 
 #### Troubleshooting
 
