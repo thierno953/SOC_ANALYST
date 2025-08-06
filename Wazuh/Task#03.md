@@ -61,3 +61,7 @@ Restart-Service -Name wazuh
 ```sh
 echo test > C:\Users\Administrator\Desktop\test123.txt
 ```
+
+![WAZUH](/Wazuh/assets/06.png)
+
+![WAZUH](/Wazuh/assets/07.png)
