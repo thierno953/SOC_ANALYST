@@ -60,7 +60,7 @@ hydra -L Users.lst -P Passwords.lst <Wazuh agent> ssh
 
 ```sh
 for i in {1..10}; do ssh wronguser@<Wazuh agent> -p 22; done
-```
+``` 
 
 #### Verify the result  
 
