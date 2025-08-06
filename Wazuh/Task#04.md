@@ -14,16 +14,21 @@ sudo systemctl status ssh
 
 ```sh
 # nano Users.lst
-root
-admin
-test
+tom
+jerry
+donald
+msfadmin
+user1
+bahrain
 ```
 
 ```sh
 # nano Passwords.lst
-123456
-admin
-password
+P@ssw0rd
+123$
+321$
+451#
+123
 ```
 
 #### Launch SSH brute-force attack using Medusa
@@ -72,6 +77,10 @@ sudo nano /var/ossec/etc/ossec.conf
 sudo systemctl restart wazuh-agent
 ```
 
+```sh
+hydra -L Users.lst -P Passwords.lst <Wazuh agent> ssh
+```
+
 #### Expected Result
 
 - After the Medusa attack, Wazuh will detect multiple failed login attempts from the same IP and raise a **Brute Force Attack alert** in the Wazuh dashboard under the `Security Events` section.
@@ -82,3 +91,5 @@ sudo systemctl restart wazuh-agent
 sudo tail -f /var/log/auth.log
 sudo tail -f /var/ossec/logs/ossec.log
 ```
+
+![WAZUH](/Wazuh/assets/08.png)
