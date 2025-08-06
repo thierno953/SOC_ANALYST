@@ -6,22 +6,14 @@
 
 - Use the community config (or create your own): [https://github.com/SwiftOnSecurity/sysmon-config](https://github.com/SwiftOnSecurity/sysmon-config)
 
-#### Minimal config for DNS queries (sysmonconfig-export.xml):
-
-```sh
-<EventFiltering>
-  <DnsQuery onmatch="include">
-    <Image condition="contains">svchost.exe</Image>
-  </DnsQuery>
-</EventFiltering>
-```
-
 #### Install Sysmon with config (PowerShell):
 
 ```sh
 cd C:\Users\Administrator\Desktop\Sysmon\
 .\Sysmon64.exe -i .\sysmonconfig-export.xml -accepteula
 ```
+
+![WAZUH](/Wazuh/assets/11.png)
 
 #### Configure Wazuh Agent on Windows
 
@@ -61,31 +53,66 @@ sudo nano /var/ossec/ruleset/rules/0999-custom_sysmon_rules.xml
 
 ```sh
 <group name="custom_sysmon_rules">
-  <!-- Match Event ID 22 -->
-  <rule id="255001" level="8">
-    <if_sid>61600</if_sid>
-    <field name="win.system.eventID">^22$</field>
-    <description>Sysmon - DNS query detected (Event ID 22)</description>
-    <options>no_full_log</options>
-    <group>sysmon_event_22</group>
+
+  <!-- Base rule for all Sysmon events -->
+  <rule id="61600" level="0">
+    <field name="win.system.providerName">Microsoft-Windows-Sysmon</field>
+    <description>Base rule for Sysmon events</description>
   </rule>
 
-  <!-- Extra (more specific) rule if needed -->
-  <rule id="61650" level="5">
+  <!-- DNS Query (Event ID 22) -->
+  <rule id="61650" level="8" overwrite="yes">
     <if_sid>61600</if_sid>
-    <field name="win.system.providerName">Microsoft-Windows-Sysmon</field>
     <field name="win.system.eventID">22</field>
-    <description>DNS query detected via Sysmon</description>
+    <description>Sysmon - DNS query detected: $(win.eventdata.Query)</description>
+    <options>no_full_log</options>
+    <group>sysmon, dns, windows</group>
   </rule>
+
+
+  <!-- Process Creation (Event ID 1) -->
+  <rule id="61651" level="10">
+    <if_sid>61600</if_sid>
+    <field name="win.system.eventID">1</field>
+    <description>Sysmon - Process created: $(win.eventdata.Image)</description>
+    <group>sysmon, process_creation, windows</group>
+  </rule>
+
+  <!-- Network Connection Detected (Event ID 3) -->
+  <rule id="61652" level="7">
+    <if_sid>61600</if_sid>
+    <field name="win.system.eventID">3</field>
+    <description>Sysmon - Network connection detected: $(win.eventdata.DestinationIp):$(win.eventdata.DestinationPort)</description>
+    <group>sysmon, network_connection, windows</group>
+  </rule>
+
+  <!-- Process Injection (Event ID 10) -->
+  <rule id="61653" level="12">
+    <if_sid>61600</if_sid>
+    <field name="win.system.eventID">10</field>
+    <description>Sysmon - Process Injection detected from $(win.eventdata.SourceImage) to $(win.eventdata.TargetImage)</description>
+    <group>sysmon, process_injection, windows</group>
+  </rule>
+
+  <!-- Suspicious PowerShell Process -->
+  <rule id="61654" level="15">
+    <if_sid>61651</if_sid>
+    <field name="win.eventdata.Image">C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe</field>
+    <description>Sysmon - Suspicious process launched (PowerShell)</description>
+    <group>sysmon, suspicious, windows</group>
+  </rule>
+
 </group>
 ```
-
-- Make sure the `<if_sid>61600</if_sid>` corresponds to the base rule for Sysmon logs (included in the Wazuh ruleset).
 
 #### Restart Wazuh Manager
 
 ```sh
 sudo systemctl restart wazuh-manager
+```
+
+```sh
+powershell.exe -Command "Get-Process"
 ```
 
 #### Verify in Wazuh Dashboard
@@ -95,15 +122,7 @@ sudo systemctl restart wazuh-manager
 - Search for:
 
 ```sh
-rule.id:255001
+agent.name:"win22" AND (rule.id:61650 OR rule.id:61651 OR rule.id:61652 OR rule.id:61653 OR rule.id:61654)
 ```
 
-- Or look for "DNS query detected via Sysmon".
-
-#### Tips
-
-- Use `ossec-logtest` to test if logs match the rules:
-
-```sh
-/var/ossec/bin/ossec-logtest
-```
+![WAZUH](/Wazuh/assets/12.png)
