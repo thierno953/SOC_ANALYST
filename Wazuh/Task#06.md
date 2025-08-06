@@ -69,7 +69,6 @@ sudo nano /var/ossec/ruleset/rules/0999-custom_sysmon_rules.xml
     <group>sysmon, dns, windows</group>
   </rule>
 
-
   <!-- Process Creation (Event ID 1) -->
   <rule id="61651" level="10">
     <if_sid>61600</if_sid>
@@ -109,10 +108,6 @@ sudo nano /var/ossec/ruleset/rules/0999-custom_sysmon_rules.xml
 
 ```sh
 sudo systemctl restart wazuh-manager
-```
-
-```sh
-powershell.exe -Command "Get-Process"
 ```
 
 #### Verify in Wazuh Dashboard
