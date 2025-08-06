@@ -15,6 +15,7 @@ sudo tar -xvzf emerging.rules.tar.gz
 sudo mkdir -p /etc/suricata/rules
 sudo mv rules/*.rules /etc/suricata/rules/
 sudo chmod 640 /etc/suricata/rules/*.rules
+sudo chown root:suricata /etc/suricata/rules/*.rules
 ```
 
 ## Add Custom Detection Rules
