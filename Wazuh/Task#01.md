@@ -1,4 +1,4 @@
-# Wazuh Installation & Integration 
+# Wazuh Installation & Integration
 
 ## PREPARE THE SYSTEM
 
@@ -142,3 +142,5 @@ nano /var/ossec/etc/ossec.conf
 ```sh
 sudo systemctl restart wazuh-manager
 ```
+
+![WAZUH](/Wazuh/assets/01.png)

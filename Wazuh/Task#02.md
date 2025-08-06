@@ -91,3 +91,7 @@ sudo hping3 -1 --flood <Wazuh agent>
 sudo hping3 --icmp --flood <Wazuh agent>
 sudo hping3 -S --flood --rand-source -p 80 <Wazuh agent>
 ```
+
+![WAZUH](/Wazuh/assets/02.png)
+
+![WAZUH](/Wazuh/assets/03.png)
