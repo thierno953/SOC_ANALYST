@@ -55,20 +55,35 @@ nano /var/ossec/ruleset/rules/0999-local_rules.xml
 ```sh
 <group name="apache_custom, web, attack">
   <rule id="100100" level="10">
-    <match>select.*from</match>
-    <description>Custom Rule - SQL Injection detected</description>
+    <match>select</match>
+    <description>Custom Rule - SQL Injection detected (select)</description>
+    <group>web, sqli</group>
+  </rule>
+  <rule id="100101" level="10">
+    <match>from</match>
+    <description>Custom Rule - SQL Injection detected (from)</description>
     <group>web, sqli</group>
   </rule>
 
-  <rule id="100101" level="10">
-    <match>(&lt;script|javascript:|onerror=|onload=)</match>
-    <description>Custom Rule - XSS attack attempt detected</description>
+  <rule id="100110" level="10">
+    <match>&lt;script</match>
+    <description>Custom Rule - XSS attack attempt detected (&lt;script)</description>
+    <group>web, xss</group>
+  </rule>
+  <rule id="100111" level="10">
+    <match>javascript:</match>
+    <description>Custom Rule - XSS attack attempt detected (javascript:)</description>
     <group>web, xss</group>
   </rule>
 
-  <rule id="100102" level="10">
-    <match>(\.\./|\.\.%2f|/etc/passwd|/proc/self/environ)</match>
-    <description>Custom Rule - LFI attack attempt detected</description>
+  <rule id="100120" level="10">
+    <match>../</match>
+    <description>Custom Rule - LFI attack attempt detected (../)</description>
+    <group>web, lfi</group>
+  </rule>
+  <rule id="100121" level="10">
+    <match>/etc/passwd</match>
+    <description>Custom Rule - LFI attack attempt detected (/etc/passwd)</description>
     <group>web, lfi</group>
   </rule>
 </group>
