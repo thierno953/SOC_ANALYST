@@ -26,9 +26,7 @@ nano /etc/audit/rules.d/soc.rules
 
 - Add the following lines to track execve syscalls by root (euid=0):
 
-```sh
 [https://github.com/Neo23x0/auditd/blob/master/audit.rules](https://github.com/Neo23x0/auditd/blob/master/audit.rules)
-```
 
 - Then apply the rules:
 
