@@ -21,7 +21,7 @@ PS C:\Users\Administrator> pip install pyinstaller
 PS C:\Users\Administrator> pyinstaller --version
 ```
 
-- Save the following script as `remove-threat.py`:
+- Save the following script as `"remove-threat.py"`:
 
 ```sh
 # Copyright (C) 2015-2025, Wazuh Inc.
@@ -170,7 +170,7 @@ PS C:\Users\Administrator> Restart-Service -Name wazuh
 ```sh
 <integration>
   <name>virustotal</name>
-  <api_key>YOUR_VIRUS_TOTAL_API_KEY</api_key> <!-- Replace this with your actual VirusTotal API key -->
+  <api_key><YOUR_VIRUS_TOTAL_API_KEY></api_key>
   <group>syscheck</group>
   <alert_format>json</alert_format>
 </integration>
@@ -188,6 +188,8 @@ PS C:\Users\Administrator> Restart-Service -Name wazuh
   <rules_id>87105</rules_id>
 </active-response>
 ```
+
+![WAZUH](/Wazuh/assets/16.png)
 
 #### Define custom detection rules `/var/ossec/etc/rules/local_rules.xml`:
 
@@ -213,6 +215,8 @@ PS C:\Users\Administrator> Restart-Service -Name wazuh
 sudo systemctl restart wazuh-manager
 ```
 
+![WAZUH](/Wazuh/assets/17.png)
+
 #### Test with EICAR (Standard Test File)
 
 - Download the EICAR test file (safe, non-malicious):
@@ -228,3 +232,5 @@ PS C:\Users\Administrator> cp .\eicar.txt C:\Users\Administrator\Downloads
 ```
 
 - Once the file is detected and flagged by **VirusTotal**, Wazuh will log the event and trigger the `remove-threat.exe` script to automatically delete the file from the system.
+
+![WAZUH](/Wazuh/assets/18.png)
