@@ -53,12 +53,23 @@ nano /var/ossec/ruleset/rules/0999-local_rules.xml
 - Paste this rule:
 
 ```sh
-<group name="apache_custom, web, attack, sqli">
+<group name="apache_custom, web, attack">
   <rule id="100100" level="10">
-    <decoded_as>web-log</decoded_as>
     <match>select.*from</match>
     <description>Custom Rule - SQL Injection detected</description>
     <group>web, sqli</group>
+  </rule>
+
+  <rule id="100101" level="10">
+    <match>(&lt;script|javascript:|onerror=|onload=)</match>
+    <description>Custom Rule - XSS attack attempt detected</description>
+    <group>web, xss</group>
+  </rule>
+
+  <rule id="100102" level="10">
+    <match>(\.\./|\.\.%2f|/etc/passwd|/proc/self/environ)</match>
+    <description>Custom Rule - LFI attack attempt detected</description>
+    <group>web, lfi</group>
   </rule>
 </group>
 ```
@@ -69,8 +80,4 @@ nano /var/ossec/ruleset/rules/0999-local_rules.xml
 sudo systemctl restart wazuh-manager
 ```
 
-#### View or Test Alerts
-
-```sh
-/var/ossec/bin/ossec-logtest
-```
+![WAZUH](/Wazuh/assets/13.png)
