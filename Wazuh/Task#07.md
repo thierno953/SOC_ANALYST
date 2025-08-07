@@ -20,7 +20,7 @@ sudo nano /var/ossec/etc/ossec.conf
 
 ```sh
 <localfile>
-  <log_format>apache</log_format>
+  <log_format>apache</log_format> 
   <location>/var/log/apache2/access.log</location>
 </localfile>
 ```
