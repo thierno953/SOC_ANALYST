@@ -31,17 +31,6 @@ sudo nano /var/ossec/etc/ossec.conf
 sudo systemctl restart wazuh-agent
 ```
 
-#### Simulate SQL Injection Attacks
-
-- Use `curl` or `sqlmap` from another machine or terminal:
-
-```sh
-curl "http://<WAZUH_AGENT_IP>/users/?id=1 OR 1=1"
-curl "http://<WAZUH_AGENT_IP>/users/?id=SELECT+*+FROM+users"
-sqlmap -u "http://<WAZUH_AGENT_IP>/users/?id=1"
-curl "http://<WAZUH_AGENT_IP>/?id=1' OR '1'='1"
-```
-
 #### Create a Custom Wazuh Rule for SQLi
 
 - Edit the local rules file:
@@ -93,6 +82,14 @@ nano /var/ossec/ruleset/rules/0999-local_rules.xml
 
 ```sh
 sudo systemctl restart wazuh-manager
+```
+
+#### Simulate SQL Injection Attacks
+
+```sh
+curl "http://<WAZUH_AGENT_IP>/users/?id=SELECT+*+FROM+users"
+curl "http://<WAZUH_AGENT_IP>/?id=1' OR '1'='1"
+sqlmap -u "http://<WAZUH_AGENT_IP>/users/?id=1"
 ```
 
 ![WAZUH](/Wazuh/assets/13.png)
