@@ -4,6 +4,8 @@
 
 - Wazuh documentation reference: [https://documentation.wazuh.com/current/proof-of-concept-guide/detect-remove-malware-virustotal.html#windows-endpoint](https://documentation.wazuh.com/current/proof-of-concept-guide/detect-remove-malware-virustotal.html#windows-endpoint)
 
+- Virustotal: [https://www.virustotal.com/gui/home/upload](https://www.virustotal.com/gui/home/upload)
+
 #### Enable Real-time Monitoring of the Downloads Folder
 
 - Edit `ossec.conf` on the Windows Agent:
