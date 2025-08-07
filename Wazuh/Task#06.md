@@ -14,7 +14,7 @@ cd C:\Users\Administrator\Desktop\Sysmon\
 ```
 
 ![WAZUH](/Wazuh/assets/11.png)
-
+   
 #### Configure Wazuh Agent on Windows
 
 - Ensure the Wazuh agent on Windows is monitoring Sysmon logs:
