@@ -1,6 +1,8 @@
 # Wazuh - Audit Linux Commands Run by Users (e.g., root) using auditd
 
-- Reference: [https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html](https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html)
+- Reference:
+  - [https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html](https://documentation.wazuh.com/current/proof-of-concept-guide/audit-commands-run-by-user.html)
+  - [https://github.com/Neo23x0/auditd/blob/master/audit.rules](https://github.com/Neo23x0/auditd/blob/master/audit.rules)
 
 #### Install and Start `auditd` (Audit Daemon)
 
@@ -19,14 +21,13 @@ tail -f /var/log/audit/audit.log
 - Edit audit rules file:
 
 ```sh
-nano /etc/audit/audit.rules
+nano /etc/audit/rules.d/soc.rules
 ```
 
 - Add the following lines to track execve syscalls by root (euid=0):
 
 ```sh
--a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
--a exit,always -F euid=0 -F arch=b32 -S execve -k audit-wazuh-c
+[https://github.com/Neo23x0/auditd/blob/master/audit.rules](https://github.com/Neo23x0/auditd/blob/master/audit.rules)
 ```
 
 - Then apply the rules:
