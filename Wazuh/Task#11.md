@@ -18,10 +18,10 @@ sudo nano /var/ossec/etc/ossec.conf
 ```sh
 <integration>
   <name>shuffle</name>
-  <hook_url>http://<YOUR_SHUFFLE_URL>/api/v1/hooks/<HOOK_ID></hook_url>
+  <hook_url>https://<YOUR_SHUFFLE_URL>/api/v1/hooks/<HOOK_ID></hook_url>
   <level>3</level>
   <alert_format>json</alert_format>
-</integration> 
+</integration>
 ```
 
 #### Restart the Wazuh Manager
@@ -30,4 +30,4 @@ sudo nano /var/ossec/etc/ossec.conf
 sudo systemctl restart wazuh-manager
 ```
 
-- Once restarted, Wazuh will begin sending alerts (level 3 and above) to your Shuffle workflow via HTTP POST.
+
