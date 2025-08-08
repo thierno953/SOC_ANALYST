@@ -196,7 +196,7 @@ PS C:\Users\Administrator> Restart-Service -Name wazuh
 #### Define custom detection rules `/var/ossec/etc/rules/local_rules.xml`:
 
 ```sh
-<group name="virustotal,">
+<group name="virustotal">
   <rule id="100092" level="12">
     <if_sid>657</if_sid>
     <match>Successfully removed threat</match>

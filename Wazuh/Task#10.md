@@ -24,7 +24,7 @@ echo \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Update apt package index 
+# Update apt package index
 sudo apt-get update
 
 # Install Docker components
@@ -55,22 +55,82 @@ sudo nano /var/ossec/etc/ossec.conf
 #### Add the following integration block:
 
 ```sh
-<ossec_config>
-  <!-- IRIS Integration -->
-  <integration>
-    <name>custom-wazuh_iris.py</name>
-    <hook_url>https://<IRIS_IP_ADDRESS>/alerts/add</hook_url>
-    <level>7</level>
-    <api_key><IRIS_API_KEY></api_key> <!-- Replace with your IRIS API key -->
-    <alert_format>json</alert_format>
-  </integration>
-</ossec_config>
+<integration>
+  <name>custom-wazuh_iris.py</name>
+  <hook_url>https://<IRIS_IP_ADDRESS>/alerts/add</hook_url>
+  <level>7</level>
+  <api_key><IRIS_API_KEY></api_key>
+  <alert_format>json</alert_format>
+</integration>
 ```
-
-- Replace `<IRIS_IP_ADDRESS>` and `<IRIS_API_KEY>` with your actual values.
 
 #### Restart Wazuh Manager:
 
 ```sh
 sudo systemctl restart wazuh-manager
 ```
+
+## Configure Log Monitoring
+
+- Add these localfile entries to `/var/ossec/etc/ossec.conf` to monitor authentication and system logs:
+
+```sh
+<localfile>
+  <log_format>syslog</log_format>
+  <location>/var/log/auth.log</location>
+</localfile>
+<localfile>
+  <log_format>syslog</log_format>
+  <location>/var/log/syslog</location>
+</localfile>
+```
+
+## Add Custom Rules
+
+- Edit your local rules file:
+
+```sh
+sudo nano /var/ossec/etc/rules/local_rules.xml
+```
+
+```sh
+<group name="local">
+  <rule id="150001" level="7">
+    <match>Wazuh test alert level 7</match>
+    <description>Test alert level 7 triggered</description>
+  </rule>
+  <rule id="150002" level="3">
+    <match>Wazuh test alert level 3</match>
+    <description>Test alert level 3 triggered</description>
+  </rule>
+</group>
+```
+
+## Validate and Restart Wazuh
+
+```sh
+/var/ossec/bin/wazuh-analysisd -t
+sudo systemctl restart wazuh-manager
+```
+
+## Testing Alerts
+
+```sh
+logger -p auth.alert "Wazuh test alert level 3"
+logger -p user.alert "Wazuh test alert level 7"
+```
+
+## Check Wazuh alerts by running
+
+```sh
+sudo cat /var/ossec/logs/alerts/alerts.json | grep "Wazuh test alert"
+sudo tail -f /var/ossec/logs/alerts/alerts.json
+```
+
+![WAZUH](/Wazuh/assets/19.png)
+
+![WAZUH](/Wazuh/assets/20.png)
+
+![WAZUH](/Wazuh/assets/21.png)
+
+![WAZUH](/Wazuh/assets/22.png)
