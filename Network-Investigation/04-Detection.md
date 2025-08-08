@@ -10,41 +10,35 @@ alert   http      $HOME_NET  any   ->    $EXTERNAL_NET     any (msg: "Requests";
 Action  Protocol  Source    Source_port  Destination  Destination_port   Rule_options
 ```
 
-#### A rule/signature consists of:
+## Rule Components:
 
-- **Action**: What Suricata should do if the rule matches.
+- **Action**: What Suricata should do when the rule matches (`alert`, `drop`)
 
-- **Header**: Defines the protocol, IP addresses, ports, and direction.
+- **Header**: Protocol, IPs, ports, and direction
 
-- **Rule options**: Specific conditions and metadata (e.g., message, signature ID, revision).
+- **Options**: Rule conditions like message (`msg`), signature ID (`sid`), revision (`rev`)
 
-  > **Red** = Action
+## Valid actions:
 
-  > **Green** = Header
+- `alert` - Generate an alert (IDS mode)
 
-  > **Blue** = Rule Options
+- `pass` - Skip this packet
 
-#### Valid actions:
+- `drop` - Drop the packet and log an alert (IPS mode)
 
-- `alert` - generate an alert (for IDS use)
+- `reject` - Drop and send TCP RST / ICMP error message
 
-- `pass` - stop inspecting the packet further
+- `rejectsrc` - Error to the sender only
 
-- `drop` - drop the packet and generate an alert
+- `rejectdst` - Error to the receiver only
 
-- `reject` - drop and send a RST/ICMP unreachable message to the sender
+- `rejectboth` - Error to both sender and receiver
 
-- `rejectsrc` - send error to the sender only
-
-- `rejectdst` - send error to the receiver only
-
-- `rejectboth` - send errors to both sender and receiver
-
-#### Variable Example
+## Variable Example
 
 ```sh
-HOME_NET = <YOUR_INTERNAL_IP>
-EXTERNAL_NET = "any"
+HOME_NET = [192.168.0.0/24]
+EXTERNAL_NET = !$HOME_NET
 ```
 
 ## Installing Suricata IDS on Ubuntu Server
@@ -54,7 +48,9 @@ EXTERNAL_NET = "any"
   - Suricata Quick Start: [https://docs.suricata.io/en/latest/quickstart.html](https://docs.suricata.io/en/latest/quickstart.html)
   - IPS Inline Setup Guide: [https://docs.suricata.io/en/latest/setting-up-ipsinline-for-linux.html](https://docs.suricata.io/en/latest/setting-up-ipsinline-for-linux.html)
 
-## Installation steps:
+## Installation on Ubuntu Server
+
+#### Add Suricata Repository and Install
 
 ```sh
 sudo apt-get install software-properties-common
@@ -63,7 +59,7 @@ sudo apt update
 sudo apt install suricata jq
 ```
 
-## Check installation:
+## Verify Installation
 
 ```sh
 sudo suricata --build-info
@@ -74,7 +70,7 @@ whereis suricata
 
 ## Suricata Configuration
 
-- Backup and edit config file:
+#### Backup and Edit Config
 
 ```sh
 cd /etc/suricata
@@ -82,19 +78,17 @@ sudo cp suricata.yaml suricata.yaml.backup
 sudo nano suricata.yaml
 ```
 
-## Sample YAML configuration:
+## Sample Configuration (`suricata.yaml`)
 
 ```sh
 vars:
   address-groups:
     HOME_NET: "[192.168.0.0/24]"
-    
     EXTERNAL_NET: "!$HOME_NET"
 
 default-rule-path: /var/lib/suricata/rules
 
 rule-files:
-# - suricata.rules
   - custom.rules
 
 stats:
@@ -104,21 +98,21 @@ af-packet:
   - interface: enp0s8
 ```
 
-## Creating Custom Rules
+## Create Custom Rules
 
 ```sh
-cd /var/lib
-sudo mkdir -p suricata/rules
+sudo mkdir -p /var/lib/suricata/rules
 sudo touch /var/lib/suricata/rules/custom.rules
 ```
 
-## Example Rule
+## Example Rule: ICMP Alert
 
 ```sh
 sudo nano /var/lib/suricata/rules/custom.rules
 ```
 
 ```sh
+# Alert on any ICMP traffic incoming to HOME_NET
 alert icmp any any -> $HOME_NET any (msg: "Incoming ICMP packets!"; sid:123; rev:1;)
 ```
 
@@ -133,16 +127,18 @@ sudo suricata -c /etc/suricata/suricata.yaml -i enp0s8
 ```sh
 cd /var/log/suricata/
 tail -f fast.log
-``` 
+```
 
-## Lab: Detect Nmap Scan
+## Detect Nmap Scan
 
 ```sh
 tail -f /var/log/suricata/fast.log
 nmap -sS <TARGET_IP>
 ```
 
-## Edit `suricata.yaml` to enable NFQUEUE
+## Configure IPS (NFQUEUE)
+
+#### Edit `suricata.yaml` for NFQUEUE
 
 ```sh
 nfq:
@@ -155,17 +151,18 @@ af-packet:
   - interface: enp0s8
 ```
 
-## Modify Rules to Use drop
+## Add Drop Rule
 
 ```sh
 sudo nano /var/lib/suricata/rules/custom.rules
 ```
 
 ```sh
+# Drop ICMP traffic to HOME_NET
 drop icmp any any -> $HOME_NET any (msg: "Drop ICMP packets!"; sid:124; rev:1;)
 ```
 
-## Configure IPTables to Use NFQUEUE`
+## Configure IPTables for NFQUEUE
 
 ```sh
 sudo iptables -I INPUT -p icmp -j NFQUEUE --queue-num 2
@@ -179,16 +176,35 @@ sudo iptables -vnL
 sudo suricata -c /etc/suricata/suricata.yaml -q 2
 ```
 
-## Test the Rule
+## Test Drop Rule
 
 ```sh
 ping <Suricata_IP>
 tail -f /var/log/suricata/fast.log
 ```
 
-## Remove IPTables Rules (Optional Cleanup)
+## Remove IPTables Rules (Cleanup)
 
 ```sh
 sudo iptables -D INPUT -p icmp -j NFQUEUE --queue-num 2
 sudo iptables -D OUTPUT -p icmp -j NFQUEUE --queue-num 2
+```
+
+## Update Rules with `suricata-update`
+
+```sh
+sudo apt install suricata-update
+sudo suricata-update
+```
+
+## View Detailed JSON Logs
+
+```sh
+tail -f /var/log/suricata/eve.json | jq .
+```
+
+## HTTP GET Detection Rule
+
+```sh
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"HTTP GET Detected"; flow:established,to_server; http.method; content:"GET"; sid:125; rev:1;)
 ```
