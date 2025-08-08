@@ -36,15 +36,15 @@ sudo gpasswd -a $USER docker
 newgrp docker
 ```
 
-#### DFIR-IRIS Deployment (Docker-based)
+## DFIR-IRIS Deployment (Docker-based)
 
 - Official documentation: [https://docs.dfir-iris.org/getting_started/](https://docs.dfir-iris.org/getting_started/)
 
-#### Wazuh & IRIS Integration
+## Wazuh & IRIS Integration
 
 - GitHub Repository: [https://github.com/nateuribe/Wazuh-IRIS-integration](https://github.com/nateuribe/Wazuh-IRIS-integration)
 
-#### Configure Wazuh Manager
+## Configure Wazuh Manager
 
 - Edit the `ossec.conf` file:
 
@@ -52,7 +52,7 @@ newgrp docker
 sudo nano /var/ossec/etc/ossec.conf
 ```
 
-#### Add the following integration block:
+## Add the following integration block:
 
 ```sh
 <integration>
@@ -64,7 +64,7 @@ sudo nano /var/ossec/etc/ossec.conf
 </integration>
 ```
 
-#### Restart Wazuh Manager:
+## Restart Wazuh Manager:
 
 ```sh
 sudo systemctl restart wazuh-manager
