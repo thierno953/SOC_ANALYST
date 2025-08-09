@@ -69,13 +69,13 @@ python3 vol.py --help
 #### Retrieve memory image information
 
 ```sh
-python3 vol.py -f memdump.mem windows.info
+python3 vol.py -f memdump.mem windows.info.Info
 ```
 
 #### List running processes
 
 ```sh
-python3 vol.py -f memdump.mem windows.pslist
+python3 vol.py -f memdump.mem windows.pslist.PsList
 ```
 
 #### Scan for hidden processes
@@ -94,9 +94,15 @@ python3 vol.py -f memdump.mem windows.cmdline --pid 2580
 #### Network scan (for active connections)
 
 ```sh
-python3 vol.py -f memdump.mem windows.netscan
+python3 vol.py -f memdump.mem windows.netscan.NetScan
+python3 vol.py -f memdump.mem windows.netstat.NetStat
+python3 vol.py -f memdump.mem windows.privileges.Privs
 ```
 
-#### Additional Resource: `VirusTotal`
+## Resources:
 
-- Analyse de fichiers ou de hachages suspects: [https://www.virustotal.com/gui/home/search.](https://www.virustotal.com/gui/home/search)
+- [Create Forensic Images with Exterro FTK Imager](https://www.exterro.com/digital-forensics-software/ftk-imager#:~:text=FTK%20Imager%20is%20a%20free%20data%20preview%20and,data%20without%20making%20changes%20to%20the%20original%20evidence.)
+
+- [https://github.com/volatilityfoundation/volatility3/releases/](https://github.com/volatilityfoundation/volatility3/releases/)
+
+- [https://www.virustotal.com/gui/home/search](https://www.virustotal.com/gui/home/search)
