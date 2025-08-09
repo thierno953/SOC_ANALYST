@@ -63,6 +63,7 @@ python3 vol.py --help
 #### Retrieve memory image information
 
 ```sh
+du -sh memdump.mem
 python3 vol.py -f memdump.mem windows.info.Info
 ```
 
