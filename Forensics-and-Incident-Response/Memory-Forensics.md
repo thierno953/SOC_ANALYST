@@ -101,3 +101,5 @@ python3 vol.py -f memdump.mem windows.privileges.Privs
 - [https://github.com/volatilityfoundation/volatility3/releases/](https://github.com/volatilityfoundation/volatility3/releases/)
 
 - [https://www.virustotal.com/gui/home/search](https://www.virustotal.com/gui/home/search)
+
+- [Quickhash](https://en.softonic.com/download/quickhash-gui/windows/post-download?dt=internalDownload&_gl=1*1gjg2mn*_gcl_au*MTc0NjUzMzE1Ny4xNzU0NzY3MDY1)
