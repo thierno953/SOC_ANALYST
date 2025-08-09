@@ -32,8 +32,6 @@
 
 - A memory dump or RAM dump is a snapshot of memory that has been captured for memory analysis. When a RAM dump is captured it will contain data relating to any running processes at the time the capture was taken.
 
-- Memory Acquisition with FTK Imager [https://archive.org/download/access-data-ftk-imager-4.7.1.](https://archive.org/download/access-data-ftk-imager-4.7.1)
-
 ## Volatility
 
 - **Volatility** is an open-source memory forensics framework used for analysing volatile memory (RAM) in digital investigations.
