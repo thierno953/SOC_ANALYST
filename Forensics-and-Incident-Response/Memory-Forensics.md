@@ -50,10 +50,6 @@
 
 ## Installing Volatility
 
-- Official site: [https://volatilityfoundation.org/the-volatility-framework/.](https://volatilityfoundation.org/the-volatility-framework/)
-
-- Latest release: [https://github.com/volatilityfoundation/volatility3/releases/tag/v2.4.1](https://github.com/volatilityfoundation/volatility3/releases/tag/v2.4.1)
-
 ```sh
 wget https://github.com/volatilityfoundation/volatility3/archive/refs/tags/v2.4.1.zip
 unzip v2.4.1.zip
