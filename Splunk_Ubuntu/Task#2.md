@@ -18,6 +18,7 @@ disabled = false
 ## Install Sysmon for Linux
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+- [Recommended base config: MSTIC Sysmon Config](https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml)
 
 ```sh
 # Download Microsoft packages repo
@@ -42,8 +43,6 @@ nano sysmon-config.xml
 ## Paste the advanced XML configuration
 
 - This configuration covers multiple `MITRE ATT&CK` techniques for `process creation, network connections, file creation, persistence, environment injection, and process termination`.
-
-- [Recommended base config: MSTIC Sysmon Config](https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml)
 
 - [https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml](https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml)
 
