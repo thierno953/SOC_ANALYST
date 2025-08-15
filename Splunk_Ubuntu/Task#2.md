@@ -45,7 +45,7 @@ nano sysmon-config.xml
 
 - [Recommended base config: MSTIC Sysmon Config](https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml)
 
-[https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml](https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml)
+- [https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml](https://github.com/thierno953/SOC_ANALYST/blob/main/Splunk_Ubuntu/sysmon-config.xml)
 
 ## Start Sysmon with the configuration
 
