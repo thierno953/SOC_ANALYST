@@ -1,24 +1,55 @@
-# Unauthorized Access Detection with Fail2Ban
+# Unauthorized Access Detection with Fail2Ban & Splunk
 
 - Detect unauthorized SSH access on Linux using **Fail2Ban**, with logs sent to **Splunk** via the **Universal Forwarder**.
 
-## Install and Configure Fail2Ban on the Target Machine
+```sh
+Attacker
+    │
+    │ SSH attempts (Brute Force)
+    |
+[ Linux Server with SSH ]
+    │
+    │ /var/log/auth.log
+    |
+[ Fail2Ban ]
+    │
+    │ Blocks IP after repeated failures
+    │ Writes to /var/log/fail2ban.log
+    |
+[ Splunk Universal Forwarder ]
+    │
+    │ Sends logs to Splunk Enterprise
+    |
+[ Splunk Enterprise ]
+    │
+    │ Analysis, dashboards, and alerts
+    |
+[ Administrator ]
+```
 
-#### Update and install Fail2Ban
+## Install and Configure Fail2Ban on the Target Machine
 
 ```sh
 apt update && apt install fail2ban -y
+systemctl restart fail2ban
+fail2ban-client status sshd
+ls /etc/fail2ban/filter.d/recidive.conf
 ```
 
-#### Configure the SSH jail (`jail.local`)
+#### Configure the `jail.local` file
 
 ```sh
 nano /etc/fail2ban/jail.local
 ```
 
-- Content of the file:
+- Content:
 
 ```sh
+[DEFAULT]
+ignoreip = 127.0.0.1/8 ::1 <TON_IP_FIXE>
+dbfile = /var/lib/fail2ban/fail2ban.sqlite3
+logtarget = SYSLOG
+
 [sshd]
 enabled = true
 port = ssh
@@ -26,51 +57,65 @@ logpath = /var/log/auth.log
 maxretry = 3
 bantime = 600
 findtime = 600
+
+[recidive]
+enabled  = true
+filter   = recidive
+logpath  = /var/log/fail2ban.log
+bantime  = 604800
+findtime = 86400
+maxretry = 5
+action   = iptables-allports[name=recidive]
 ```
 
-#### Restart and check Fail2Ban status
+## Restart and check Fail2Ban status
 
 ```sh
-systemctl restart fail2ban
-fail2ban-client status
+sudo systemctl restart fail2ban
+sudo fail2ban-client reload
+sudo fail2ban-client status
+sudo fail2ban-client status recidive
 tail -f /var/log/fail2ban.log
 ```
 
-## Configure the Splunk Universal Forwarder to Collect Logs
-
-#### Add monitoring of the log files
+## Configure Splunk Universal Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log
+/opt/splunkforwarder/bin/splunk list index
+/opt/splunkforwarder/bin/splunk list monitor
 ```
 
-#### Edit `inputs.conf` to include Fail2Ban and SSH logs
+#### Edit `inputs.conf`
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
-- Content of the file:
+- Content:
 
 ```sh
 [monitor:///var/log/syslog]
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
+host = serveur-ssh-prod
 
 [monitor:///var/log/auth.log]
 disabled = false
 index = security_incidents
 sourcetype = linux_secure
-whitelist = Failed|invalid|Denied
+whitelist = Failed password|Invalid user|authentication failure
+host = serveur-ssh-prod
 
 [monitor:///var/log/fail2ban.log]
 disabled = false
 index = fail2ban_logs
 sourcetype = fail2ban
+host = ubuntu-prod-ssh
 ```
 
-#### Restart the Forwarder
+## Restart Splunk Forwarder:
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
@@ -78,38 +123,60 @@ sourcetype = fail2ban
 
 ## Simulate an SSH Brute Force Attack
 
-#### On the attacking machine, install Hydra
+- Install Hydra:
 
 ```sh
 apt update && apt install hydra -y
 ```
 
-#### Launch an SSH brute force attack
+#### Test attack:
 
 ```sh
-hydra -l admin -P password.txt <IP_VICTIME> ssh
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://<IP_VICTIME>
 ```
 
-- Make sure `admin` is an existing user and the SSH port is reachable.
-
-#### Observe logs on the victim machine
+## Monitor Fail2Ban Activity
 
 ```sh
+sudo fail2ban-client status sshd
+sudo fail2ban-client status recidive
 tail -f /var/log/fail2ban.log
+watch -n 1 "fail2ban-client status sshd | grep 'Banned IP list'"
 ```
 
-## Event Analysis in Splunk
-
-#### Search queries in Splunk's Search & Reporting App:
+#### Basic search:
 
 ```sh
-index="fail2ban_logs" sourcetype="fail2ban" | search "192.168.129.239"
+index="fail2ban_logs" sourcetype="fail2ban"
 ```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_09.png)
+![Splunk](/Splunk_Ubuntu/assets/02.png)
+
+#### Failed SSH login attempts:
 
 ```sh
 index="security_incidents" sourcetype="linux_secure" "Failed password"
 ```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_10.png)
+![Splunk](/Splunk_Ubuntu/assets/03.png)
+
+#### Banned IPs with count:
+
+```sh
+(index="fail2ban_logs" OR index="security_incidents")
+| rex field=_raw "Ban\s(?<banned_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count AS attempts BY banned_ip
+| sort -attempts
+```
+
+![Splunk](/Splunk_Ubuntu/assets/04.png)
+
+#### Timeline of bans:
+
+```sh
+index="fail2ban_logs"
+| rex field=_raw "Ban\s(?<banned_ip>\d+\.\d+\.\d+\.\d+)"
+| timechart span=1h count BY banned_ip
+```
+
+![Splunk](/Splunk_Ubuntu/assets/05.png)

@@ -4,13 +4,11 @@
 
 ## Splunk Enterprise Installation (Server Side)
 
-#### Update and Download
-
 ```sh
 apt update
-wget -O splunk-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/9.4.3/linux/splunk-9.4.3-237ebbd22314-linux-amd64.deb"
-chmod +x splunk-9.4.3-237ebbd22314-linux-amd64.deb
-dpkg -i splunk-9.4.3-237ebbd22314-linux-amd64.deb
+wget -O splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/10.0.0/linux/splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb"
+chmod +x splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb
+dpkg -i splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb
 ```
 
 #### Enable Autostart + Firewall Rules
@@ -24,44 +22,33 @@ ufw allow 9997     # Receiving logs from Forwarder
 ufw status
 ```
 
-#### Start Splunk
+## Start Splunk
 
 ```sh
 /opt/splunk/bin/splunk start --accept-license
 ```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_02.png)
-
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_03.png)
-
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_04.png)
-
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_05.png)
-
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_06.png)
-
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_07.png)
-
 ## Installing Splunk Universal Forwarder (Client Side)
 
 - [Download Splunk Universal Forwarder 9.4.3](https://www.splunk.com/en_us/download/universal-forwarder.html)
 
-#### Download and Install
+## Download and Install
 
 ```sh
-wget -O splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/9.4.3/linux/splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb"
-chmod +x splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
-dpkg -i splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
+wget -O splunkforwarder-10.0.0-e8eb0c4654f8-linux-amd64.deb "https://download.splunk.com/products/universalforwarder/releases/10.0.0/linux/splunkforwarder-10.0.0-e8eb0c4654f8-linux-amd64.deb"
+
+chmod +x splunkforwarder-10.0.0-e8eb0c4654f8-linux-amd64.deb
+dpkg -i splunkforwarder-10.0.0-e8eb0c4654f8-linux-amd64.deb
 ```
 
-#### Enable Boot Start and Start Service
+## Enable Boot Start and Start Service
 
 ```sh
 /opt/splunkforwarder/bin/splunk enable boot-start
 /opt/splunkforwarder/bin/splunk start
 ```
 
-#### Connect to Splunk Enterprise Server
+## Connect to Splunk Enterprise Server
 
 - Replace `<Splunk_Server_IP>` with your actual Splunk Enterprise server IP address:
 
@@ -70,7 +57,7 @@ dpkg -i splunkforwarder-9.4.3-237ebbd22314-linux-amd64.deb
 /opt/splunkforwarder/bin/splunk list forward-server
 ```
 
-#### Firewall Settings
+## Firewall Settings
 
 ```sh
 ufw enable
@@ -79,26 +66,26 @@ ufw allow 9997
 ufw status
 ```
 
-#### Recommended Permissions
+## Recommended Permissions
 
 ```sh
 chown -R splunkfwd:splunkfwd /opt/splunkforwarder
 chmod -R 755 /opt/splunkforwarder
 ```
 
-#### Monitor System Logs (`/var/log/syslog`)
+## Monitor System Logs (`/var/log/syslog`)
 
 ```sh
 tail -f /var/log/syslog
 ```
 
-#### Add File Monitoring to Forwarder
+## Add File Monitoring to Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk add monitor /var/log/syslog
 ```
 
-#### Advanced Configuration with `inputs.conf`
+## Advanced Configuration with `inputs.conf`
 
 - Create or Edit the `inputs.conf` file
 
@@ -115,7 +102,7 @@ index = linux_os_logs
 sourcetype = syslog
 ```
 
-#### Restart the Forwarder
+## Restart the Forwarder
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
@@ -127,4 +114,4 @@ sourcetype = syslog
 index="linux_os_logs" sourcetype=syslog
 ```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_08.png)
+![Splunk](/Splunk_Ubuntu/assets/01.png)

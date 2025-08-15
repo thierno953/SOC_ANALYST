@@ -23,17 +23,12 @@ apt-get install suricata -y
 #### Download Emerging Threats (ET) rules:
 
 ```sh
-cd /etc/suricata && mkdir rules && cd && cd /tmp/
+cd /etc/suricata && mkdir rules && cd
+cd /tmp/
 curl -LO https://rules.emergingthreats.net/open/suricata-7.0.3/emerging.rules.tar.gz
 tar -xvzf emerging.rules.tar.gz
 mv rules/*.rules /etc/suricata/rules/
 chmod 640 /etc/suricata/rules/*.rules
-```
-
-#### Example: Editing a specific rule
-
-```sh
-nano /etc/suricata/rules/emerging-malware.rules
 ```
 
 #### Suricata configuration file (`/etc/suricata/suricata.yaml`)
@@ -57,10 +52,12 @@ af-packet:
 #### Starting and testing Suricata
 
 ```sh
+systemctl enable --now suricata
 systemctl restart suricata
 systemctl status suricata
-cd /var/log/suricata/
-tail -f fast.log
+tail -f /var/log/suricata/fast.log
+tail -f /var/log/suricata/eve.json | jq .
+grep -i "SCAN" /etc/suricata/rules/*.rules
 ```
 
 ## Configure Splunk Universal Forwarder
@@ -81,10 +78,9 @@ sourcetype = syslog
 
 [monitor:///var/log/audit/audit.log]
 disabled = false
-sourcetype = auditd
 index = linux_file_integrity
+sourcetype = auditd
 
-#[monitor:///var/log/suricata/fast.log]
 [monitor:///var/log/suricata/eve.json]
 disabled = false
 index = network_security_logs
@@ -102,15 +98,23 @@ sourcetype = suricata
 #### From the attacker machine:
 
 ```sh
-nmap -sS <victim_IP>
+nmap -sS -p 1-1000 --reason <victim_IP>
 ```
 
-## Visualization in Splunk (Search & Reporting)
+## Analyze Alerts in Splunk
 
-- `Search queries`
+- Search for alerts by attacker's IP:
 
 ```sh
-index="network_security_logs" sourcetype="suricata" src_ip="<IP_ATTACK_MACHINE>"
+index="network_security_logs" sourcetype="suricata" src_ip="<attacker_IP>"
+```
+
+## Responding to the Incident
+
+- Block attacker IP at the firewall:
+
+```sh
+iptables -A INPUT -s <attacker_IP> -j DROP
 ```
 
 ![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_14.png)

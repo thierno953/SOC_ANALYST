@@ -8,16 +8,19 @@
 
 - Analyze logs and respond to the incident
 
-#### Installing and configuring auditd
+## Install and Configure auditd
 
 ```sh
 apt-get update
 apt-get install auditd -y
 systemctl start auditd
+systemctl enable auditd
 systemctl status auditd
 ```
 
-#### Configure integrity rules:
+## Configure File Integrity Rules
+
+- Edit `/etc/audit/rules.d/audit.rules`:
 
 ```sh
 nano /etc/audit/rules.d/audit.rules
@@ -26,38 +29,38 @@ nano /etc/audit/rules.d/audit.rules
 #### Content of audit.rules
 
 ```sh
-## First rule - delete all existing rules
+# Delete all existing rules
 -D
 
-## Increase buffers to handle burst events (increase for busy systems)
+# Increase buffers for burst events
 -b 8192
 
-## Time to wait during event bursts
+# Wait time during event bursts
 --backlog_wait_time 60000
 
-## Set failure mode to syslog
+# Set failure mode to syslog
 -f 1
 
-## Watch for changes in /etc/
+# Monitor sensitive directories and files
 -w /etc/ -p wa -k file_integrity
+-w /etc/passwd -p wa -k file_integrity
+-w /etc/shadow -p wa -k file_integrity
 ```
 
-#### Apply the rules
+## Apply Rules
 
 ```sh
 systemctl restart auditd
-auditctl -l   # Verify that the rules are loaded
+auditctl -l   # Verify active rules
 ```
 
 ## Configure Splunk Universal Forwarder
-
-- Edit `inputs.conf`
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
-- Content of `inputs.conf`
+- Add monitors:
 
 ```sh
 [monitor:///var/log/syslog]
@@ -76,48 +79,82 @@ index = network_security_logs
 sourcetype = suricata
 ```
 
-#### Restart the Splunk Forwarder
+## Parse Fields
+
+- Edit `transforms.conf`:
+
+```sh
+nano /opt/splunkforwarder/etc/system/local/transforms.conf
+```
+
+```sh
+[auditd_file_exe]
+REGEX = (?:name|exe)=(".*?"|\S+)
+FORMAT = file::$1
+
+[auditd_user]
+REGEX = auid=(\d+|-1)
+FORMAT = user::$1
+
+[auditd_pid]
+REGEX = pid=(\d+)
+FORMAT = pid::$1
+
+[auditd_key]
+REGEX = key=(\S+)
+FORMAT = key::$1
+```
+
+- Edit `props.conf`:
+
+```sh
+nano /opt/splunkforwarder/etc/system/local/props.conf
+```
+
+```sh
+[auditd]
+REPORT-auditd_fields = auditd_file_exe, auditd_user, auditd_pid, auditd_key
+```
+
+#### Restart the forwarder:
 
 ```sh
 /opt/splunkforwarder/bin/splunk restart
 ```
 
-## Simulate an attack (unauthorized modification)
-
-- Create or modify a file in `/etc/`
+## Simulate an Unauthorized Modification
 
 ```sh
-nano /etc/myfirstfile.txt
-
-# File content
-This is my first file.
+echo "unauthorized change" | sudo tee -a /etc/myfirstfile.txt
 ```
 
-#### Monitor logs in real time
+## Check audit logs:
 
 ```sh
 tail -f /var/log/audit/audit.log
-```
-
-#### Search logs related to the key `file_integrity`
-
-```sh
-ausearch -k file_integrity
+ausearch -k file_integrity | tail -20
 ausearch -k file_integrity | grep myfirstfile
 ```
 
-#### Search queries in Splunk `Search & Reporting`
-
-- Use these queries in Splunk UI to analyze the events
+## Analyze in Splunk
 
 ```sh
 index=linux_file_integrity sourcetype=auditd "myfirstfile"
-```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_12.png)
-
-```sh
 index=linux_file_integrity sourcetype=auditd key=file_integrity
-```
+| table _time host user exe file
+| sort -_time
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_13.png)
+index=linux_file_integrity sourcetype=auditd
+| table file user host _raw
+| head 20
+
+index=linux_file_integrity sourcetype=auditd
+| table _time host user file pid exe
+| head 20
+
+index=linux_file_integrity sourcetype=auditd
+| eval file=coalesce(file, "unknown"), user=coalesce(user, "unknown"), host=coalesce(host, "unknown"), pid=coalesce(pid, "unknown"), exe=coalesce(exe, "unknown")
+| stats count by file user host pid exe
+| sort -count
+```
