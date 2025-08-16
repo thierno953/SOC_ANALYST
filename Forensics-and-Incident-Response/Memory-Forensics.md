@@ -44,6 +44,8 @@ python3 vol.py --help
 
 ```sh
 sha256sum memdump.mem > memdump.mem.sha256
+sha1sum memdump.mem > memdump.mem.sha1
+md5sum memdump.mem > memdump.mem.md5
 ```
 
 ## Analysis Workflow
@@ -53,6 +55,8 @@ sha256sum memdump.mem > memdump.mem.sha256
 ```sh
 du -sh memdump.mem
 sha256sum memdump.mem
+sha1sum memdump.mem
+md5sum memdump.mem
 python3 vol.py -f memdump.mem windows.info.Info
 ```
 
