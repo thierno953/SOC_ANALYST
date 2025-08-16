@@ -30,32 +30,25 @@ sudo systemctl start sysmon
 sudo systemctl enable rsyslog
 sudo systemctl restart rsyslog
 
-# checks
+# Checks
 sysmon -h || true
 systemctl status sysmon --no-pager || true
 ```
-
-#### Run it:
 
 ```sh
 chmod +x install_sysmon.sh
 ./install_sysmon.sh
 ```
 
-## Sysmon configuration (lean & effective)
+## Configure Sysmon
 
-#### Create `sysmon-config.xml` (inspired by MSTIC, simplified for this lab):
-
-```sh
-nano sysmon-config.xml
-```
+- Sysmon configuration: `sysmon-config.xml` (lean & effective)
 
 ```sh
 <?xml version="1.0" encoding="utf-8"?>
 <Sysmon schemaversion="4.90">
   <HashAlgorithms>*</HashAlgorithms>
   <EventFiltering>
-    <!-- Process creation -->
     <ProcessCreate onmatch="include">
       <CommandLine condition="contains">useradd</CommandLine>
       <CommandLine condition="contains">adduser</CommandLine>
@@ -69,14 +62,12 @@ nano sysmon-config.xml
       <Image condition="end with">/bash</Image>
     </ProcessCreate>
 
-    <!-- File creations/modifications -->
     <FileCreate onmatch="include">
       <TargetFilename condition="end with">.sh</TargetFilename>
       <TargetFilename condition="contains">/tmp/</TargetFilename>
       <TargetFilename condition="end with">.exe</TargetFilename>
     </FileCreate>
 
-    <!-- Network connections (exfiltration / shells) -->
     <NetworkConnect onmatch="include">
       <DestinationPort condition="is">22</DestinationPort>
       <DestinationPort condition="is">4444</DestinationPort>
@@ -84,7 +75,6 @@ nano sysmon-config.xml
       <Image condition="end with">/nc</Image>
     </NetworkConnect>
 
-    <!-- Exclude basic noise -->
     <ProcessAccess onmatch="exclude">
       <Image condition="begin with">/usr/bin/sudo</Image>
     </ProcessAccess>
@@ -105,32 +95,24 @@ sudo systemctl restart sysmon
 grep -i sysmon /var/log/syslog | tail -n 50
 ```
 
-## Route Sysmon Events to Dedicated File
+## Route Sysmon Events to a Dedicated File
 
-- Create `/etc/rsyslog.d/30-sysmon.conf`:
+- Rsyslog config: `/etc/rsyslog.d/30-sysmon.conf`
 
 ```sh
-# Route events from program "sysmon" to a dedicated file
 if ($programname == 'sysmon') then /var/log/sysmon.log
 & stop
 ```
 
-#### Reload rsyslog:
-
 ```sh
 sudo systemctl restart rsyslog
 sudo touch /var/log/sysmon.log && sudo chmod 644 /var/log/sysmon.log
-```
-
-#### Check
-
-```sh
 tail -f /var/log/sysmon.log
 ```
 
-## Splunk Universal Forwarder configuration
+## Splunk Universal Forwarder
 
-- Monitor the dedicated file:
+- Inputs (`inputs.conf`):
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
@@ -143,7 +125,7 @@ index = linux_sysmon
 sourcetype = sysmon:linux
 ```
 
-- Props configuration:
+- Props (`props.conf`):
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/props.conf
@@ -156,43 +138,41 @@ TIME_PREFIX = timestamp="
 TRUNCATE = 0
 ```
 
-#### Restart the UF:
+- Restart UF:
 
 ```sh
 sudo /opt/splunkforwarder/bin/splunk restart
 ```
 
-#### Smoke test in Splunk:
+- Smoke test in Splunk:
 
 ```sh
 index=linux_sysmon sourcetype="sysmon:linux" | head 20
 ```
 
-## Malicious activity simulation script
+## Simulate Malicious Activity
 
-- Save as `simulate_attack.sh` and run:
+- Script: `simulate_attack.sh`
 
 ```sh
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Create suspicious user
 sudo adduser maluser --disabled-password --gecos ""
 echo "maluser:Password123!" | sudo chpasswd
 
-# Drop & execute a suspicious script
 cat <<'EOF' | sudo tee /tmp/test.sh >/dev/null
 #!/usr/bin/env bash
 echo "Malicious script executed"
 EOF
+
 sudo chmod +x /tmp/test.sh
 /tmp/test.sh
 
-# Local SSH attempt
 ssh -o StrictHostKeyChecking=no localhost true || true
 ```
 
-#### Run and monitor logs:
+- Monitor logs:
 
 ```sh
 chmod +x simulate_attack.sh
@@ -200,15 +180,7 @@ chmod +x simulate_attack.sh
 sudo tail -f /var/log/sysmon.log
 ```
 
-#### Watch the logs:
-
-```sh
-sudo tail -f /var/log/syslog | grep -E "sysmon|maluser" &
-sudo tail -f /var/log/auth.log | grep -E "maluser|sshd" &
-sudo tail -f /var/log/sysmon.log &
-```
-
-## Detection Queries (SPL)
+## Splunk Detection Queries (SPL)
 
 #### Suspicious commands:
 
@@ -233,7 +205,7 @@ index=linux_sysmon sourcetype="sysmon:linux"
 | timechart span=5m count by EventType limit=10
 ```
 
-## Splunk Alert: Suspicious User Creation
+## Splunk Alert
 
 ```sh
 nano /opt/splunk/etc/apps/search/local/savedsearches.conf
@@ -252,9 +224,9 @@ action.email.to = soc@example.com
 action.email.subject = [ALERT] Linux - Suspicious User Creation
 ```
 
-## Splunk Dashboard (Simple XML)
+## Splunk Dashboard
 
-- Create a new dashboard and paste:
+- Simple XML: `linux_sysmon_dashboard.xml`
 
 ```sh
 nano /opt/splunk/etc/apps/search/local/data/ui/views/linux_sysmon_dashboard.xml
@@ -289,11 +261,18 @@ nano /opt/splunk/etc/apps/search/local/data/ui/views/linux_sysmon_dashboard.xml
 </dashboard>
 ```
 
-#### Incident Response (IR)
+## Incident Response (IR)
 
 ```sh
 id maluser
 sudo chage -l maluser
 grep maluser /etc/passwd
 sudo deluser --remove-home maluser
+```
+
+## Add a lock and log step for suspicious accounts before deletion.
+
+```sh
+sudo usermod -L maluser
+sudo passwd -l maluser
 ```

