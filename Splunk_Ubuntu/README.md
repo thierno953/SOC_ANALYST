@@ -1,6 +1,6 @@
 # Security Investigation of an Ubuntu Machine using Splunk
 
-- [Download Splunk Enterprise 10.0.0](https://www.splunk.com/en_us/download/splunk-enterprise.html)
+- [Download Splunk Enterprise](https://www.splunk.com/en_us/download/splunk-enterprise.html)
 
 ## Splunk Enterprise Installation (Server Side)
 
@@ -30,7 +30,7 @@ ufw status
 
 ## Installing Splunk Universal Forwarder (Client Side)
 
-- [Download Splunk Universal Forwarder 10.0.0](https://www.splunk.com/en_us/download/universal-forwarder.html)
+- [Download Splunk Universal Forwarder](https://www.splunk.com/en_us/download/universal-forwarder.html)
 
 ## Download and Install
 
@@ -113,4 +113,3 @@ sourcetype = syslog
 ```sh
 index="linux_os_logs" sourcetype=syslog
 ```
-
