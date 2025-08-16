@@ -1,180 +1,299 @@
 # User Account Activity Monitoring
 
-- Install Sysmon for Linux
+- Install Sysmon for Linux.
 
-- Configure log ingestion with Splunk
+- Route logs to Splunk.
 
-- Simulate malicious activity
+- Simulate malicious activity (suspicious account, scripts, SSH).
 
-- Visualize events in Splunk
+- Detect events via Splunk queries.
 
-- Respond to the incident
+- Respond to incidents.
 
-#### Install Sysmon for Linux
+## Sysmon for Linux install script
+
+- Save as `install_sysmon.sh` and run:
 
 - [Sysmon for Linux](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
 ```sh
+#!/usr/bin/env bash
+set -euo pipefail
+
 wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
 sudo apt-get update
-sudo apt-get install sysmonforlinux -y
+sudo apt-get install -y sysmonforlinux rsyslog
+
+sudo systemctl enable sysmon
+sudo systemctl start sysmon
+sudo systemctl enable rsyslog
+sudo systemctl restart rsyslog
+
+# checks
+sysmon -h || true
+systemctl status sysmon --no-pager || true
 ```
+
+#### Run it:
 
 ```sh
-sysmon -h
-systemctl status sysmon
+chmod +x install_sysmon.sh
+./install_sysmon.sh
 ```
 
-#### Create and apply a Sysmon configuration file
+## Sysmon configuration (lean & effective)
+
+#### Create `sysmon-config.xml` (inspired by MSTIC, simplified for this lab):
 
 ```sh
 nano sysmon-config.xml
 ```
 
-- [MSTIC Sysmon Resources](https://github.com/microsoft/MSTIC-Sysmon/blob/main/linux/configs/main.xml)
-
 ```sh
-<Sysmon schemaversion="1.0">
+<?xml version="1.0" encoding="utf-8"?>
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>*</HashAlgorithms>
+  <EventFiltering>
+    <!-- Process creation -->
+    <ProcessCreate onmatch="include">
+      <CommandLine condition="contains">useradd</CommandLine>
+      <CommandLine condition="contains">adduser</CommandLine>
+      <CommandLine condition="contains">ssh</CommandLine>
+      <CommandLine condition="contains">wget</CommandLine>
+      <CommandLine condition="contains">curl</CommandLine>
+      <CommandLine condition="contains">nc</CommandLine>
+      <CommandLine condition="contains">netcat</CommandLine>
+      <CommandLine condition="contains">chmod 777</CommandLine>
+      <CommandLine condition="contains">rm -rf</CommandLine>
+      <Image condition="end with">/bash</Image>
+    </ProcessCreate>
 
-  <!-- Surveillance des créations de fichiers suspects -->
-  <FileCreate onmatch="include">
-    <TargetFilename condition="contains">/home/</TargetFilename>
-    <TargetFilename condition="contains">/tmp/</TargetFilename>
-    <TargetFilename condition="end with">.sh</TargetFilename>
-    <TargetFilename condition="end with">.exe</TargetFilename>
-    <TargetFilename condition="contains">/var/log/auth.log</TargetFilename>
-    <TargetFilename condition="contains">/var/log/syslog</TargetFilename>
-  </FileCreate>
+    <!-- File creations/modifications -->
+    <FileCreate onmatch="include">
+      <TargetFilename condition="end with">.sh</TargetFilename>
+      <TargetFilename condition="contains">/tmp/</TargetFilename>
+      <TargetFilename condition="end with">.exe</TargetFilename>
+    </FileCreate>
 
-  <!-- Surveillance des processus suspects -->
-  <ProcessCreate onmatch="include">
-    <CommandLine condition="contains">/tmp/</CommandLine>
-    <CommandLine condition="end with">.sh</CommandLine>
-    <CommandLine condition="contains">curl</CommandLine>
-    <CommandLine condition="contains">wget</CommandLine>
-    <CommandLine condition="contains">nc</CommandLine>
-    <CommandLine condition="contains">nmap</CommandLine>
-    <CommandLine condition="contains">rm -rf</CommandLine>
-    <CommandLine condition="contains">chmod 777</CommandLine>
-    <CommandLine condition="contains">chown</CommandLine>
-  </ProcessCreate>
+    <!-- Network connections (exfiltration / shells) -->
+    <NetworkConnect onmatch="include">
+      <DestinationPort condition="is">22</DestinationPort>
+      <DestinationPort condition="is">4444</DestinationPort>
+      <Image condition="end with">/bash</Image>
+      <Image condition="end with">/nc</Image>
+    </NetworkConnect>
 
-  <!-- Détection du chargement de bibliothèques malveillantes -->
-  <ImageLoad onmatch="include">
-    <ImageLoaded condition="contains">/tmp/</ImageLoaded>
-    <ImageLoaded condition="contains">/dev/shm/</ImageLoaded>
-  </ImageLoad>
-
-  <!-- Surveillance réseau -->
-  <NetworkConnect onmatch="include">
-    <DestinationIp condition="excludes">127.0.0.1</DestinationIp>
-    <DestinationIp condition="excludes">::1</DestinationIp>
-  </NetworkConnect>
-
-  <!-- Commandes sensibles -->
-  <CommandLine onmatch="include">
-    <CommandLine condition="contains">sudo</CommandLine>
-    <CommandLine condition="contains">useradd</CommandLine>
-    <CommandLine condition="contains">adduser</CommandLine>
-    <CommandLine condition="contains">passwd</CommandLine>
-  </CommandLine>
-
+    <!-- Exclude basic noise -->
+    <ProcessAccess onmatch="exclude">
+      <Image condition="begin with">/usr/bin/sudo</Image>
+    </ProcessAccess>
+  </EventFiltering>
 </Sysmon>
 ```
+
+#### Apply the configuration:
 
 ```sh
 sudo sysmon -c sysmon-config.xml
 sudo systemctl restart sysmon
 ```
 
-```sh
-grep -i sysmon /var/log/syslog
-```
+#### Verify Sysmon logging:
 
 ```sh
-sudo nano /etc/rsyslog.conf
+grep -i sysmon /var/log/syslog | tail -n 50
 ```
 
+## Route Sysmon Events to Dedicated File
+
+- Create `/etc/rsyslog.d/30-sysmon.conf`:
+
 ```sh
-if $programname == 'sysmon' then /var/log/sysmon.log
+# Route events from program "sysmon" to a dedicated file
+if ($programname == 'sysmon') then /var/log/sysmon.log
 & stop
 ```
+
+#### Reload rsyslog:
+
+```sh
+sudo systemctl restart rsyslog
+sudo touch /var/log/sysmon.log && sudo chmod 644 /var/log/sysmon.log
+```
+
+#### Check
+
+```sh
+tail -f /var/log/sysmon.log
+```
+
+## Splunk Universal Forwarder configuration
+
+- Monitor the dedicated file:
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/inputs.conf
 ```
 
 ```sh
-[monitor:///var/log/syslog]
-disabled = false
-index = linux_os_logs
-sourcetype = syslog
-
-[monitor:///var/log/auth.log]
-disabled = false
-index = linux_os_logs
-sourcetype = authlog
-
 [monitor:///var/log/sysmon.log]
 disabled = false
-index = linux_os_logs
-sourcetype = sysmon
+index = linux_sysmon
+sourcetype = sysmon:linux
 ```
+
+- Props configuration:
 
 ```sh
 nano /opt/splunkforwarder/etc/system/local/props.conf
 ```
 
 ```sh
-[sysmon]
-EXTRACT-pid = ProcessId=(\d+)
-EXTRACT-ppid = ParentProcessId=(\d+)
-EXTRACT-user = User=(\S+)
-EXTRACT-command = CommandLine="([^"]+)"
+[sysmon:linux]
+SHOULD_LINEMERGE = false
+TIME_PREFIX = timestamp="
+TRUNCATE = 0
 ```
 
+#### Restart the UF:
+
 ```sh
-# Restart Splunk Forwarder
-/opt/splunkforwarder/bin/splunk restart
+sudo /opt/splunkforwarder/bin/splunk restart
 ```
 
-#### Simulate malicious activity
+#### Smoke test in Splunk:
 
 ```sh
+index=linux_sysmon sourcetype="sysmon:linux" | head 20
+```
+
+## Malicious activity simulation script
+
+- Save as `simulate_attack.sh` and run:
+
+```sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Create suspicious user
 sudo adduser maluser --disabled-password --gecos ""
 echo "maluser:Password123!" | sudo chpasswd
-echo "echo 'Malicious script executed'" > /tmp/test.sh
-chmod +x /tmp/test.sh
+
+# Drop & execute a suspicious script
+cat <<'EOF' | sudo tee /tmp/test.sh >/dev/null
+#!/usr/bin/env bash
+echo "Malicious script executed"
+EOF
+sudo chmod +x /tmp/test.sh
 /tmp/test.sh
-ssh localhost
+
+# Local SSH attempt
+ssh -o StrictHostKeyChecking=no localhost true || true
 ```
 
-- Monitor traces in logs:
+#### Run and monitor logs:
 
 ```sh
-sudo tail -f /var/log/syslog | grep maluser
-sudo tail -f /var/log/auth.log | grep maluser
+chmod +x simulate_attack.sh
+./simulate_attack.sh
 sudo tail -f /var/log/sysmon.log
 ```
 
-#### Search queries in Splunk `Search & Reporting`
+#### Watch the logs:
 
 ```sh
-index="linux_os_logs" sourcetype=sysmon CommandLine="*useradd*" OR CommandLine="*adduser*"
-index="linux_os_logs" sourcetype=sysmon FileCreate="*.sh" OR FileCreate="*.exe"
-index="linux_os_logs" sourcetype=sysmon CommandLine="*chmod 777*" OR CommandLine="*rm -rf*"
+sudo tail -f /var/log/syslog | grep -E "sysmon|maluser" &
+sudo tail -f /var/log/auth.log | grep -E "maluser|sshd" &
+sudo tail -f /var/log/sysmon.log &
 ```
 
-![Enterprise](/Splunk_Ubuntu/assets/splunk_linux_15.png)
+## Detection Queries (SPL)
 
-## Incident Response
-
-- Verify and remove the malicious account
+#### Suspicious commands:
 
 ```sh
+index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*useradd*" OR CommandLine="*adduser*")
+index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*wget*" OR CommandLine="*curl*")
+index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*nc*" OR CommandLine="*netcat*")
+index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*chmod 777*" OR CommandLine="*rm -rf*")
+```
+
+#### Files in `/tmp/`
+
+```sh
+index=linux_sysmon sourcetype="sysmon:linux" TargetFilename="/tmp/*"
+| stats count by TargetFilename, User, Image, CommandLine
+```
+
+#### Timeline of events:
+
+```sh
+index=linux_sysmon sourcetype="sysmon:linux"
+| timechart span=5m count by EventType limit=10
+```
+
+## Splunk Alert: Suspicious User Creation
+
+```sh
+nano /opt/splunk/etc/apps/search/local/savedsearches.conf
+```
+
+```sh
+[Linux - Suspicious User Creation]
+search = index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*useradd*" OR CommandLine="*adduser*")
+cron_schedule = */5 * * * *
+alert_type = number of events
+number_of_events = 1
+relation = greater than
+alert.severity = 4
+action.email = 1
+action.email.to = soc@example.com
+action.email.subject = [ALERT] Linux - Suspicious User Creation
+```
+
+## Splunk Dashboard (Simple XML)
+
+- Create a new dashboard and paste:
+
+```sh
+nano /opt/splunk/etc/apps/search/local/data/ui/views/linux_sysmon_dashboard.xml
+```
+
+```sh
+<dashboard>
+  <label>Linux Sysmon - User Activity Monitoring</label>
+  <row>
+    <panel>
+      <title>Events by type</title>
+      <chart>
+        <search>
+          <query>index=linux_sysmon sourcetype="sysmon:linux" | timechart span=5m count by EventType limit=10</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>User creations (useradd/adduser)</title>
+      <table>
+        <search>
+          <query>index=linux_sysmon sourcetype="sysmon:linux" (CommandLine="*useradd*" OR CommandLine="*adduser*") | table _time, User, CommandLine, Image</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+</dashboard>
+```
+
+#### Incident Response (IR)
+
+```sh
+id maluser
 sudo chage -l maluser
 grep maluser /etc/passwd
 sudo deluser --remove-home maluser
-rm -rf /tmp/test.sh
 ```

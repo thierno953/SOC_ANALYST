@@ -2,31 +2,6 @@
 
 - Detect unauthorized SSH access on Linux using **Fail2Ban**, with logs sent to **Splunk** via the **Universal Forwarder**.
 
-```sh
-Attacker
-    │
-    │ SSH attempts (Brute Force)
-    |
-[ Linux Server with SSH ]
-    │
-    │ /var/log/auth.log
-    |
-[ Fail2Ban ]
-    │
-    │ Blocks IP after repeated failures
-    │ Writes to /var/log/fail2ban.log
-    |
-[ Splunk Universal Forwarder ]
-    │
-    │ Sends logs to Splunk Enterprise
-    |
-[ Splunk Enterprise ]
-    │
-    │ Analysis, dashboards, and alerts
-    |
-[ Administrator ]
-```
-
 ## Install and Configure Fail2Ban on the Target Machine
 
 ```sh
@@ -99,14 +74,14 @@ nano /opt/splunkforwarder/etc/system/local/inputs.conf
 disabled = false
 index = linux_os_logs
 sourcetype = syslog
-host = serveur-ssh-prod
+host = server-ssh-prod
 
 [monitor:///var/log/auth.log]
 disabled = false
 index = security_incidents
 sourcetype = linux_secure
 whitelist = Failed password|Invalid user|authentication failure
-host = serveur-ssh-prod
+host = server-ssh-prod
 
 [monitor:///var/log/fail2ban.log]
 disabled = false
@@ -150,15 +125,11 @@ watch -n 1 "fail2ban-client status sshd | grep 'Banned IP list'"
 index="fail2ban_logs" sourcetype="fail2ban"
 ```
 
-![Splunk](/Splunk_Ubuntu/assets/02.png)
-
 #### Failed SSH login attempts:
 
 ```sh
 index="security_incidents" sourcetype="linux_secure" "Failed password"
 ```
-
-![Splunk](/Splunk_Ubuntu/assets/03.png)
 
 #### Banned IPs with count:
 
@@ -169,8 +140,6 @@ index="security_incidents" sourcetype="linux_secure" "Failed password"
 | sort -attempts
 ```
 
-![Splunk](/Splunk_Ubuntu/assets/04.png)
-
 #### Timeline of bans:
 
 ```sh
@@ -178,5 +147,3 @@ index="fail2ban_logs"
 | rex field=_raw "Ban\s(?<banned_ip>\d+\.\d+\.\d+\.\d+)"
 | timechart span=1h count BY banned_ip
 ```
-
-![Splunk](/Splunk_Ubuntu/assets/05.png)
