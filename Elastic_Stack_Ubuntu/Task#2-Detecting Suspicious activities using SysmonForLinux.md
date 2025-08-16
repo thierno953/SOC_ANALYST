@@ -54,8 +54,6 @@ tail -f /var/log/syslog | grep sysmon
 process.name: sysmon
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/04.png)
-
 ## Simulate Malicious Activity
 
 - Simulate suspicious system activity (used in attacks or misconfigurations).
@@ -77,19 +75,13 @@ curl -X GET "https://bazaar.abuse.ch/" -v
 process.name: sysmon and message: "*malicious"
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/05.png)
-
 ```sh
 process.name: sysmon and message: "99"
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/06.png)
-
 ```sh
 process.name: sysmon and message: "bazaar.abuse.ch"
 ```
-
-![ELK](/Elastic_Stack_Ubuntu/assets/07.png)
 
 ## Incident Response
 

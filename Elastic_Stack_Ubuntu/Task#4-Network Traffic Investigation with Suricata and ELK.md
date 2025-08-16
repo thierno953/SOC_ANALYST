@@ -79,17 +79,7 @@ nano /etc/suricata/rules/emerging-malware.rules
 
 - `[Logs Suricata] Alert Overview`
 
-![ELK](/Elastic_Stack_Ubuntu/assets/12.png)
-
-![ELK](/Elastic_Stack_Ubuntu/assets/13.png)
-
 - `[Logs Suricata] Events Overview`
-
-![ELK](/Elastic_Stack_Ubuntu/assets/14.png)
-
-![ELK](/Elastic_Stack_Ubuntu/assets/15.png)
-
-![ELK](/Elastic_Stack_Ubuntu/assets/16.png)
 
 ## Simulate an Attack and Visualize Alerts
 
@@ -113,8 +103,6 @@ tail -f /var/log/suricata/fast.log
 suricata.eve.alert.signature_id: *
 source.address: "<ATTACKER_IP>"
 ```
-
-![ELK](/Elastic_Stack_Ubuntu/assets/17.png)
 
 #### Incident Response
 

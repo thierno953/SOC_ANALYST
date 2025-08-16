@@ -47,8 +47,6 @@ tail -f /var/log/auth.log
 event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/03.png)
-
 ## Create Elastic SIEM Detection Rules
 
 - Go to:` Security > Rules > Detection Rules > Add Elastic rules`

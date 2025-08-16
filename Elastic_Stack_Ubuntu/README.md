@@ -134,8 +134,6 @@ cd /usr/share/kibana/bin/
 ./kibana-verification-code
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/01.png)
-
 ## Fleet Server Configuration
 
 - On the Fleet Agent machine
@@ -156,5 +154,3 @@ sudo ./elastic-agent install \
   --url=https://<FLEET_SERVER_IP>:8220 \
   --enrollment-token=<your_fleet_enrollment_token>
 ```
-
-![ELK](/Elastic_Stack_Ubuntu/assets/02.png)

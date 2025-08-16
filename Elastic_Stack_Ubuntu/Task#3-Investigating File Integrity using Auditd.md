@@ -70,10 +70,6 @@ systemctl restart auditd
 
   - `[Logs Auditd] Audit Events`
 
-![ELK](/Elastic_Stack_Ubuntu/assets/08.png)
-
-![ELK](/Elastic_Stack_Ubuntu/assets/09.png)
-
 ## Simulating an Attack and Viewing Events
 
 - Simulate a change to `/etc/passwd`:
@@ -102,13 +98,9 @@ ausearch -k passwd_changes
 auditd.log.key:"passwd_changes"
 ```
 
-![ELK](/Elastic_Stack_Ubuntu/assets/10.png)
-
 ```sh
 message: "/etc/passwd"
 ```
-
-![ELK](/Elastic_Stack_Ubuntu/assets/11.png)
 
 ## Incident Response
 
