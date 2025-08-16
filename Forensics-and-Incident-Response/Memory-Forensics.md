@@ -1,6 +1,6 @@
 # Memory Forensics Cheat Sheet
 
-## 1. What is Memory Forensics?
+## What is Memory Forensics?
 
 - **Memory forensics** is the process of analyzing a computer’s **volatile memory (RAM)** to extract digital artifacts and system activity.
 
@@ -43,70 +43,85 @@ python3 vol.py --help
 ### Hash the dump after acquisition to verify integrity.
 
 ```sh
+# Generate hashes for integrity verification
 sha256sum memdump.mem > memdump.mem.sha256
 sha1sum memdump.mem > memdump.mem.sha1
 md5sum memdump.mem > memdump.mem.md5
 ```
 
-## Analysis Workflow
+## Volatility Plugins Cheat Sheet
 
-### Step 1: Verify & Identify Memory Image
+### Verify & Identify Memory Image
 
 ```sh
 du -sh memdump.mem
-sha256sum memdump.mem
-sha1sum memdump.mem
-md5sum memdump.mem
 python3 vol.py -f memdump.mem windows.info.Info
 ```
 
-### Step 2: Process Analysis
+### Process Analysis
 
 ```sh
-# List running processes
-python3 vol.py -f memdump.mem windows.pslist.PsList
-
-# Scan for hidden processes
-python3 vol.py -f memdump.mem windows.psscan.PsScan
-
-# Get command-line arguments of processes
-python3 vol.py -f memdump.mem windows.cmdline
-python3 vol.py -f memdump.mem windows.cmdline --pid <PID>
+| Plugin    | Description                             | Command                                                                           |
+| --------- | --------------------------------------- | --------------------------------------------------------------------------------- |
+| `pslist`  | Lists running processes                 | `python3 vol.py -f memdump.mem windows.pslist.PsList`                             |
+| `psscan`  | Scan for hidden or terminated processes | `python3 vol.py -f memdump.mem windows.psscan.PsScan`                             |
+| `pstree`  | Displays process tree                   | `python3 vol.py -f memdump.mem windows.pstree.PsTree`                             |
+| `cmdline` | Shows command line arguments            | `python3 vol.py -f memdump.mem windows.cmdline --pid <PID>`                       |
+| `dlllist` | Lists DLLs loaded by processes          | `python3 vol.py -f memdump.mem windows.dlllist`                                   |
+| `handles` | Shows open handles by processes         | `python3 vol.py -f memdump.mem windows.handles`                                   |
+| `memdump` | Dump memory of a specific process       | `python3 vol.py -f memdump.mem windows.memdump --pid 1234 -D ./dumped_processes/` |
 ```
 
-### Step 3: Network & Connections
+### Network Analysis
 
 ```sh
-python3 vol.py -f memdump.mem windows.netscan.NetScan
-python3 vol.py -f memdump.mem windows.netstat.NetStat
+| Plugin    | Description                     | Command                                                  |
+| --------- | ------------------------------- | -------------------------------------------------------- |
+| `netscan` | Scan active network connections | `python3 vol.py -f memdump.mem windows.netscan.NetScan`  |
+| `netstat` | Display network connections     | `python3 vol.py -f memdump.mem windows.netstat.NetStat`  |
+| `privs`   | Show process privileges         | `python3 vol.py -f memdump.mem windows.privileges.Privs` |
 ```
 
-### Step 4: Malware & Code Injection
+### Malware & Suspicious Activity
 
 ```sh
-python3 vol.py -f memdump.mem windows.malfind
-python3 vol.py -f memdump.mem windows.dlllist
-python3 vol.py -f memdump.mem windows.handles
+| Plugin       | Description                                       | Command                                                       |
+| ------------ | ------------------------------------------------- | ------------------------------------------------------------- |
+| `malfind`    | Detect injected code & hidden malware             | `python3 vol.py -f memdump.mem windows.malfind`               |
+| `apihooks`   | Detect API hooks                                  | `python3 vol.py -f memdump.mem windows.apihooks.ApiHooks`     |
+| `modscan`    | Scan loaded kernel modules                        | `python3 vol.py -f memdump.mem windows.modscan.ModScan`       |
+| `ldrmodules` | Detect DLL injection                              | `python3 vol.py -f memdump.mem windows.ldrmodules.LdrModules` |
+| `ssdt`       | Scan System Service Descriptor Table for rootkits | `python3 vol.py -f memdump.mem windows.ssdt.SSDT`             |
+| `shimcache`  | Check AppCompat cache for executed programs       | `python3 vol.py -f memdump.mem windows.shimcache.ShimCache`   |
+| `svcscan`    | List Windows services                             | `python3 vol.py -f memdump.mem windows.svcscan.SvcScan`       |
+| `driverscan` | Scan for loaded kernel drivers                    | `python3 vol.py -f memdump.mem windows.driverscan.DriverScan` |
 ```
 
-### Step 5: Persistence & Registry
+### Autoruns & Persistence
 
 ```sh
-python3 vol.py -f memdump.mem windows.autoruns
-python3 vol.py -f memdump.mem windows.registry.printkey --key "Software\Microsoft\Windows\CurrentVersion\Run"
+| Plugin              | Description                 | Command                                                                                                         |
+| ------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `autoruns`          | Shows autorun entries       | `python3 vol.py -f memdump.mem windows.autoruns.Autoruns`                                                       |
+| `registry.printkey` | Check registry autorun keys | `python3 vol.py -f memdump.mem windows.registry.printkey --key "Software\Microsoft\Windows\CurrentVersion\Run"` |
 ```
 
-### Step 6: File & Timeline Analysis
+### File & Registry Analysis
 
 ```sh
-python3 vol.py -f memdump.mem windows.filescan
-python3 vol.py -f memdump.mem timeliner
+| Plugin     | Description                                    | Command                                                   |
+| ---------- | ---------------------------------------------- | --------------------------------------------------------- |
+| `filescan` | Scan for file objects in memory                | `python3 vol.py -f memdump.mem windows.filescan.FileScan` |
+| `dlllist`  | List DLLs loaded by processes                  | `python3 vol.py -f memdump.mem windows.dlllist`           |
+| `handles`  | List open handles (files, registry keys, etc.) | `python3 vol.py -f memdump.mem windows.handles`           |
 ```
 
-### Step 7: Dump Suspicious Artifacts
+### Timeline & Event Analysis
 
 ```sh
-python3 vol.py -f memdump.mem windows.memdump --pid <PID> -D ./dumped_processes/
+| Plugin      | Description                          | Command                                   |
+| ----------- | ------------------------------------ | ----------------------------------------- |
+| `timeliner` | Build timeline of events from memory | `python3 vol.py -f memdump.mem timeliner` |
 ```
 
 ## Resources:
