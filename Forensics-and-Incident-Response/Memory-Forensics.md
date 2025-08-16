@@ -1,52 +1,34 @@
-# Memory Forensics
+# Memory Forensics Cheat Sheet
 
-- Memory forensics is the process of analyzing a computer's volatile memory (RAM) to extract critical information, artifacts, and insights related to system activities, security incidents, and digital investigations.
+## 1. What is Memory Forensics?
 
-- It provides a real-time snapshot of the system's state, enabling the detection of malware, uncovering of rootkits, and reconstruction of user activities for incident response and digital forensics.
+- **Memory forensics** is the process of analyzing a computer’s **volatile memory (RAM)** to extract digital artifacts and system activity.
 
-## Benefits of Memory Forensics
+- Provides a **real-time snapshot** of the system, helping detect malware, uncover rootkits, and reconstruct user actions.
 
-- This is useful because of the way in which processes, files and programs are run in memory and once a snapshot has been captured, many important facts can be ascertained by the investigator, such as:
+- Essential for **incident response and digital investigations**.
 
-  - Processes running
+## Why Memory Forensics Matters
 
-  - Executable files that are running
+- Volatile memory contains key evidence that disappears after shutdown:
 
-  - Open ports, IP addresses, and other networking information
+  - Running processes & executables
 
-  - Users that are logged into the system, and from where
+  - Network connections (ports, IPs, protocols)
 
-  - Files that are open and by whom.
+  - Logged-in users & sessions
 
-## Volatile Data
+  - Open files & handles
 
-- In memory forensics, volatile data refers to information stored in a computer's volatile memory (RAM or Random Access Memory) that is temporary and is lost when the system is powered off or restarted.
+  - Injected code and malware running in memory
 
-- Volatile data in contrasts to non-volatile data, which is stored on persistent storage devices like hard drives and remains intact even after a system shutdown.
+## Memory Acquisition Tools
 
-- Volatile data is something that any incident responder needs to be aware of, the reason being is that when dealing with a compromised device one of the first reactions may be to turn the device off to contain the threat.
+- **Windows**: FTK Imager, DumpIt, Belkasoft RAM Capturer
 
-- The problem with this approach is that any malware that is running on the device will be running in memory. So any network connections and running processes will be lost, this is because the malware has been running in memory and this data is now lost.
+- **Linux**: LiME (Linux Memory Extractor)
 
-## Memory Dump
-
-- A memory dump or RAM dump is a snapshot of memory that has been captured for memory analysis. When a RAM dump is captured it will contain data relating to any running processes at the time the capture was taken.
-
-## Volatility
-
-- **Volatility** is an open-source memory forensics framework used for analysing volatile memory (RAM) in digital investigations.
-
-- **Purpose**: It helps extract digital artifacts such as running processes, network connections, and loaded drivers from memory dumps.
-
-- **Features**: Offers a wide range of plugins for analyzing memory images from various operating systems (Windows, Linux, macOS, etc.).
-
-- **Community**: Volatility has a large community of contributors and users who actively develop plugins, share knowlodge, and provide support.
-
-## Key Components of Volatility
-
-- **Volatility Core**: Provides the foundation for memory analysis, including memory address translation, process listing, and plugin management.
-
-- **Plugins**: Specialized tools that extract specific information from memory images, such as pslist for listing processes and connections, netscan for network analysis, and filescan for file system exploration.
+- **MacOS**: OSXPmem
 
 ## Installing Volatility
 
@@ -58,48 +40,77 @@ cd /opt/volatility3
 python3 vol.py --help
 ```
 
-## Memory Analysis Commands
+### Hash the dump after acquisition to verify integrity.
 
-#### Retrieve memory image information
+```sh
+sha256sum memdump.mem > memdump.mem.sha256
+```
+
+## Analysis Workflow
+
+### Step 1: Verify & Identify Memory Image
 
 ```sh
 du -sh memdump.mem
+sha256sum memdump.mem
 python3 vol.py -f memdump.mem windows.info.Info
 ```
 
-#### List running processes
+### Step 2: Process Analysis
 
 ```sh
+# List running processes
 python3 vol.py -f memdump.mem windows.pslist.PsList
-```
 
-#### Scan for hidden processes
-
-```sh
+# Scan for hidden processes
 python3 vol.py -f memdump.mem windows.psscan.PsScan
-```
 
-#### Get command line arguments of processes
-
-```sh
+# Get command-line arguments of processes
 python3 vol.py -f memdump.mem windows.cmdline
-python3 vol.py -f memdump.mem windows.cmdline --pid 2580
+python3 vol.py -f memdump.mem windows.cmdline --pid <PID>
 ```
 
-#### Network scan (for active connections)
+### Step 3: Network & Connections
 
 ```sh
 python3 vol.py -f memdump.mem windows.netscan.NetScan
 python3 vol.py -f memdump.mem windows.netstat.NetStat
-python3 vol.py -f memdump.mem windows.privileges.Privs
+```
+
+### Step 4: Malware & Code Injection
+
+```sh
+python3 vol.py -f memdump.mem windows.malfind
+python3 vol.py -f memdump.mem windows.dlllist
+python3 vol.py -f memdump.mem windows.handles
+```
+
+### Step 5: Persistence & Registry
+
+```sh
+python3 vol.py -f memdump.mem windows.autoruns
+python3 vol.py -f memdump.mem windows.registry.printkey --key "Software\Microsoft\Windows\CurrentVersion\Run"
+```
+
+### Step 6: File & Timeline Analysis
+
+```sh
+python3 vol.py -f memdump.mem windows.filescan
+python3 vol.py -f memdump.mem timeliner
+```
+
+### Step 7: Dump Suspicious Artifacts
+
+```sh
+python3 vol.py -f memdump.mem windows.memdump --pid <PID> -D ./dumped_processes/
 ```
 
 ## Resources:
 
-- [Create Forensic Images with Exterro FTK Imager](https://www.exterro.com/digital-forensics-software/ftk-imager#:~:text=FTK%20Imager%20is%20a%20free%20data%20preview%20and,data%20without%20making%20changes%20to%20the%20original%20evidence.)
+- [FTK Imager](https://www.exterro.com/digital-forensics-software/ftk-imager)
 
-- [https://github.com/volatilityfoundation/volatility3/releases/](https://github.com/volatilityfoundation/volatility3/releases/)
+- [Volatility Framework](https://github.com/volatilityfoundation/volatility3/releases/)
 
-- [https://www.virustotal.com/gui/home/search](https://www.virustotal.com/gui/home/search)
+- [VirusTotal](https://www.virustotal.com/gui/home/search)
 
-- [Quickhash](https://en.softonic.com/download/quickhash-gui/windows/post-download?dt=internalDownload&_gl=1*1gjg2mn*_gcl_au*MTc0NjUzMzE1Ny4xNzU0NzY3MDY1)
+- [Quickhash](https://www.quickhash-gui.org/)
