@@ -49,6 +49,4 @@ Invoke-WebRequest -Uri "https://secure.eicar.org/eicar.com.txt" -OutFile "$env:U
 event.code:11
 ```
 
-![ELK](/Elastic_Stack_Windows/assets/03.png)
-
 - **Sysmon Event ID 11**: File creation detection, used to observe the creation of potentially malicious files.

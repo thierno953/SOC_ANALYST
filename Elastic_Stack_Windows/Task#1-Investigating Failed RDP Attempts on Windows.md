@@ -39,8 +39,6 @@ Get-Service Sysmon*
 
 #### Log File Location Path: `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
-![ELK](/Elastic_Stack_Windows/assets/01.png)
-
 ## Integration with ELK (Fleet/Elastic Agent)
 
 - In the Kibana interface Go to: `Management > Integrations > Windows`
@@ -64,7 +62,7 @@ Get-Service Sysmon*
 apt install hydra -y
 
 # Launch a brute-force RDP attack
-hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
+hydra -l administrator -P password.txt rdp://<target-ip>
 ```
 
 #### Visualization in Kibana (ELK)
@@ -74,5 +72,3 @@ hydra -l administrator -P password.txt <IP_FLEET_AGENT> rdp
 ```sh
 event.code: 3 and source.ip: "<IP_ATTACKER>" and rule.name: "RDP"
 ```
-
-![ELK](/Elastic_Stack_Windows/assets/02.png)

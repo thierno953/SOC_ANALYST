@@ -42,8 +42,6 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Na
 event.code:13
 ```
 
-![ELK](/Elastic_Stack_Windows/assets/04.png)
-
 - **Sysmon Event ID 13**: Activity on a registry key (creation/modification)
 
 ## Incident Response
