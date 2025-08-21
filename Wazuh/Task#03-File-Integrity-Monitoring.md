@@ -15,9 +15,9 @@ sudo nano /var/ossec/etc/ossec.conf
 ```sh
 <!-- FIM Linux -->
 <directories check_all="yes" report_changes="yes" realtime="yes">/root</directories>
-<directories check_all="yes" report_changes="yes" realtime="yes">/etc/shadow</directories>
-<directories check_all="yes" report_changes="yes" realtime="yes">/etc/group</directories>
-<directories check_all="yes" report_changes="yes" realtime="yes">/etc/passwd</directories>
+<files check_all="yes" report_changes="yes" realtime="yes">/etc/shadow</files>
+<files check_all="yes" report_changes="yes" realtime="yes">/etc/group</files>
+<files check_all="yes" report_changes="yes" realtime="yes">/etc/passwd</files>
 ```
 
 #### Restart the Wazuh agent:
@@ -47,7 +47,16 @@ This is my Under monitoring
 - Edit the `ossec.conf` (usually in `C:\Program Files (x86)\ossec-agent\ossec.conf`) and **add**:
 
 ```sh
-<directories check_all="yes" report_changes="yes" realtime="yes">C:\Users\Administrator\Desktop</directories>
+<ossec_config>
+  <agent_config>
+    <localfile>
+      <directories check_all="yes" report_changes="yes" realtime="yes">C:\Windows\System32\drivers\etc</directories>
+      <directories check_all="yes" report_changes="yes" realtime="yes">C:\Users\Administrator\Desktop\</directories>
+      <directories check_all="yes" report_changes="yes" realtime="yes">C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\</directories>
+      <registry check_all="yes" report_changes="yes">HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run</registry>
+    </localfile>
+  </agent_config>
+</ossec_config>
 ```
 
 #### Restart the Wazuh agent service:
@@ -59,7 +68,14 @@ Restart-Service -Name wazuh
 #### Create a test file to trigger monitoring:
 
 ```sh
+#Linux
+echo "new line" >> /root/beta
+
+#CMD
 echo test > C:\Users\Administrator\Desktop\test123.txt
+
+#PowerShell
+Add-Content -Path "C:\Users\Administrator\Desktop\test123.txt" -Value "new line"
 ```
 
 ![WAZUH](/Wazuh/assets/06.png)
