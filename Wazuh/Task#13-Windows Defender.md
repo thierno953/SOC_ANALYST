@@ -1,5 +1,8 @@
 # Windows Defender Integration with Wazuh
 
+- Reference:
+  - [Windows Defender logs collection](https://documentation.wazuh.com/current/user-manual/capabilities/malware-detection/win-defender-logs-collection.html)
+
 ### Configure the Wazuh Agent (Windows)
 
 - Edit the Windows agent configuration file (`ossec.conf`) to collect Windows Defender logs and enable Active

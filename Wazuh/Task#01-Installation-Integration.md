@@ -9,7 +9,7 @@ sudo su
 ```
 
 #### Extend root logical volume (if needed)
-
+ 
 ```sh
 df -h /
 sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
