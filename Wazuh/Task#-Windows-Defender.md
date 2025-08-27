@@ -1,1 +1,0 @@
-# Windows Defender with Wazuh
