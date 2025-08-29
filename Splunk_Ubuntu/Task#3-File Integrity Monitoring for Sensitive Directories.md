@@ -82,8 +82,8 @@ What is Auditd?
 
      - `w`: Watch the specified directory.
      - `p`: Permissions to monitor:
-       - `w`: Write.
-       - `a`: Attribute changes.
+     - `w`: Write.
+     - `a`: Attribute changes.
      - `k`: Keyword to tag events for easier searching (e.g., `file_integrity`).
 
 2. **Reload Auditd**:
@@ -150,6 +150,7 @@ What is Auditd?
    - Make a change to `/etc/passwd` to simulate unauthorized modification:Add or remove a line, then save and exit.
 
      ```bash
+     # Add/remove a line and save
      sudo nano /etc/passwd
 
      ```
@@ -159,8 +160,8 @@ What is Auditd?
    - Delete a file in `/etc/` (ensure it is non-critical for this test):
 
      ```bash
+     sudo touch /etc/testfile
      sudo rm /etc/testfile
-
      ```
 
 3. **List Audit Logs**:
@@ -183,12 +184,16 @@ What is Auditd?
 ### **Step 6: Analyze Logs in Splunk**
 
 1. **Search for File Integrity Events**:
+
    - Run the following query in Splunk:
+
      ```
-     index=linux_logs sourcetype=auditd key="file_integrity"
+     index=linux_file_integrity sourcetype=auditd key="file_integrity"
      ```
+
    - This query will filter events tagged with the `file_integrity` keyword.
    - Note: Its all possible because of Aud
+
 2. **Investigate Specific Events**:
 
    - Analyze the logs for unauthorized modifications. Example:
@@ -238,5 +243,3 @@ What is Auditd?
    ```
 
    - Enable SELinux/AppArmor policies for extra protection.
-
-

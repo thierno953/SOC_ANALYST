@@ -25,9 +25,6 @@
    sudo apt update
    sudo apt install fail2ban -y
 
-   systemctl restart fail2ban
-   fail2ban-client status sshd
-   ls /etc/fail2ban/filter.d/recidive.conf
    ```
 
 2. **Configure Fail2Ban for SSH**:
@@ -43,11 +40,6 @@
    - Add the following lines to protect the SSH service:
 
      ```
-     [DEFAULT]
-     ignoreip = 127.0.0.1/8 ::1 <TON_IP_FIXE>
-     dbfile = /var/lib/fail2ban/fail2ban.sqlite3
-     logtarget = SYSLOG
-
      [sshd]
      enabled = true
      port = ssh
@@ -55,15 +47,6 @@
      maxretry = 3
      bantime = 600
      findtime = 600
-
-     [recidive]
-     enabled  = true
-     filter   = recidive
-     logpath  = /var/log/fail2ban.log
-     bantime  = 604800
-     findtime = 86400
-     maxretry = 5
-     action   = iptables-allports[name=recidive]
 
      ```
 
@@ -80,9 +63,9 @@
 4. **Verify Fail2Ban Status**:
 
    ```bash
-   sudo fail2ban-client reload
+
    sudo fail2ban-client status
-   sudo fail2ban-client status recidive
+
    ```
 
    Look for the `sshd` jail in the output.
@@ -95,7 +78,51 @@
 
 ---
 
-### **Step 3: Simulate Unauthorized SSH Access**
+### **Step 3: Configure Splunk for Log Monitoring**
+
+1. Make sure your Universal forwarder is up and running on Ubuntu server.
+2. **Set up log forwarding for Fail2Ban**:
+
+   - Create an input configuration:
+
+     ```bash
+
+     sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
+
+     ```
+
+   - Add the following configuration to monitor Fail2Ban logs:
+
+```
+[monitor:///var/log/syslog]
+disabled = false
+index = linux_os_logs
+sourcetype = syslog
+
+[monitor:///var/log/auth.log]
+disabled = false
+index = security_incidents
+sourcetype = linux_secure
+whitelist = Failed|invalid|Denied
+
+[monitor:///var/log/fail2ban.log]
+disabled = false
+sourcetype = fail2ban
+index = fail2ban_logs
+
+```
+
+- Save and restart the Splunk Universal Forwarder:
+
+  ```bash
+
+  sudo /opt/splunkforwarder/bin/splunk restart
+
+  ```
+
+---
+
+### **Step 4: Simulate Unauthorized SSH Access**
 
 1.  ```bash
     ssh user@<target-ip>
@@ -118,7 +145,7 @@
 
    ```bash
 
-   hydra -l testuser -P passwords.txt <target-ip> ssh
+   hydra -l admin -P passwords.txt <target-ip> ssh
 
    ```
 
@@ -140,62 +167,10 @@
    ```bash
 
    tail -f /var/log/fail2ban.log
-   sudo fail2ban-client status sshd
-   sudo fail2ban-client status recidive
-   watch -n 1 "fail2ban-client status sshd | grep 'Banned IP list'"
 
    ```
 
    - Check for entries indicating that Fail2Ban has banned the attacking IP.
-
----
-
-### **Step 4: Configure Splunk for Log Monitoring**
-
-1. Make sure your Universal forwarder is up and running on Ubuntu server.
-2. **Set up log forwarding for Fail2Ban**:
-
-   - Create an input configuration:
-
-     ```bash
-
-     sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
-
-     ```
-
-   - Add the following configuration to monitor Fail2Ban logs:
-
-     ```
-     [monitor:///var/log/syslog]
-     disabled = false
-     index = linux_os_logs
-     sourcetype = syslog
-     host = server-ssh-prod
-
-     [monitor:///var/log/auth.log]
-     disabled = false
-     index = security_incidents
-     sourcetype = linux_secure
-     whitelist = Failed password|Invalid user|authentication failure
-     host = server-ssh-prod
-
-     [monitor:///var/log/fail2ban.log]
-     disabled = false
-     index = fail2ban_logs
-     sourcetype = fail2ban
-     host = ubuntu-prod-ssh
-
-     ```
-
-   - Save and restart the Splunk Universal Forwarder:
-
-     ```bash
-
-     sudo /opt/splunkforwarder/bin/splunk restart
-
-     ```
-
----
 
 ### **Step 5: Analyze Logs in Splunk**
 
@@ -205,17 +180,6 @@
    ```
 
    index=linux_logs sourcetype=fail2ban action="ban"
-
-   index="security_incidents" sourcetype="linux_secure" "Failed password"
-
-   (index="fail2ban_logs" OR index="security_incidents")
-   | rex field=_raw "Ban\s(?<banned_ip>\d+\.\d+\.\d+\.\d+)"
-   | stats count AS attempts BY banned_ip
-   | sort -attempts
-
-   index="fail2ban_logs"
-   | rex field=_raw "Ban\s(?<banned_ip>\d+\.\d+\.\d+\.\d+)"
-   | timechart span=1h count BY banned_ip
 
    ```
 

