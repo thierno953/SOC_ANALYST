@@ -120,7 +120,7 @@ Set up a network monitoring system to detect abnormal traffic patterns, includin
    - Set up a listener to receive a specific file:
 
      ```bash
-     nmap -sS -p 1-1000 --reason <victim_IP>
+     nmap -sS <victim_IP>
 
      ```
 

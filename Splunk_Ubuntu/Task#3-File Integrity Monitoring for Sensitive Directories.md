@@ -169,7 +169,7 @@ What is Auditd?
    - Use `ausearch` to find log entries for the simulated actions:
 
      ```bash
-     sudo ausearch -k file_integrity
+     sudo ausearch -k file_integrity | grep testfile
 
      ```
 
