@@ -45,7 +45,7 @@ The objective of this task is to detect, investigate, and respond to unauthorize
   ```cmd
   splunk restart
   ```
-
+  
 ---
 
 ### **3. Simulate Malicious Registry Changes**

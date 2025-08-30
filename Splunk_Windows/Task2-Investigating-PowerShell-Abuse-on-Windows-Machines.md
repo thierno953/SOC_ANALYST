@@ -35,6 +35,7 @@ The objective of this task is to detect, investigate, and respond to malicious o
   index = sysmon_logs
   sourcetype = XmlWinEventLog:Sysmon
   renderXml = false
+  
   ```
 
 ---
@@ -71,7 +72,7 @@ The objective of this task is to detect, investigate, and respond to malicious o
 - Visualize the events on the Splunk dashboard:
 
 ```
-index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon"
+index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
 ```
 
 - Example of detected events:

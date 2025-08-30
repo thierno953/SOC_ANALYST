@@ -37,7 +37,7 @@
      ```cmd
      cd "C:\Program Files\SplunkUniversalForwarder\bin"
      splunk enable boot-start
-     splunk start
+     .\splunk.exe start
      splunk add forward-server <Splunk_Server_IP>:9997 -auth admin:Admin@123
      ```
 
@@ -59,25 +59,25 @@
      - Example configuration:
 
        ```plaintext
-       [WinEventLog://Security]
-       disabled = false
-       index = security_events
-       sourcetype = WinEventLog:Security
-
        [WinEventLog://Application]
-       disabled = false
+       disabled = 0
        index = windows_system_logs
        sourcetype = WinEventLog:Application
 
+       [WinEventLog://Security]
+       disabled = 0
+       index = security_events
+       sourcetype = WinEventLog:Security
+
        [WinEventLog://System]
-       disabled = false
+       disabled = 0
        index = windows_system_logs
        sourcetype = WinEventLog:System
        ```
 
    - Restart the Universal Forwarder to apply the changes:
      ```cmd
-     splunk restart
+     .\splunk.exe start
      ```
 
 5. **Enable and Verify Forwarding on Splunk Enterprise**:

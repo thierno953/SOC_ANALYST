@@ -39,7 +39,7 @@ hydra -l administrator -P /path/to/passwords.txt rdp://<windows-machine-ip>
 - Visualize the event on Splunk Dashboard
 
 ```
-index="sysmon_logs"  sourcetype = XmlWinEventLog:Sysmon
+index="sysmon_logs"  sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP>"
 ```
 
 ### 4. Incident Response
@@ -51,9 +51,7 @@ index="sysmon_logs"  sourcetype = XmlWinEventLog:Sysmon
 - Use the Windows Firewall to block suspicious IP addresses:
 
 ```
-        powershell
-        Copy code
-        New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress 139.84.176.244
+New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress 139.84.176.244
 
 ```
 
@@ -75,4 +73,3 @@ index="sysmon_logs"  sourcetype = XmlWinEventLog:Sysmon
         - Navigate to `Account Lockout Policy` and configure:
             - Lockout Threshold: 5 failed attempts.
             - Lockout Duration: 15 minutes.
-

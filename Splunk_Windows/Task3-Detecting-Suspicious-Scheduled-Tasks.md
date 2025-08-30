@@ -16,12 +16,23 @@ The objective of this task is to detect, investigate, and respond to unauthorize
 
 ---
 
+## Use Case 1
+
 ### **1. Setting Up the Windows Machine**
 
 - Verify Sysmon Installation:
+
   ```cmd
   sc query sysmon64
   ```
+
+- Sysmon XML config to monitor Run keys:
+
+```
+<RegistryValue name="HKCU\Software\Microsoft\Windows\CurrentVersion\Run" onmatch="include" />
+<RegistryValue name="HKLM\Software\Microsoft\Windows\CurrentVersion\Run" onmatch="include" />
+<RegistryValue name="HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" onmatch="include" />
+```
 
 ---
 
@@ -57,15 +68,16 @@ The objective of this task is to detect, investigate, and respond to unauthorize
   schtasks /change /tn "MaliciousTask" /tr "C:\evil_script.ps1"
   ```
 
+- Execute a Scheduled Task:
+
+  ```cmd
+  schtasks /run /tn "MaliciousTask"
+  ```
+
 - Delete a Scheduled Task:
 
   ```cmd
   schtasks /delete /tn "MaliciousTask" /f
-  ```
-
-- Execute a Scheduled Task:
-  ```cmd
-  schtasks /run /tn "MaliciousTask"
   ```
 
 ---
