@@ -35,7 +35,7 @@
 
      sudo nano /etc/fail2ban/jail.local
 
-     ```
+     ``` 
 
    - Add the following lines to protect the SSH service:
 
