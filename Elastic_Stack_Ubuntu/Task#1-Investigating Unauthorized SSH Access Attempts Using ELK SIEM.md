@@ -6,7 +6,7 @@
 
   - Navigate to:
 
-  `Management > Fleet > Fleet Agent > View more agent metrics > Agent Info`
+  `Management > Fleet > Agents`
 
 ## Simulate an SSH Brute-Force Attack and View Logs
 
@@ -20,21 +20,21 @@ sudo apt install hydra -y
 echo -e "password\n123456\nadmin\nroot\nthierno" > password.txt
 
 # Launch a brute-force SSH attack against the Fleet Agent
-hydra -l thierno -P password.txt <FLEET_AGENT_IP> ssh
+hydra -l thierno -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
 ```
 
 #### On the Fleet Agent machine:
 
 ```sh
 # Monitor authentication logs in real time
-tail -f /var/log/auth.log
+sudo tail -f /var/log/auth.log
 ```
 
 - Repeat with another user:
 
 ```sh
-hydra -l root -P password.txt <FLEET_AGENT_IP> ssh
-tail -f /var/log/auth.log
+hydra -l root -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
+sudo tail -f /var/log/auth.log
 ```
 
 #### View SSH Logs in Kibana Discover
@@ -70,12 +70,12 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 - Trigger the attack again to generate alerts:
 
 ```sh
-hydra -l thierno -P password.txt <FLEET_AGENT_IP> ssh
-hydra -l root -P password.txt <FLEET_AGENT_IP> ssh
+hydra -l thierno -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
+hydra -l root -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
 
 # Trigger additional failed login attempts
 for i in {1..5}; do ssh fleet-server@<IP>; done
-```
+``` 
 
 - Go to: `Security > Alerts`
 

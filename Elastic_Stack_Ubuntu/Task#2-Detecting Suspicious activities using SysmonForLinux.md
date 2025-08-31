@@ -75,7 +75,7 @@ curl -X GET "https://bazaar.abuse.ch/" -v
 process.name: sysmon and message: "*malicious"
 ```
 
-```sh
+```sh 
 process.name: sysmon and message: "99"
 ```
 

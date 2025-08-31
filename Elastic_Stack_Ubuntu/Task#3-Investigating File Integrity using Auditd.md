@@ -22,7 +22,21 @@ systemctl status auditd
 tail -f /var/log/audit/audit.log
 ```
 
-## Configuring Auditd
+## Preparing ELK for Detection
+
+- In **Kibana** -> `Management -> Integrations`
+
+- Search for `Auditd Logs` -> Add the integration
+
+- Set file paths: `/var/log/audit/audit.log*`
+
+- Assign to an existing **Agent Policy** -> Continue -> Confirm
+
+- Available Dashboards:
+
+  - `[Logs Auditd] Audit Events`
+
+## Simulating an Attack and Viewing Events
 
 - Edit the audit rules:
 
@@ -55,22 +69,6 @@ nano /etc/audit/rules.d/audit.rules
 ```sh
 systemctl restart auditd
 ```
-
-## Preparing ELK for Detection
-
-- In **Kibana** -> `Management -> Integrations`
-
-- Search for `Auditd Logs` -> Add the integration
-
-- Set file paths: `/var/log/audit/audit.log*`
-
-- Assign to an existing **Agent Policy** -> Continue -> Confirm
-
-- Available Dashboards:
-
-  - `[Logs Auditd] Audit Events`
-
-## Simulating an Attack and Viewing Events
 
 - Simulate a change to `/etc/passwd`:
 

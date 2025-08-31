@@ -34,7 +34,7 @@ sudo chmod 640 /etc/suricata/rules/*.rules
 ```sh
 vars:
   address-groups:
-    HOME_NET: "[IP_FLEET_AGENT]"   # IP address of the monitored host
+    HOME_NET: "[ELASTIC_AGENT_HOST_IP]"   # IP address of the monitored host
     EXTERNAL_NET: "any"
 
 af-packet:
@@ -58,9 +58,8 @@ sudo systemctl status suricata
 - View logs:
 
 ```sh
-cd /var/log/suricata/
-tail -f fast.log
-tail -f eve.json
+tail -f /var/log/suricata/fast.log
+tail -f /var/log/suricata/eve.json
 
 nano /etc/suricata/rules/emerging-malware.rules
 ```
@@ -86,8 +85,8 @@ nano /etc/suricata/rules/emerging-malware.rules
 - From another machine (attacker):
 
 ```sh
-nmap -sS <IP_FLEET_AGENT>
-nmap -A -T4 <IP_FLEET_AGENT>
+nmap -sS <ELASTIC_AGENT_HOST_IP>
+nmap -A -T4 <ELASTIC_AGENT_HOST_IP>
 ```
 
 - On the monitored host:
