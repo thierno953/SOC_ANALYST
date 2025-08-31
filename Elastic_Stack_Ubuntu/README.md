@@ -188,5 +188,5 @@ sudo ./elastic-agent install \
 ```sh
 sudo ./elastic-agent install \
   --url=https://<FLEET_SERVER_IP>:8220 \
-  --enrollment-token=<your_enrollment_token>
+  --enrollment-token=<YOUR_ENROLLMENT_TOKEN>
 ```
