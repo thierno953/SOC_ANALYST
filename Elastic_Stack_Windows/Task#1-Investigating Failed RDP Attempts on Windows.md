@@ -45,7 +45,7 @@ Get-Service Sysmon*
 
 - Ensure the following sources are **enabled**:
 
-  - Forwarded
+  - Forwarded 
 
   - PowerShell
 

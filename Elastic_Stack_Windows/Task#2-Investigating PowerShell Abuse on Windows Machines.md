@@ -21,7 +21,7 @@
 
   - PowerShell
 
-  - PowerShell Operational
+  - PowerShell Operational 
 
   - Sysmon Operational
 
