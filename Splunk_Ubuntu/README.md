@@ -113,3 +113,5 @@ sourcetype = syslog
 ```sh
 index="linux_os_logs" sourcetype=syslog
 ```
+
+![Splunk](/Splunk_Ubuntu/assets/01.png)

@@ -35,7 +35,7 @@
 
      sudo nano /etc/fail2ban/jail.local
 
-     ``` 
+     ```
 
    - Add the following lines to protect the SSH service:
 
@@ -179,9 +179,11 @@ index = fail2ban_logs
 
    ```
 
-   index=linux_logs sourcetype=fail2ban action="ban"
+   index="fail2ban_logs" sourcetype=fail2ban action="ban"
 
    ```
+
+   ![Splunk](/Splunk_Ubuntu/assets/02.png)
 
 3. **Visualize Results**:
    - Create a dashboard to monitor trends of failed login attempts and banned IPs.
