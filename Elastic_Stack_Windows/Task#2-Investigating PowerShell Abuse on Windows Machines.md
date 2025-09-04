@@ -21,7 +21,7 @@
 
   - PowerShell
 
-  - PowerShell Operational 
+  - PowerShell Operational
 
   - Sysmon Operational
 
@@ -50,3 +50,7 @@ event.code:11
 ```
 
 - **Sysmon Event ID 11**: File creation detection, used to observe the creation of potentially malicious files.
+
+![ELK](/Elastic_Stack_Windows/assets/04.png)
+
+![ELK](/Elastic_Stack_Windows/assets/05.png)

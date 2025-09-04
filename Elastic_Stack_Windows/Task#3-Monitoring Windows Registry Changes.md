@@ -44,6 +44,8 @@ event.code:13
 
 - **Sysmon Event ID 13**: Activity on a registry key (creation/modification)
 
+![ELK](/Elastic_Stack_Windows/assets/06.png)
+
 ## Incident Response
 
 - Response steps:
