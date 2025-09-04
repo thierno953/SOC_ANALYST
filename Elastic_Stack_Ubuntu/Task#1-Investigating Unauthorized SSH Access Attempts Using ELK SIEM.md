@@ -47,6 +47,8 @@ sudo tail -f /var/log/auth.log
 event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 ```
 
+![ELK](/Elastic_Stack_Ubuntu/assets/04.png)
+
 ## Create Elastic SIEM Detection Rules
 
 - Go to:` Security > Rules > Detection Rules > Add Elastic rules`
@@ -67,16 +69,6 @@ event.outcome: "failure" and process.name: "sshd" and user.name: "thierno"
 
 ## Generate and Manage a Security Alert
 
-- Trigger the attack again to generate alerts:
-
-```sh
-hydra -l thierno -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
-hydra -l root -P password.txt <ELASTIC_AGENT_HOST_IP> ssh
-
-# Trigger additional failed login attempts
-for i in {1..5}; do ssh fleet-server@<IP>; done
-``` 
-
 - Go to: `Security > Alerts`
 
 - Create an investigation case:
@@ -90,3 +82,23 @@ for i in {1..5}; do ssh fleet-server@<IP>; done
   - Description: `Attempted SSH brute-force attack`
 
   - Confirm with: `Create case`
+
+#### Trigger the attack again to generate alerts:
+
+```sh
+event.dataset:"system.auth" AND event.outcome:"failure"
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/05.png)
+
+#### Trigger additional failed login attempts
+
+```sh
+for i in {1..5}; do ssh root@<ELASTIC_AGENT_HOST_IP>; done
+```
+
+```sh
+event.category: authentication AND event.outcome: failure
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/06.png)

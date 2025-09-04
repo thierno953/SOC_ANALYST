@@ -148,6 +148,8 @@ sudo ufw reload
 
 - **Elasticsearch**: Test API -> https://<your-desktop-ip>:9200
 
+![ELK](/Elastic_Stack_Ubuntu/assets/01.png)
+
 ## Fleet Server Configuration
 
 - Open Fleet ports:
@@ -172,6 +174,8 @@ sudo ./elastic-agent install \
   --url=https://<FLEET_SERVER_IP>:8220
 ```
 
+![ELK](/Elastic_Stack_Ubuntu/assets/02.png)
+
 - Add Agent
 
 `Management > Fleet > Agents > Add agent`
@@ -179,5 +183,7 @@ sudo ./elastic-agent install \
 ```sh
 sudo ./elastic-agent install \
   --url=https://<FLEET_SERVER_IP>:8220 \
-  --enrollment-token=<YOUR_ENROLLMENT_TOKEN>
+  --enrollment-token=<YOUR_ENROLLMENT_TOKEN> --insecure
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/03.png)
