@@ -367,7 +367,7 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
      sudo iptables -A OUTPUT -p tcp --dport 4444 -j DROP
 
      ```
-
+ 
 2. **Investigate the Source**:
    - Analyze Sysmon logs in Splunk for:
      - The process owner.
