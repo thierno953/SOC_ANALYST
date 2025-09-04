@@ -96,9 +96,13 @@ ausearch -k passwd_changes
 auditd.log.key:"passwd_changes"
 ```
 
+![ELK](/Elastic_Stack_Ubuntu/assets/16.png)
+
 ```sh
 message: "/etc/passwd"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/17.png)
 
 ## Incident Response
 
