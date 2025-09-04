@@ -100,8 +100,15 @@ tail -f /var/log/suricata/fast.log
 
 ```sh
 suricata.eve.alert.signature_id: *
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/18.png)
+
+```sh
 source.address: "<ATTACKER_IP>"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/19.png)
 
 #### Incident Response
 
