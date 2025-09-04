@@ -183,7 +183,7 @@ index = fail2ban_logs
 
    ```
 
-   ![Splunk](/Splunk_Ubuntu/assets/02.png)
+   ![Splunk](/Splunk_Ubuntu/assets/02.png) 
 
 3. **Visualize Results**:
    - Create a dashboard to monitor trends of failed login attempts and banned IPs.
