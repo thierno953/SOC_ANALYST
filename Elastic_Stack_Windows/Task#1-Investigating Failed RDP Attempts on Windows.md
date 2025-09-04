@@ -39,13 +39,15 @@ Get-Service Sysmon*
 
 #### Log File Location Path: `Event Viewer > Applications and Services Logs > Microsoft > Windows > Sysmon > Operational`
 
+![ELK](/Elastic_Stack_Windows/assets/01.png)
+
 ## Integration with ELK (Fleet/Elastic Agent)
 
 - In the Kibana interface Go to: `Management > Integrations > Windows`
 
 - Ensure the following sources are **enabled**:
 
-  - Forwarded 
+  - Forwarded
 
   - PowerShell
 
@@ -65,6 +67,8 @@ apt install hydra -y
 hydra -l administrator -P password.txt rdp://<target-ip>
 ```
 
+![ELK](/Elastic_Stack_Windows/assets/02.png)
+
 #### Visualization in Kibana (ELK)
 
 - Interface: `Analytics > Discover` use the following filters:
@@ -72,3 +76,5 @@ hydra -l administrator -P password.txt rdp://<target-ip>
 ```sh
 event.code: 3 and source.ip: "<IP_ATTACKER>" and rule.name: "RDP"
 ```
+
+![ELK](/Elastic_Stack_Windows/assets/03.png)
