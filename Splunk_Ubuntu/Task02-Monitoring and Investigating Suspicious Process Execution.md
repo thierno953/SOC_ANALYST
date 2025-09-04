@@ -291,47 +291,37 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
    - Configure Splunk Universal Forwarder to monitor Sysmon logs:
 
-     ```bash
+```bash
+sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
+```
 
-     sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
+- Add the following configuration:
 
-     ```
+  ```
 
-   - Add the following configuration:
+  [monitor:///var/log/sysmon.log]
+  sourcetype = syslog
+  index = linux_os_logs
 
-     ```
+  ```
 
-     [monitor:///var/log/sysmon.log]
-     sourcetype = syslog
-     index = linux_os_logs
+- Save and restart the Splunk Universal Forwarder:
 
-     ```
+  ```bash
 
-   - Save and restart the Splunk Universal Forwarder:
+  sudo /opt/splunkforwarder/bin/splunk restart
 
-     ```bash
-
-     sudo /opt/splunkforwarder/bin/splunk restart
-
-     ```
+  ```
 
 2. **Verify Log Forwarding**:
 
    - Check if logs are visible in Splunk using this query:
 
-     ```
-
-     ```
-
-   index="linux_os_logs" sourcetype=syslog
-
-   ```
-
-   ```
+```
+index="linux_os_logs" sourcetype=syslog
+```
 
 ![Splunk](/Splunk_Ubuntu/assets/03.png)
-
-````
 
 ---
 
@@ -345,13 +335,12 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
      index="linux_os_logs" process=sysmon TechniqueName="Command" "ncat"
      ```
 
-```
-
 ![Splunk](/Splunk_Ubuntu/assets/04.png)
 
-````
+---
 
 2. **Visualize Process Trends**:
+
 - Create a dashboard in Splunk to monitor:
   - Frequently executed processes.
   - Unusual parent-child relationships.
@@ -370,9 +359,12 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
   ```
 
 2. **Investigate the Source**:
+
 - Analyze Sysmon logs in Splunk for:
   - The process owner.
   - Commands executed by the process.
   - Network connections initiated.
 
-````
+```
+
+```
