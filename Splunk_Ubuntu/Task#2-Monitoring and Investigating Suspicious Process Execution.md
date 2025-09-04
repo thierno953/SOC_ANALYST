@@ -24,25 +24,19 @@
 
 1. **Install Sysmon**:
 
-   - Clone the Sysmon repository:
-
-     ```bash
-
-     ```
-
    # Add Microsoft repository key
 
+   ```sh
    wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
    sudo dpkg -i packages-microsoft-prod.deb
+   ```
 
    # Update and install Sysmon for Linux
 
-   sudo apt-get update
-   sudo apt-get install sysmonforlinux -y
-
-   ```
-
-   ```
+```
+ sudo apt-get update
+ sudo apt-get install sysmonforlinux -y
+```
 
 2. **Configure Sysmon**:
 
@@ -58,9 +52,7 @@
 
 - Add the following content to monitor process creation:
 
-````
-
-```xml
+```
 <!--
  SysmonForLinux
 
@@ -237,7 +229,7 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  </RuleGroup>
 </EventFiltering>
 </Sysmon>
-````
+```
 
 - Save and restart Sysmon:
 
@@ -329,9 +321,14 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
      ```
 
-     index=linux_logs sourcetype=syslog
-
      ```
+
+   index="linux_os_logs" sourcetype=syslog
+
+   ```
+
+    ![Splunk](/Splunk_Ubuntu/assets/03.png)
+   ```
 
 ---
 
@@ -348,6 +345,8 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    index="linux_os_logs" process=sysmon TechniqueName="Command" "ncat"
 
    ```
+
+   ![Splunk](/Splunk_Ubuntu/assets/04.png)
 
    ```
 
