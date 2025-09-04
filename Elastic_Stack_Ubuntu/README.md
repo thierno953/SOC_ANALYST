@@ -109,15 +109,6 @@ sudo systemctl restart kibana
 sudo systemctl status kibana
 ```
 
-- Allow Required Ports (UFW)
-
-```sh
-sudo ufw enable
-sudo ufw allow 9200/tcp
-sudo ufw allow 5601/tcp
-sudo ufw reload
-```
-
 ### Reset Passwords
 
 ```sh
@@ -155,7 +146,7 @@ sudo ufw reload
 
 - **Kibana**: Open browser -> http://<your-desktop-ip>:5601
 
-- **Elasticsearch**: Test API -> http://<your-desktop-ip>:9200
+- **Elasticsearch**: Test API -> https://<your-desktop-ip>:9200
 
 ## Fleet Server Configuration
 
