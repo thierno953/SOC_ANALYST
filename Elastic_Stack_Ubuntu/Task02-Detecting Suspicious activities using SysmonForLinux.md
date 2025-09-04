@@ -46,13 +46,15 @@ tail -f /var/log/syslog | grep sysmon
 
   - Assign to an **Agent Policy**
 
-- Validate the integration → Available dashboard: `[Sysmon] Sysmon for Linux Logs Overview`
+- Validate the integration -> Available dashboard: `[Sysmon] Sysmon for Linux Logs Overview`
 
 - In **Kibana Discover** (quick search):
 
 ```sh
 process.name: sysmon
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/07.png)
 
 ## Simulate Malicious Activity
 
@@ -72,16 +74,22 @@ curl -X GET "https://bazaar.abuse.ch/" -v
 - **View events in Kibana Discover:**
 
 ```sh
-process.name: sysmon and message: "*malicious"
-```
-
-```sh 
 process.name: sysmon and message: "99"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/08.png)
 
 ```sh
 process.name: sysmon and message: "bazaar.abuse.ch"
 ```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/09.png)
+
+```sh
+process.name: sysmon and message: "*malicious"
+```
+
+![ELK](/Elastic_Stack_Ubuntu/assets/10.png)
 
 ## Incident Response
 
@@ -100,3 +108,11 @@ find / -name "99-malicious-config" -type f
 sudo apt install net-tools -y
 netstat -ltnp
 ```
+
+- Validate the integration -> Available dashboard: `[Sysmon] Sysmon for Linux Logs Overview`
+
+![ELK](/Elastic_Stack_Ubuntu/assets/11.png)
+![ELK](/Elastic_Stack_Ubuntu/assets/12.png)
+![ELK](/Elastic_Stack_Ubuntu/assets/13.png)
+![ELK](/Elastic_Stack_Ubuntu/assets/14.png)
+![ELK](/Elastic_Stack_Ubuntu/assets/15.png)
