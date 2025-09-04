@@ -327,8 +327,9 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
    ```
 
-    ![Splunk](/Splunk_Ubuntu/assets/03.png)
-   ```
+![Splunk](/Splunk_Ubuntu/assets/03.png)
+   
+```
 
 ---
 
@@ -346,7 +347,7 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
    ```
 
-   ![Splunk](/Splunk_Ubuntu/assets/04.png)
+![Splunk](/Splunk_Ubuntu/assets/04.png)
 
    ```
 
