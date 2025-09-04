@@ -327,9 +327,11 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 
    ```
 
+   ```
+
 ![Splunk](/Splunk_Ubuntu/assets/03.png)
-   
-```
+
+````
 
 ---
 
@@ -340,38 +342,37 @@ NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    - Run a query to find all process creation events:
 
      ```
-
+     index="linux_os_logs" process=sysmon TechniqueName="Command" "ncat"
      ```
 
-   index="linux_os_logs" process=sysmon TechniqueName="Command" "ncat"
-
-   ```
+```
 
 ![Splunk](/Splunk_Ubuntu/assets/04.png)
 
-   ```
+````
 
 2. **Visualize Process Trends**:
-   - Create a dashboard in Splunk to monitor:
-     - Frequently executed processes.
-     - Unusual parent-child relationships.
+- Create a dashboard in Splunk to monitor:
+  - Frequently executed processes.
+  - Unusual parent-child relationships.
 
 ### **Step 6: Incident Response**
 
 1. **Kill the Malicious Process**:
 
-   - Identify the process ID (PID):
+- Identify the process ID (PID):
 
-     ```bash
-     ps aux | grep bash
-     sudo kill <pid>
-     sudo iptables -A OUTPUT -p tcp --dport 4444 -j DROP
+  ```bash
+  ps aux | grep bash
+  sudo kill <pid>
+  sudo iptables -A OUTPUT -p tcp --dport 4444 -j DROP
 
-     ```
- 
+  ```
+
 2. **Investigate the Source**:
-   - Analyze Sysmon logs in Splunk for:
-     - The process owner.
-     - Commands executed by the process.
-     - Network connections initiated.
- 
+- Analyze Sysmon logs in Splunk for:
+  - The process owner.
+  - Commands executed by the process.
+  - Network connections initiated.
+
+````
