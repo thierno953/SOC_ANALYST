@@ -36,19 +36,19 @@
    - Run the following commands to configure the forwarder:
      ```cmd
      cd "C:\Program Files\SplunkUniversalForwarder\bin"
-     splunk enable boot-start
+     .\splunk.exe enable boot-start
      .\splunk.exe start
-     splunk add forward-server <Splunk_Server_IP>:9997 -auth admin:Admin@123
+     .\splunk.exe enable boot-start add forward-server <Splunk_Server_IP>:9997 -auth admin:Admin@123
      ```
 
 3. **Add Monitors for Windows Logs**:
 
    - Use Splunk forwarder commands to monitor key Windows event logs:
      ```cmd
-     splunk add monitor "C:\Windows\System32\winevt\Logs\Security.evtx"
-     splunk add monitor "C:\Windows\System32\winevt\Logs\Application.evtx"
-     splunk add monitor "C:\Windows\System32\winevt\Logs\System.evtx"
-     splunk restart
+     .\splunk.exe add monitor "C:\Windows\System32\winevt\Logs\Security.evtx"
+     .\splunk.exe add monitor "C:\Windows\System32\winevt\Logs\Application.evtx"
+     .\splunk.exe add monitor "C:\Windows\System32\winevt\Logs\System.evtx"
+     .\splunk.exe restart
      ```
 
 4. **Configure Universal Forwarder Inputs**:
@@ -84,9 +84,12 @@
    - On the Splunk Web UI, go to **Settings > Forwarding and Receiving > Configure Receiving**.
    - Add port `9997` as a receiving port.
    - Verify data flow by searching in Splunk:
-     ```plaintext
-     index="*" | stats count by sourcetype
-     ```
+
+```plaintext
+index="*" | stats count by sourcetype
+```
+
+![Splunk](/Splunk_Windows/assets/01.png)
 
 ---
 
@@ -112,11 +115,19 @@
 ## **Phase 4: Verify Data in Splunk**
 
 - Run specific search queries to verify data ingestion:
+
   - **For Windows system logs**:
-    ```plaintext
-    index=windows_system_logs | stats count by sourcetype
-    ```
-  - **For security events**:
-    ```plaintext
-    index=security_events | stats count by sourcetype
-    ```
+
+```plaintext
+index=windows_system_logs | stats count by sourcetype
+```
+
+![Splunk](/Splunk_Windows/assets/02.png)
+
+- **For security events**:
+
+```plaintext
+index=security_events | stats count by sourcetype
+```
+
+![Splunk](/Splunk_Windows/assets/03.png)

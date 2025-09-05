@@ -2,8 +2,6 @@
 
 The objective of this task is to detect, investigate, and respond to unauthorized or suspicious scheduled tasks on a Windows machine that might be used for persistence, execution of malicious scripts, or lateral movement. This task uses **Sysmon** to monitor scheduled tasks and **Splunk** to analyze and visualize the data.
 
-`Detail-Level` - Medium
-
 ---
 
 ### **Steps**
@@ -29,9 +27,13 @@ The objective of this task is to detect, investigate, and respond to unauthorize
 - Sysmon XML config to monitor Run keys:
 
 ```
-<RegistryValue name="HKCU\Software\Microsoft\Windows\CurrentVersion\Run" onmatch="include" />
-<RegistryValue name="HKLM\Software\Microsoft\Windows\CurrentVersion\Run" onmatch="include" />
-<RegistryValue name="HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" onmatch="include" />
+<EventFiltering>
+  <RegistryEvent onmatch="include">
+    <TargetObject name="HKCU\Software\Microsoft\Windows\CurrentVersion\Run" />
+    <TargetObject name="HKLM\Software\Microsoft\Windows\CurrentVersion\Run" />
+    <TargetObject name="HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce" />
+  </RegistryEvent>
+</EventFiltering>
 ```
 
 ---
@@ -92,22 +94,30 @@ The objective of this task is to detect, investigate, and respond to unauthorize
     index=sysmon_logs EventCode=1 Image="*schtasks.exe" | stats count by Image, CommandLine, User
     ```
 
-  - **Detect Task Modification**:
+![Splunk](/Splunk_Windows/assets/09.png)
 
-    ```spl
-    index=sysmon_logs EventCode=1 CommandLine="*change*" Image="*schtasks.exe"
-    ```
+- **Detect Task Modification**:
 
-  - **Detect Task Execution**:
-    ```spl
-    index=sysmon_logs EventCode=1 CommandLine="*run*" Image="*schtasks.exe"
-    ```
+  ```spl
+  index=sysmon_logs EventCode=1 CommandLine="*change*" Image="*schtasks.exe"
+  ```
+
+![Splunk](/Splunk_Windows/assets/10.png)
+
+- **Detect Task Execution**:
+  ```spl
+  index=sysmon_logs EventCode=1 CommandLine="*run*" Image="*schtasks.exe"
+  ```
+
+![Splunk](/Splunk_Windows/assets/11.png)
 
 - Correlate Events:
 
   ```spl
   index=sysmon_logs EventCode=1 Image="*schtasks.exe" OR EventCode=3
   ```
+
+![Splunk](/Splunk_Windows/assets/12.png)
 
 - Visualize Activity in Splunk:
   - Timeline of scheduled task creations and executions.

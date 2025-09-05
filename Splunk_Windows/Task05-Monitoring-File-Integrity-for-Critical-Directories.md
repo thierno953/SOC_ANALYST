@@ -78,9 +78,11 @@ The objective of this task is to monitor and investigate unauthorized changes to
 
   - **Detect File Creations**:
 
-    ```spl
-    index=sysmon_logs EventCode=11 TargetFilename="*System32*" OR TargetFilename="*Program Files*" | stats count by TargetFilename, Image, User
-    ```
+        ```spl
+        index=sysmon_logs EventCode=11 TargetFilename="*System32*" OR TargetFilename="*Program Files*" | stats count by TargetFilename, Image, User
+        ```
+
+    ![Splunk](/Splunk_Windows/assets/16.png)
 
   - **Detect File Modifications**:
 
@@ -98,6 +100,8 @@ The objective of this task is to monitor and investigate unauthorized changes to
   ```spl
   index=sysmon_logs (EventCode=1 OR EventCode=11 OR EventCode=23) | transaction ProcessId maxspan=1m
   ```
+
+  ![Splunk](/Splunk_Windows/assets/17.png)
 
 - Visualize File Activity in Splunk:
   - Bar chart of most modified files in critical directories.
@@ -129,10 +133,13 @@ The objective of this task is to monitor and investigate unauthorized changes to
 4. **Analyze Malicious Files**:
 
    - Investigate content of suspicious files:
+
      ```powershell
      Get-Content "C:\Windows\System32\malicious.exe"
      ```
+
    - Remove malicious files:
+
      ```powershell
      Remove-Item -Path "C:\Windows\System32\malicious.exe" -Force
      ```

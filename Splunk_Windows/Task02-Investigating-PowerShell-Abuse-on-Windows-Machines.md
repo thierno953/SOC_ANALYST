@@ -2,8 +2,6 @@
 
 The objective of this task is to detect, investigate, and respond to malicious or unauthorized PowerShell activity on a Windows machine using Sysmon and Splunk. The focus is on identifying suspicious PowerShell commands, encoded scripts, and activities such as file downloads or executions from non-standard paths.
 
-`Detail-Level` - Medium
-
 ---
 
 ### **Steps**
@@ -29,13 +27,14 @@ The objective of this task is to detect, investigate, and respond to malicious o
     ```
 
 - Edit the `inputs.conf` file for Sysmon logs:
+
   ```plaintext
   [WinEventLog://Microsoft-Windows-Sysmon/Operational]
   disabled = 0
   index = sysmon_logs
   sourcetype = XmlWinEventLog:Sysmon
   renderXml = false
-  
+
   ```
 
 ---
@@ -74,6 +73,8 @@ The objective of this task is to detect, investigate, and respond to malicious o
 ```
 index="sysmon_logs" sourcetype="XmlWinEventLog:Sysmon" "*eicar*"
 ```
+
+![Splunk](/Splunk_Windows/assets/08.png)
 
 - Example of detected events:
 

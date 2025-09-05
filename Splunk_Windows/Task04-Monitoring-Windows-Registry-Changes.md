@@ -2,8 +2,6 @@
 
 The objective of this task is to detect, investigate, and respond to unauthorized or suspicious changes to the Windows Registry, focusing on monitoring registry modifications that indicate malware installation, persistence mechanisms, or security configuration tampering using Sysmon and Splunk.
 
-`Detail-Level` - Medium
-
 ---
 
 ### **Steps**
@@ -45,7 +43,7 @@ The objective of this task is to detect, investigate, and respond to unauthorize
   ```cmd
   splunk restart
   ```
-  
+
 ---
 
 ### **3. Simulate Malicious Registry Changes**
@@ -77,17 +75,23 @@ The objective of this task is to detect, investigate, and respond to unauthorize
   index=sysmon_logs EventCode=13 | where like(TargetObject, "%Run%")
   ```
 
+![Splunk](/Splunk_Windows/assets/13.png)
+
 - Detect registry key deletions:
 
   ```spl
   index=sysmon_logs EventCode=12 | stats count by TargetObject, Image, User
   ```
 
+  ![Splunk](/Splunk_Windows/assets/14.png)
+
 - Correlate registry events with process creation:
 
   ```spl
   index=sysmon_logs EventCode=1 Image="*powershell.exe"
   ```
+
+![Splunk](/Splunk_Windows/assets/15.png)
 
 - Visualize registry activities in dashboards:
   - Bar chart of registry paths most frequently modified.
