@@ -90,11 +90,11 @@ Set up a network monitoring system to detect abnormal traffic patterns, includin
 
 4. **Restart and Test Suricata Configuration**:
 
-   ```bash
-
-   sudo systemctl restart suricata
-
-   ```
+```bash
+sudo chown -R suricata:suricata /etc/suricata/rules
+sudo chmod -R 644 /etc/suricata/rules/*.rules
+sudo systemctl restart suricata
+```
 
 5. **Start Suricata**:
 

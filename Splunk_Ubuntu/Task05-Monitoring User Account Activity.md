@@ -92,11 +92,15 @@ tail -f /var/log/syslog | grep maluser
 index="linux_os_logs" sysmon
 ```
 
+![Splunk](/Splunk_Ubuntu/assets/10.png)
+
 ### Filter for processes related to account creation:
 
 ```sh
 index="linux_os_logs" process=sysmon maluser
 ```
+
+![Splunk](/Splunk_Ubuntu/assets/11.png)
 
 ### Step 5: Incident Response
 
