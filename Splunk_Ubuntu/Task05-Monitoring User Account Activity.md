@@ -2,8 +2,6 @@
 
 - Detect and investigate user account creation, modification, and deletion events on an Ubuntu server using **Sysmon for Linux** and **Splunk**, simulate suspicious activity, and respond appropriately.
 
-- **Difficulty**: Medium
-
 - **Tools**: Sysmon for Linux, Splunk Universal Forwarder, Splunk
 
 ### Step 1: Install Sysmon for Linux

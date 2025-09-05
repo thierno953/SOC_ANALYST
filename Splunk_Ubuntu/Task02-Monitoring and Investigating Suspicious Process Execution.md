@@ -1,8 +1,5 @@
 **Objective**: Detect and investigate suspicious processes running on an Ubuntu server using practical tools like Sysmon for Linux and Splunk. Simulate an attack by running a reverse shell.
 
-- **Detailed level**: Full
-- **Difficulty level**: Medium
-
 ---
 
 ### **Step-by-Step Guide**

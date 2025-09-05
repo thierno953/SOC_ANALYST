@@ -2,9 +2,6 @@
 
 The objective of this task is to monitor and detect unauthorized modifications, deletions, or attribute changes in sensitive directories, such as `/etc/`, using **Auditd** for real-time monitoring and **Splunk** for centralized log analysis. By simulating potential threats, such as file tampering or deletion, students will gain hands-on experience in setting up file integrity monitoring, analyzing logs for forensic purposes, and implementing incident response strategies to secure critical system files.
 
-- **Detailed level**: Full
-- **Difficulty level**: Medium
-
 What is Auditd?
 
 - **System Activity Logging**: Auditd monitors and records system events like file access, user actions, and configuration changes.
