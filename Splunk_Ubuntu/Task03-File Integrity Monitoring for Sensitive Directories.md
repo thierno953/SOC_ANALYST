@@ -143,6 +143,8 @@ What is Auditd?
 
      ```
 
+![Splunk](/Splunk_Ubuntu/assets/05.png)
+
 ### **Step 5: Simulate Unauthorized Changes**
 
 1. **Modify a File**:
@@ -191,8 +193,10 @@ What is Auditd?
      index=linux_file_integrity sourcetype=auditd key="file_integrity"
      ```
 
-   - This query will filter events tagged with the `file_integrity` keyword.
-   - Note: Its all possible because of Aud
+![Splunk](/Splunk_Ubuntu/assets/06.png)
+
+- This query will filter events tagged with the `file_integrity` keyword.
+- Note: Its all possible because of Aud
 
 2. **Investigate Specific Events**:
 

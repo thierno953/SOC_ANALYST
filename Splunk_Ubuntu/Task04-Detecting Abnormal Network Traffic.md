@@ -168,6 +168,8 @@ Set up a network monitoring system to detect abnormal traffic patterns, includin
 
      ```
 
+![Splunk](/Splunk_Ubuntu/assets/07.png)
+
 ---
 
 ### **Step 5: Analyze Logs in Splunk**
@@ -182,14 +184,18 @@ Set up a network monitoring system to detect abnormal traffic patterns, includin
 
      ```
 
+![Splunk](/Splunk_Ubuntu/assets/08.png)
+
 2. **Investigate Traffic Patterns**:
 
    - Query for specific traffic types or destinations:
 
      ```
-     index=network_logs sourcetype=suricata dest_ip="<attacker-ip>"
+     index=network_security_logs sourcetype=suricata dest_ip="<victim-ip>"
 
      ```
+
+![Splunk](/Splunk_Ubuntu/assets/09.png)
 
 3. **Visualize Alerts**:
    - Create dashboards to monitor:
