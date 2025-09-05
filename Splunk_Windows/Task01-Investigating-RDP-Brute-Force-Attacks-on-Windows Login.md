@@ -81,7 +81,7 @@ index="sysmon_logs"  sourcetype="XmlWinEventLog:Sysmon" SourceIp="<IP>"
 - Use the Windows Firewall to block suspicious IP addresses:
 
 ```
-New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress 139.84.176.244
+New-NetFirewallRule -DisplayName "Block RDP Brute Force" -Direction Inbound -Action Block -RemoteAddress <IP>
 
 ```
 
