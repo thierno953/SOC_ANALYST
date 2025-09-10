@@ -148,3 +148,30 @@ Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, Rem
 
 Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses1.txt"
 ```
+
+## Registry Forensics (Persistence & Autoruns)
+
+```sh
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+```
+
+## Event Logs (Authentication & RDP)
+
+```sh
+Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4624 } | Select-Object TimeCreated, Id, Message
+Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4625 } | Select-Object TimeCreated, Id, Message
+Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4627 } | Format-Table TimeCreated, Message
+```
+
+- `4624` = Successful login.
+
+- `4625` = Failed login (bruteforce attempts, wrong password).
+
+- `4627` = Group membership info during logon.
+
+## Hashing Suspicious Files (for VirusTotal / IOC comparison)
+
+```sh
+Get-FileHash "C:\Users\Public\Documents\InfectedFiles\*" -Algorithm SHA256
+```
