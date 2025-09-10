@@ -1,6 +1,6 @@
 # Windows Forensics
 
-- The practice of collecting and analyzing data from Windows systems to identify, investigate, and recover from security incidents.
+- Windows Forensics is the practice of collecting and analyzing data from Windows systems to identify, investigate, and recover from security incidents. The main objectives are:
 
   - Identify malicious activities
 
@@ -8,170 +8,139 @@
 
   - Prevent further attacks
 
-- **Focus Areas**: `filesystem, registry, event logs, memory, network activity`
+- **Focus areas**: `filesystem, registry, event logs, memory, network activity`
 
 ## Key Components of Windows Forensics
 
-- **Filesystem**: Investigating files, folders, timestamps, and hidden data.
+- **Filesystem**: Investigate files, folders, timestamps, and hidden data to detect malicious activity.
 
-- **Registry**: Tracking system configuration changes, user activity, and application settings.
+- **Registry**: Track system configuration changes, user activity, and application settings.
 
-- **Event Logs**: Examining security, application, and System logs for relevant events.
+- **Event Logs**: Examine security, application, and system logs for authentication, malware, or unauthorized access.
 
-- **Memory (RAM)**: Capturing volatile data, including running processes and network connections.
+- **Memory (RAM)**: Capture volatile data such as running processes and network connections.
 
-## Why Windows Forensics is Important
+- **Network Activity**: Monitor active connections, open ports, and suspicious network traffic.
 
-- **Incident Response**: Detect and analyze the scope and impact of a breaches.
+## Importance of Windows Forensics
 
-- **Legal Evidence**: Ensure data integrity for court-admissible digital evidence.
+- **Incident Response**: Detect and analyze the scope and impact of breaches.
 
-- **Recovery**: Help restore systems to secure, operational status after on attack.
+- **Legal Evidence**: Preserve integrity for court-admissible digital evidence.
+
+- **Recovery**: Restore systems to secure, operational status after an attack.
 
 - **Proactive Security**: Improve defenses by learning from past incidents.
 
 ## Why Use PowerShell for Forensics
 
-- **Powerful Command-Line Tool**: Built into Windows, making it accessible for forensic investigations.
+- Built-in command-line tool in Windows.
 
-- **Automation Capabilities**: Easily automate repetitive forensic tasks and incident response procedures.
+- Automation of repetitive tasks.
 
-- **System-wide Access**: Direct access to files, processes, logs, and network activity without installing third-party tools.
+- System-wide access without third-party tools.
 
-- **Scripting Flexibility**: Create custom scripts for specific forensic needs.
+- Flexible scripting for custom forensic needs.
 
 ## Key PowerShell Cmdlets for Forensics
 
-- `Get-Process`: List all running processes with their details (`memory usage, CPU time, etc`).
+- `Get-Process` - List running processes.
 
-- `Get-EventLog`: Retrieve and filter Windows event logs (`Security, Application, System logs`).
+- `Get-EventLog` - Retrieve Windows event logs.
 
-- `Get-FileHash`: Generate cryptographic hashes (`MD5, SHA256`) to verify file integrity.
+- `Get-FileHash` - Generate hashes for file verification.
 
-- `Get-ChildItem`: Recursively list files and folders with metadata for forensic analysis.
+- `Get-ChildItem` - List files and folders recursively.
 
-- `Get-WmiObject`: Access system information (installed software, startup items, system configurations).
+- `Get-WmiObject` - Access system information and services.
 
-## Collecting System Information with PowerShell
+## Collecting System Information
 
 ```sh
-Get-ComputerInfo
-Get-ComputerInfo | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\SystemInfo.txt
-Get-Process
-Get-Process | Format-Table -AutoSize
-Get-Process | Format-Table -AutoSize | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessList.txt
+Get-ComputerInfo | Out-File "C:\Users\Administrator\Documents\Forensic\SystemInfo.txt"
+Get-Process | Format-Table -AutoSize | Out-File "C:\Users\Administrator\Documents\Forensic\ProcessList.txt"
 ```
 
 ## Investigating User Accounts
 
-#### List all AD user accounts:
-
 ```sh
-Get-ADUser -Filter *
-Get-ADUser -Filter * | Select-Object Name, Enabled | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ADUserAccounts.txt
-```
+# List all AD user accounts
+Get-ADUser -Filter * | Select-Object Name, Enabled | Out-File "C:\Users\Administrator\Documents\Forensic\ADUserAccounts.txt"
 
-#### List `Domain Admins` group members:
-
-```sh
+# List Domain Admins
 Get-ADGroupMember -Identity "Domain Admins"
-```
 
-#### Get detailed info on a specific user:
-
-```sh
+# Get detailed info for a specific user
 Get-ADUser -Identity "thierno" -Properties *
 ```
 
-## Investigating Process
+## Investigating Processes and Services
 
 ```sh
-Get-Process
+# Suspicious processes
+Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Out-File "C:\Users\Administrator\Documents\Forensic\SuspiciousProcesses.txt"
 
-Get-Process | Where-Object { $_.Name -notin @('explorer', 'svchost', 'winlogon', 'lsass', 'services')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousProcesses.txt"
-
-Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath
-
-Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindows.txt
-
-Get-WmiObject Win32_Process | Where-Object { $_.ExecutablePath -notlike "C:\Windows\*" } | Select-Object Name, ProcessId, ExecutablePath | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ProcessOutOfWindowsBrief.txt
-
-Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU
-
-Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\HighCPUProcesses.txt
-
-Get-Process | Sort-Object PM -Descending | Select-Object -First 10 Name, Id, PM
+# Suspicious services
+Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Out-File "C:\Users\Administrator\Documents\Forensic\SuspiciousServices.txt"
 ```
 
-## Investigating Services
+## Scheduled Tasks and Network Connections
 
 ```sh
-Get-Service
+# Suspicious scheduled tasks
+Get-ScheduledTask | Where-Object { $_.TaskName -notin @('UpdateTask','SystemTasks','WindowsTasks') } | Out-File "C:\Users\Administrator\Documents\Forensic\SuspiciousScheduledTasks.txt"
 
-Get-Service | Format-Table -AutoSize
-
-Get-Service | Where-Object { $_.Name -notin @('TrustedInstaller', 'WindDefend', 'EventLog', 'Dhcp', 'Dnscache')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousServices.txt"
-
-Get-Service -Name "BITS" | Format-List *
-
-Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName
-
-Get-WmiObject Win32_Service | Where-Object { $_.PathName -notlike "C:\Windows\*" } | Select-Object Name, DisplayName, PathName | Out-File -FilePath C:\Users\Administrator\Documents\221B-Case\ServiceOutOfWindows.txt
-```
-
-## Checking Scheduled Tasks
-
-```sh
-Get-ScheduledTask | Format-Table -AutoSize
-
-Get-ScheduledTask | Where-Object { $_.TaskName -notin @('UpdateTask', 'SystemTasks', 'WindowsTasks')} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\SuspicousScheduledTasks.txt"
-```
-
-## Checking Active Internet Connections
-
-```sh
-Get-NetTCPConnection
-
-Get-NetTCPConnection | Format-Table -AutoSize
-
-Get-NetTCPConnection | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ActiveNetTCPConnections.txt"
-
-Get-NetTCPConnection -LocalPort 3389
-
-Get-NetTCPConnection -LocalPort 3389 | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\RDPConnection.txt"
-
-Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}
-
-Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize
-
-Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses.txt"
-
-Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Format-Table -AutoSize | Out-File -FilePath "C:\Users\Administrator\Documents\221B-Case\ConnectionwithProcesses1.txt"
+# Active network connections
+Get-NetTCPConnection | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, @{Name="Process";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}} | Out-File "C:\Users\Administrator\Documents\Forensic\ActiveConnections.txt"
 ```
 
 ## Registry Forensics (Persistence & Autoruns)
 
 ```sh
-Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
-Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run" | Out-File "C:\Users\Administrator\Documents\Forensic\Autoruns.txt"
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" | Out-File "C:\Users\Administrator\Documents\Forensic\AutorunsUser.txt"
 ```
 
 ## Event Logs (Authentication & RDP)
 
 ```sh
-Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4624 } | Select-Object TimeCreated, Id, Message
-Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4625 } | Select-Object TimeCreated, Id, Message
-Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4627 } | Format-Table TimeCreated, Message
+Get-WinEvent -LogName Security | Where-Object { $_.Id -in 4624,4625,4627 } | Format-Table TimeCreated, Id, Message | Out-File "C:\Users\Administrator\Documents\Forensic\SecurityEvents.txt"
 ```
 
-- `4624` = Successful login.
+- `4624` = Successful login
 
-- `4625` = Failed login (bruteforce attempts, wrong password).
+- `4625` = Failed login (bruteforce, wrong password)
 
-- `4627` = Group membership info during logon.
+- `4627` = Group membership info during login
 
-## Hashing Suspicious Files (for VirusTotal / IOC comparison)
+## Hashing Suspicious Files
 
 ```sh
-Get-FileHash "C:\Users\Public\Documents\InfectedFiles\*" -Algorithm SHA256
+Get-FileHash "C:\Users\Public\Documents\InfectedFiles\*" -Algorithm SHA256 | Out-File "C:\Users\Administrator\Documents\Forensic\FileHashes.txt"
+```
+
+## Simulated Attacks
+
+### Malware Simulation
+
+```sh
+$folder = "C:\Users\Public\Documents\InfectedFiles"
+New-Item -ItemType Directory -Force -Path $folder
+
+1..5 | ForEach-Object {
+    $file = "$folder\File$_.txt"
+    Set-Content -Path $file -Value "This is a simulated infected file $_"
+    Rename-Item -Path $file -NewName "$file.encrypted"
+}
+
+Start-Process -FilePath "notepad.exe"
+```
+
+### Unauthorized Access Simulation
+
+```sh
+New-LocalUser "intruder" -Password (ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force) -FullName "Unauthorized User"
+Add-LocalGroupMember -Group "Administrators" -Member "intruder"
+
+Write-EventLog -LogName Security -Source "Microsoft-Windows-Security-Auditing" -EventID 4625 -EntryType Failure -Message "Failed login attempt for intruder"
 ```
